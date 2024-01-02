@@ -3,6 +3,8 @@ package DevHeaven.keyword.domain.friend.entity;
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
 import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.entity.Member;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import lombok.AllArgsConstructor;
@@ -31,6 +33,7 @@ public class Friend extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private FriendStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)

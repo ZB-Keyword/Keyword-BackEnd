@@ -7,5 +7,6 @@ import lombok.Getter;
 @Builder
 public class FriendDeleteResponse {
 
-  private boolean isFriendDelete;
+  @Builder.Default
+  private Boolean isFriendDelete = false;
 }
