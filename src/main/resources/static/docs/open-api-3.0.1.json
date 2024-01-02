@@ -1,0 +1,59 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "THT API 문서",
+    "description" : "Spring REST Docs with SwaggerUI.",
+    "version" : "0.0.1"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8086"
+  } ],
+  "tags" : [ ],
+  "paths" : {
+    "/friends/{memberId}" : {
+      "delete" : {
+        "tags" : [ "friends" ],
+        "operationId" : "friends/delete",
+        "parameters" : [ {
+          "name" : "memberId",
+          "in" : "path",
+          "description" : "친구 삭제할 Member Id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/friends-memberId-1844427887"
+                },
+                "examples" : {
+                  "friends/delete" : {
+                    "value" : "{\n  \"friendDelete\" : true\n}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "friends-memberId-1844427887" : {
+        "type" : "object",
+        "properties" : {
+          "friendDelete" : {
+            "type" : "boolean",
+            "description" : "친구 삭제 성공 유무"
+          }
+        }
+      }
+    }
+  }
+}
