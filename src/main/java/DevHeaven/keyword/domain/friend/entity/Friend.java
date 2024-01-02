@@ -3,6 +3,8 @@ package DevHeaven.keyword.domain.friend.entity;
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
 import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.entity.Member;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import org.elasticsearch.monitor.os.OsStats.Mem;
 
 @Getter
 @Builder
@@ -30,8 +33,16 @@ public class Friend extends BaseTimeEntity {
     @Column(nullable = false)
     private FriendStatus status;
 
-    private Long memberRequestId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_request_id") // 변경된 부분
+    private Member memberRequest;
 
-    @ManyToOne
-    private Member member;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "friend_id") // 변경된 부분
+    private Member friend;
+
+    public void modifyFriendStatus(final FriendStatus friendStatus){
+        this.status=friendStatus;
+    }
+
 }
