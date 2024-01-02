@@ -1,5 +1,6 @@
 package DevHeaven.keyword.domain.friend.controller;
 
+import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -14,6 +15,8 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
+import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,11 +54,16 @@ class FriendControllerTest {
         .andDo(MockMvcRestDocumentationWrapper.document("friends/delete",
             preprocessRequest(prettyPrint()),
             preprocessResponse(prettyPrint()),
-            pathParameters(
-                parameterWithName("memberId").description("친구 삭제할 Member Id")
-            ),
-            responseFields(
-                fieldWithPath("friendDelete").type(JsonFieldType.BOOLEAN).description("친구 삭제 성공 유무")
+            resource(
+                ResourceSnippetParameters.builder()
+                    .tag("Friend API")
+                    .summary("친구 삭제 API")
+                    .pathParameters(parameterWithName("memberId").description("친구 삭제할 Member Id"))
+                    .responseFields(
+                        fieldWithPath("friendDelete").type(JsonFieldType.BOOLEAN).description("친구 삭제 성공 유무")
+                    )
+                    .responseSchema(Schema.schema("Friend Delete Response"))
+                    .build()
             )));
 
   }
