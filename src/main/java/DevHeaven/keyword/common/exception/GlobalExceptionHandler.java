@@ -20,4 +20,10 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(INTERNAL_SERVER_ERROR.getHttpStatus()).body(ErrorResponse.from(e, INTERNAL_SERVER_ERROR));
     }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorResponse> handleException(CustomException exception){
+        log.error("Exception is occurred.", exception);
+        return ResponseEntity.status(exception.getErrorCode().getHttpStatus()).body(ErrorResponse.from(exception));
+    }
 }
