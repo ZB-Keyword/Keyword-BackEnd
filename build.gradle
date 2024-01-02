@@ -2,7 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.17'
 	id 'io.spring.dependency-management' version '1.1.4'
-	id 'org.asciidoctor.jvm.convert' version '3.3.2'
+	id "com.epages.restdocs-api-spec" version "0.16.4"
+	id 'org.hidetake.swagger.generator' version '2.18.2'
 }
 
 group = 'DevHeaven'
@@ -22,9 +23,6 @@ repositories {
 	mavenCentral()
 }
 
-ext {
-	set('snippetsDir', file("build/generated-snippets"))
-}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
@@ -41,12 +39,14 @@ dependencies {
 	implementation 'org.flywaydb:flyway-mysql'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.batch:spring-batch-test'
-	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+	testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.16.4'
+	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
 }
 
 tasks.named('bootBuildImage') {
@@ -54,11 +54,30 @@ tasks.named('bootBuildImage') {
 }
 
 tasks.named('test') {
-	outputs.dir snippetsDir
 	useJUnitPlatform()
 }
 
-tasks.named('asciidoctor') {
-	inputs.dir snippetsDir
-	dependsOn test
+
+tasks.withType(GenerateSwaggerUI){
+	dependsOn'openapi3'
+
+	delete file('scr/main/resources/static/docs')
+	copy{
+		from "build/resources/main/static/docs"
+		into "src/main/resources/static/docs"
+	}
+}
+
+bootJar {
+	dependsOn('openapi3')
+}
+
+openapi3 {
+	server = "http://localhost:8086"
+	title = "THT API 문서"
+	description = "Spring REST Docs with SwaggerUI."
+	version = "0.0.1"
+	outputFileNamePrefix = 'open-api-3.0.1'
+	format = 'json'
+	outputDirectory= 'build/resources/main/static/docs'
 }
