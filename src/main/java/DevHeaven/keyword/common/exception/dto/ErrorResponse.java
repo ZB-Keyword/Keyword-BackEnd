@@ -1,5 +1,6 @@
 package DevHeaven.keyword.common.exception.dto;
 
+import DevHeaven.keyword.common.exception.CustomException;
 import DevHeaven.keyword.common.exception.type.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,5 +33,13 @@ public class ErrorResponse {
                 .errorMessage(exception.getMessage())
                 .httpStatus(errorCode.getHttpStatus())
                 .build();
+    }
+
+    public static ErrorResponse from(final CustomException exception){
+        return ErrorResponse.builder()
+            .errorCode(exception.getErrorCode())
+            .errorMessage(exception.getErrorCode().getErrorMessage())
+            .httpStatus(exception.getErrorCode().getHttpStatus())
+            .build();
     }
 }
