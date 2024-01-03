@@ -1,6 +1,7 @@
 package DevHeaven.keyword.domain.friend.controller;
 
 import static DevHeaven.keyword.common.exception.type.ErrorCode.*;
+import static com.epages.restdocs.apispec.ResourceDocumentation.headerWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
@@ -46,8 +47,13 @@ class FriendControllerTest {
 
   @MockBean
   private FriendService friendService;
-  protected  ResourceSnippetParameters friendDeleteResponse() {
+  protected  ResourceSnippetParameters friendDeleteErrorResponse() {
     return ResourceSnippetParameters.builder()
+        .tag("Friend API")
+        .summary("친구 삭제 API")
+        .requestHeaders(
+            headerWithName("Authorization").description("Bearer AccessToken")
+        )
         .pathParameters(parameterWithName("memberId").description("친구 삭제할 Member Id"))
         .responseFields(
             fieldWithPath("errorCode").type(JsonFieldType.STRING).description("친구 삭제 실패 code"),
@@ -65,7 +71,9 @@ class FriendControllerTest {
 
     //when
     //then
-    mockMvc.perform(delete("/friends/{memberId}",memberId))
+    mockMvc.perform(delete("/friends/{memberId}",memberId)
+            .header("Authorization", "Bearer AccessToken")
+        )
         .andDo(print())
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(jsonPath("$.isFriendDelete").value(true))
@@ -76,6 +84,9 @@ class FriendControllerTest {
                 ResourceSnippetParameters.builder()
                     .tag("Friend API")
                     .summary("친구 삭제 API")
+                    .requestHeaders(
+                        headerWithName("Authorization").description("Bearer AccessToken")
+                    )
                     .pathParameters(parameterWithName("memberId").description("친구 삭제할 Member Id"))
                     .responseFields(
                         fieldWithPath("isFriendDelete").type(JsonFieldType.BOOLEAN).description("친구 삭제 성공 유무")
@@ -86,7 +97,30 @@ class FriendControllerTest {
 
     verify(friendService).deleteFriend(memberId);
   }
+  @Test
+  @DisplayName("친구 삭제 - 실패 : 친구를 회워 DB에서 찾을 수 없음")
+  void deleteFriend_fail_not_found_member() throws Exception {
+    //given
+    Long memberId = 1L;
 
+    //when
+    doThrow(new MemberNotFoundException(MEMBER_NOT_FOUND)).when(friendService).deleteFriend(anyLong());
+
+    //then
+    mockMvc.perform(delete("/friends/{memberId}",memberId)
+            .header("Authorization", "Bearer yourAccessToken")
+        )
+        .andDo(print())
+        .andExpect(MockMvcResultMatchers.status().isNotFound())
+        .andDo(MockMvcRestDocumentationWrapper.document("friends/delete/fail/notMember",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            resource(
+                friendDeleteErrorResponse()
+            )));
+
+    verify(friendService).deleteFriend(memberId);
+  }
   @Test
   @DisplayName("친구 삭제 - 실패 : 친구 목록에서 ACCEPT 인 상태를 찾을 수 없음")
   void deleteFriend_fail_not_found_accepted() throws Exception {
@@ -97,39 +131,19 @@ class FriendControllerTest {
     doThrow(new FriendNotFoundException(FRIEND_NOT_FOUND)).when(friendService).deleteFriend(anyLong());
 
     //then
-    mockMvc.perform(delete("/friends/{memberId}",memberId))
+    mockMvc.perform(delete("/friends/{memberId}",memberId)
+            .header("Authorization", "Bearer yourAccessToken")
+        )
         .andDo(print())
         .andExpect(MockMvcResultMatchers.status().isNotFound())
         .andDo(MockMvcRestDocumentationWrapper.document("friends/delete/fail/notFriend",
             preprocessRequest(prettyPrint()),
             preprocessResponse(prettyPrint()),
             resource(
-                friendDeleteResponse()
+                friendDeleteErrorResponse()
             )));
 
     verify(friendService).deleteFriend(memberId);
   }
 
-  @Test
-  @DisplayName("친구 삭제 - 실패 : 친구를 회원 목록에서 찾을 수 없음")
-  void deleteFriend_fail_not_found_member() throws Exception {
-    //given
-    Long memberId = 1L;
-
-    //when
-    doThrow(new MemberNotFoundException(MEMBER_NOT_FOUND)).when(friendService).deleteFriend(anyLong());
-
-    //then
-    mockMvc.perform(delete("/friends/{memberId}",memberId))
-        .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isNotFound())
-        .andDo(MockMvcRestDocumentationWrapper.document("friends/delete/fail/notMember",
-            preprocessRequest(prettyPrint()),
-            preprocessResponse(prettyPrint()),
-            resource(
-                friendDeleteResponse()
-            )));
-
-    verify(friendService).deleteFriend(memberId);
-  }
 }
