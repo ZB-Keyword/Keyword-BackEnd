@@ -83,3 +83,4 @@ CREATE TABLE Chat (
                       CONSTRAINT `FK_ChatRoom_TO_Chat_1` FOREIGN KEY (`chat_room_id`) REFERENCES `ChatRoom` (`chat_room_id`),
                       CONSTRAINT `FK_Member_TO_Chat_1` FOREIGN KEY (`member_id`) REFERENCES `Member` (`member_id`)
 );
+
