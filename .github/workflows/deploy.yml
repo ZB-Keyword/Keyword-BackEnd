@@ -38,7 +38,7 @@ jobs:
         mkdir -p ./src/main/resources
         touch ./src/main/resources/application.yml
         echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.yml
-        ./gradlew build --info
+        ./gradlew build
 
 
             
