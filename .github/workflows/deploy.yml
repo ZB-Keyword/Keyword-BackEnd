@@ -22,9 +22,6 @@ jobs:
         java-version: '8'
         distribution: 'temurin'
         
-    - name: grant execute permission for gradlew
-      run: chmod +x gradlew
-
     - name: Start MariaDB
       uses: getong/mariadb-action@v1.1
       with:
@@ -32,6 +29,9 @@ jobs:
         mysql database: 'keyword'
         mysql user: 'keyword'
         mysql password: "${{ secrets.MARIADB_PASSWORD }}"
+        
+    - name: grant execute permission for gradlew
+      run: chmod +x gradlew
       
     - name: Build with Gradle
       run : ./gradlew build
