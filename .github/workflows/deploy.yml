@@ -22,12 +22,6 @@ jobs:
         java-version: '8'
         distribution: 'temurin'
 
-    - name: Make application.properties
-      run: |
-        mkdir -p ./src/main/resources
-        touch ./src/main/resources/application.properties
-        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.properties
-        
     - name: Start MariaDB
       uses: getong/mariadb-action@v1.1
       with:
@@ -40,7 +34,11 @@ jobs:
       run: chmod +x gradlew
       
     - name: Build with Gradle
-      run : ./gradlew build
+      run : |
+        mkdir -p ./src/main/resources
+        touch ./src/main/resources/application.properties
+        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.properties
+        ./gradlew build
 
 
             
