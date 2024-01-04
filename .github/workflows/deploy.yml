@@ -21,6 +21,14 @@ jobs:
       with:
         java-version: '8'
         distribution: 'temurin'
+
+    - name: Make application.properties
+      run: |
+        cd ./src/main/resources
+        touch ./application.properties
+          
+        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./application.properties
+        shell: bash
         
     - name: Start MariaDB
       uses: getong/mariadb-action@v1.1
