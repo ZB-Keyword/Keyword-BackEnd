@@ -27,3 +27,12 @@ jobs:
       
     - name: Build with Gradle
       run : ./gradlew build
+
+    - name: Start MariaDB
+      uses: getong/mariadb-action@v1.1
+      with:
+        character set servver: 'utf8'
+        mysql database: 'keyword'
+        mysql user: 'keyword'
+        mysql password: 'keyword'
+            
