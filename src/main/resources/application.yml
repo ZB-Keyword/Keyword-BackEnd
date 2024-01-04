@@ -4,10 +4,3 @@ springdoc:
   swagger-ui:
     url: /docs/open-api-3.0.1.json
     path: /docs/swagger
-
-spring:
-  flyway:
-    enabled: true
-    user: keyword
-    password: keyword
-    baselineOnMigrate: true
