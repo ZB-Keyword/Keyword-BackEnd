@@ -13,8 +13,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-import DevHeaven.keyword.common.exception.FriendNotFoundException;
-import DevHeaven.keyword.common.exception.MemberNotFoundException;
+import DevHeaven.keyword.common.exception.FriendException;
+import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.domain.friend.service.FriendService;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -104,7 +104,7 @@ class FriendControllerTest {
     Long memberId = 1L;
 
     //when
-    doThrow(new MemberNotFoundException(MEMBER_NOT_FOUND)).when(friendService).deleteFriend(anyLong());
+    doThrow(new MemberException(MEMBER_NOT_FOUND)).when(friendService).deleteFriend(anyLong());
 
     //then
     mockMvc.perform(delete("/friends/{memberId}",memberId)
@@ -128,7 +128,7 @@ class FriendControllerTest {
     Long memberId=1L;
 
     //when
-    doThrow(new FriendNotFoundException(FRIEND_NOT_FOUND)).when(friendService).deleteFriend(anyLong());
+    doThrow(new FriendException(FRIEND_NOT_FOUND)).when(friendService).deleteFriend(anyLong());
 
     //then
     mockMvc.perform(delete("/friends/{memberId}",memberId)

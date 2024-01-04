@@ -4,9 +4,9 @@ import DevHeaven.keyword.common.exception.type.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class MemberNotFoundException extends CustomException{
+public class MemberException extends CustomException{
 
-  public MemberNotFoundException(final ErrorCode errorCode) {
+  public MemberException(final ErrorCode errorCode) {
     super(errorCode);
   }
 }

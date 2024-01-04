@@ -1,14 +1,13 @@
 package DevHeaven.keyword.domain.friend.service;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import DevHeaven.keyword.common.exception.FriendNotFoundException;
-import DevHeaven.keyword.common.exception.MemberNotFoundException;
+import DevHeaven.keyword.common.exception.FriendException;
+import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.repository.FriendRepository;
 import DevHeaven.keyword.domain.member.entity.Member;
@@ -65,7 +64,7 @@ class FriendServiceTest {
 
     //when
     //then
-    Assertions.assertThrows(MemberNotFoundException.class,()-> friendService.deleteFriend(memberRequestId));
+    Assertions.assertThrows(MemberException.class,()-> friendService.deleteFriend(memberRequestId));
     verify(memberRepository, times(1)).findById(anyLong());
     verify(friendRepository, times(0)).findByMemberRequestAndFriendAndStatus(any(),any(),any());
   }
@@ -82,7 +81,7 @@ class FriendServiceTest {
 
     //when
     //then
-    Assertions.assertThrows(FriendNotFoundException.class,()-> friendService.deleteFriend(memberRequestId));
+    Assertions.assertThrows(FriendException.class,()-> friendService.deleteFriend(memberRequestId));
     verify(memberRepository, times(1)).findById(anyLong());
     verify(friendRepository, times(1)).findByMemberRequestAndFriendAndStatus(any(),any(),any());
   }

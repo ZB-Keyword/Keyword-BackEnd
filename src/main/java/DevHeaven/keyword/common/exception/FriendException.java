@@ -4,9 +4,9 @@ import DevHeaven.keyword.common.exception.type.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class FriendNotFoundException extends CustomException {
+public class FriendException extends CustomException {
 
-  public FriendNotFoundException(ErrorCode errorCode) {
+  public FriendException(ErrorCode errorCode) {
     super(errorCode);
   }
 }
