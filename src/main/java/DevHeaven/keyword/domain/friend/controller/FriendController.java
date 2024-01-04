@@ -19,9 +19,6 @@ public class FriendController {
   // TODO : 시큐리티 적용후 @AuthPrincipal 파라미터 추가 예정
   @DeleteMapping("/{memberReqId}")
   public ResponseEntity <FriendDeleteResponse> deleteFriend(@PathVariable(required = true,name = "memberReqId") final Long memberRequestId){
-    friendService.deleteFriend(memberRequestId);
-    return ResponseEntity.ok(FriendDeleteResponse.builder()
-        .isFriendDelete(true)
-        .build());
+    return ResponseEntity.ok(friendService.deleteFriend(memberRequestId));
   }
 }
