@@ -4,6 +4,7 @@ import static DevHeaven.keyword.common.exception.type.ErrorCode.*;
 import static com.epages.restdocs.apispec.ResourceDocumentation.headerWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
@@ -15,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import DevHeaven.keyword.common.exception.FriendException;
 import DevHeaven.keyword.common.exception.MemberException;
+import DevHeaven.keyword.domain.friend.dto.response.FriendDeleteResponse;
 import DevHeaven.keyword.domain.friend.service.FriendService;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -68,6 +70,11 @@ class FriendControllerTest {
   void deleteFriend_success() throws Exception {
     //given
     Long memberId=1L;
+    FriendDeleteResponse deleteResponse = FriendDeleteResponse.builder()
+        .isFriendDelete(true)
+        .build();
+
+    given(friendService.deleteFriend(anyLong())).willReturn(deleteResponse);
 
     //when
     //then
