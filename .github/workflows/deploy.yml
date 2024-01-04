@@ -26,6 +26,7 @@ jobs:
       uses: getong/mariadb-action@v1.1
       with:
         character set servver: 'utf8'
+        mariadb version: '10.6.1'
         mysql database: 'keyWord'
         mysql user: 'root'
         mysql password: "${{ secrets.MARIADB_PASSWORD }}"
