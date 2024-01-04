@@ -1,5 +1,6 @@
 package DevHeaven.keyword.domain.friend.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.verify;
 
 import DevHeaven.keyword.common.exception.FriendException;
 import DevHeaven.keyword.common.exception.MemberException;
+import DevHeaven.keyword.domain.friend.dto.response.FriendDeleteResponse;
 import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.repository.FriendRepository;
 import DevHeaven.keyword.domain.member.entity.Member;
@@ -47,9 +49,10 @@ class FriendServiceTest {
     given(friendRepository.findByMemberRequestAndFriendAndStatus(any(),any(),any())).willReturn(Optional.of(friendToMember));
 
     //when
-    friendService.deleteFriend(memberRequestId);
+    FriendDeleteResponse deleteResponse = friendService.deleteFriend(memberRequestId);
 
     //then
+    assertThat(deleteResponse.getIsFriendDelete()).isTrue();
     verify(memberRepository, times(1)).findById(anyLong());
     verify(friendRepository, times(2)).findByMemberRequestAndFriendAndStatus(any(),any(),any());
   }
