@@ -24,9 +24,6 @@ jobs:
         
     - name: grant execute permission for gradlew
       run: chmod +x gradlew
-      
-    - name: Build with Gradle
-      run : ./gradlew build
 
     - name: Start MariaDB
       uses: getong/mariadb-action@v1.1
@@ -35,4 +32,9 @@ jobs:
         mysql database: 'keyword'
         mysql user: 'keyword'
         mysql password: 'keyword'
+      
+    - name: Build with Gradle
+      run : ./gradlew build
+
+
             
