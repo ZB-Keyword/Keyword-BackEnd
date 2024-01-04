@@ -8,6 +8,6 @@ springdoc:
 spring:
   flyway:
     enabled: true
-    user: root
-    password:
+    user: keyword
+    password: keyword
     baselineOnMigrate: true
