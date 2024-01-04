@@ -31,7 +31,7 @@ jobs:
         character set servver: 'utf8'
         mysql database: 'keyword'
         mysql user: 'keyword'
-        mysql password: 'keyword'
+        mysql password: "${{ secrets.MARIADB_PASSWORD }}"
       
     - name: Build with Gradle
       run : ./gradlew build
