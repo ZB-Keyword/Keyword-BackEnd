@@ -24,11 +24,9 @@ jobs:
 
     - name: Make application.properties
       run: |
-        cd ./src/main/resources
-        touch ./application.properties
-          
-        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./application.properties
-        shell: bash
+        mkdir -p ./src/main/resources
+        touch ./src/main/resources/application.properties
+        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.properties
         
     - name: Start MariaDB
       uses: getong/mariadb-action@v1.1
