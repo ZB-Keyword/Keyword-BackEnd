@@ -32,6 +32,8 @@ jobs:
     - name: Start MariaDB
       uses: getong/mariadb-action@v1.1
       with:
+        host port : 3307
+        container port : 3306
         character set servver: 'utf8'
         mariadb version: '10.6.1'
         mysql database: 'keyWord'
