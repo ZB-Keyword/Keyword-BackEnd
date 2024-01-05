@@ -49,7 +49,6 @@ jobs:
         CREATE USER IF NOT EXISTS 'keyWord'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
         GRANT ALL PRIVILEGES ON keyWord.* TO 'keyWord'@'%';
         FLUSH PRIVILEGES;
-    EOF
       
     - name: grant execute permission for gradlew
       run: chmod +x gradlew
