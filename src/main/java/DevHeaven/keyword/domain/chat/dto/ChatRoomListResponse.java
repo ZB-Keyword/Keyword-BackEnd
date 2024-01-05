@@ -1,11 +1,6 @@
 package DevHeaven.keyword.domain.chat.dto;
 
-import DevHeaven.keyword.domain.chat.entity.ChatRoom;
-import DevHeaven.keyword.domain.chat.type.ChatRoomStatus;
-import DevHeaven.keyword.domain.friend.entity.Friend;
-import DevHeaven.keyword.domain.schedule.dto.ScheduleFriendDTO;
 import java.util.List;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,13 +12,13 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatRoomDTO {
+public class ChatRoomListResponse {
     private Long chatRoomId;
     private String scheduleTitle;
-    private List<ScheduleFriendDTO> friendsName;
+    private List<String> friendsName;
 
-    public ChatRoomDTO create(String name) {
-        ChatRoomDTO room = new ChatRoomDTO();
+    public ChatRoomListResponse create(String name) {
+        ChatRoomListResponse room = new ChatRoomListResponse();
 
         //room.roomId = UUID.randomUUID().toString();
         room.scheduleTitle = name;

@@ -3,6 +3,9 @@ package DevHeaven.keyword.domain.schedule.entity;
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,8 +16,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
@@ -53,4 +54,8 @@ public class Schedule extends BaseTimeEntity {
 
     @ManyToOne
     private Member member;
+
+    @OneToMany
+    private List<Member> scheduleFriendList;
+
 }

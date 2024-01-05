@@ -1,11 +1,14 @@
 package DevHeaven.keyword.domain.chat.entity;
 
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
-import DevHeaven.keyword.domain.chat.dto.ChatRoomDTO;
+import DevHeaven.keyword.domain.chat.dto.ChatRoomListResponse;
 import DevHeaven.keyword.domain.chat.type.ChatRoomStatus;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
-import javax.persistence.Column;
+import java.util.stream.Collectors;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -30,22 +33,25 @@ public class ChatRoom extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Enumerated(EnumType.STRING)
     private ChatRoomStatus status;
 
-    public ChatRoomDTO from() {
-        return ChatRoomDTO.builder()
-            .chatRoomId(this.getId())
-            .scheduleTitle(this.schedule.getTitle())
-            .friendsName(null)
-            //todo 일정 아이디로 일정 참여 친구 목록을 찾아와야함
+    public static ChatRoomListResponse from(ChatRoom chatRoom) {
+        return ChatRoomListResponse.builder()
+            .chatRoomId(chatRoom.getId())
+            .scheduleTitle(chatRoom.schedule.getTitle())
+            .friendsName(
+                chatRoom.schedule.getScheduleFriendList()
+                    .stream().map(Object::toString)
+                    .collect(Collectors.toList()))
             .build();
     }
 }
