@@ -28,6 +28,7 @@ jobs:
         touch ./src/main/resources/application.yml
         echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.yml
         cat ./src/main/resources/application.yml
+        shell: bash
 
     - name: Shutdown Ubuntu MySQL (SUDO)
       run: sudo service mysql stop
