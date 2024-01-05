@@ -39,7 +39,6 @@ public class ChatRoomController {
     public Page<ChatRoomListResponse> getChatRoom(Pageable pageable) {
         //파라미터로 UserAdapter 추가하고
         //서비스 단에 넘겨줘야함
-        //반환값으로 ChatRoomListResponse
         return chatRoomService.getChatRoom(pageable);
     }
 
