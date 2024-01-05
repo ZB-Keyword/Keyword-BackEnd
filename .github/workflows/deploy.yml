@@ -36,13 +36,13 @@ jobs:
         mariadb version: '10.6.1'
         mysql database: 'keyWord'
         mysql user: 'root'
-        mysql password: "${{ secrets.MARIADB_PASSWORD }}"
+        mysql password: ${{ secrets.MARIADB_PASSWORD }}
         
     - name: grant execute permission for gradlew
       run: chmod +x gradlew
       
     - name: Build with Gradle
-      run : ./gradlew build --info
+      run : ./gradlew build
 
 
             
