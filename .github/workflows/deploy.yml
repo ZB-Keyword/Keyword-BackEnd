@@ -44,7 +44,7 @@ jobs:
     - name: check docker ps
       run: |
         CONTAINER_ID=$(docker ps --filter "ancestor=mariadb:latest" --format "{{.ID}}")
-        echo "::set-output name=id::$CONTAINER_ID
+        echo "::set-output name=id::$CONTAINER_ID"
     - name: Run Commands in MariaDB Container
       run: |
         CONTAINER_ID=${{ steps.get-container-id.outputs.id }}
