@@ -40,7 +40,7 @@ jobs:
         character set server: 'utf8'
         mariadb version: '10.6.1'
         mysql database: 'keyWord'
-        mysql user: 'root'
+        mysql user: 'keyWord'
         mysql password: ${{ secrets.MARIADB_PASSWORD }}
         
     - name: grant execute permission for gradlew
