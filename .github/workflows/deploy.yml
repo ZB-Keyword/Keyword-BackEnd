@@ -42,13 +42,7 @@ jobs:
         mysql user: 'keyWord'
         mysql password: ${{ secrets.MARIADB_PASSWORD }}
     - name: check docker ps
-      run: |
-        CONTAINER_ID=$(docker ps --filter "ancestor=mariadb:latest" --format "{{.ID}}")
-        docker exec -i $CONTAINER_ID mysql -u root -p$MYSQL_ROOT_PASSWORD <<EOF
-        CREATE DATABASE IF NOT EXISTS keyWord;
-        CREATE USER IF NOT EXISTS 'keyWord'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';
-        GRANT ALL PRIVILEGES ON keyWord.* TO 'keyWord'@'%';
-        FLUSH PRIVILEGES;
+      run: docker ps
       
     - name: grant execute permission for gradlew
       run: chmod +x gradlew
