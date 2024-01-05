@@ -32,7 +32,7 @@ jobs:
     - name: Start MariaDB
       uses: getong/mariadb-action@v1.1
       with:
-        character set servver: 'utf8'
+        character set server: 'utf8'
         mariadb version: '10.6.1'
         mysql database: 'keyWord'
         mysql user: 'root'
