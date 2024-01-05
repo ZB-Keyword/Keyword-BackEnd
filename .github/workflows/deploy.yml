@@ -50,5 +50,11 @@ jobs:
     - name: Build with Gradle
       run : ./gradlew build --info
 
+    - name: Store Test Reports
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-reports
+        path: build/reports/tests/test
+
 
             
