@@ -42,14 +42,7 @@ jobs:
         mysql user: 'keyWord'
         mysql password: ${{ secrets.MARIADB_PASSWORD }}
     - name: check docker ps
-      run: |
-        CONTAINER_ID=$(docker ps --filter "ancestor=mariadb:latest" --format "{{.ID}}")
-        echo "::set-output name=id::$CONTAINER_ID"
-    - name: Run Commands in MariaDB Container
-      run: |
-        CONTAINER_ID=${{ steps.get-container-id.outputs.id }}
-        docker exec -it $CONTAINER_ID /bin/bash -c "mysql -u keyWord -p1234 -e 'SHOW DATABASES;'"
-        
+      run: docker ps        
     - name: grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Wait for MariaDB to start
