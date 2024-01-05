@@ -48,7 +48,7 @@ jobs:
     - name: Run Commands in MariaDB Container
       run: |
         CONTAINER_ID=${{ steps.get-container-id.outputs.id }}
-        docker exec -it $CONTAINER_ID /bin/bash -c "mysql -u root -p -e 'SHOW DATABASES;'"
+        docker exec -it $CONTAINER_ID /bin/bash -c "mysql -u keyWord -p1234 -e 'SHOW DATABASES;'"
         
     - name: grant execute permission for gradlew
       run: chmod +x gradlew
