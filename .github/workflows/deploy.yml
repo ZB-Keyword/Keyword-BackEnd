@@ -37,6 +37,7 @@ jobs:
       with:
         host port: 3307
         container port: 3306
+        mariadb version: 'latest'
         character set server: 'utf8'
         mysql database: 'keyWord'
         mysql user: 'keyWord'
