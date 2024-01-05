@@ -32,13 +32,13 @@ jobs:
     - name: Start MariaDB
       uses: getong/mariadb-action@v1.1
       with:
-        host_port: 3307
-        container_port: 3306
-        character_set_server: 'utf8'
-        mariadb_version: '10.6.1'
-        mysql_database: 'keyWord'
-        mysql_user: 'root'
-        mysql_password: ${{ secrets.MARIADB_PASSWORD }}
+        host port: 3307
+        container port: 3306
+        character set server: 'utf8'
+        mariadb version: '10.6.1'
+        mysql database: 'keyWord'
+        mysql user: 'root'
+        mysql password: ${{ secrets.MARIADB_PASSWORD }}
         
     - name: grant execute permission for gradlew
       run: chmod +x gradlew
