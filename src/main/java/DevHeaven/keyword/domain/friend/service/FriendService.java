@@ -29,10 +29,10 @@ public class FriendService {
         .orElseThrow(() -> new MemberException(
             MEMBER_NOT_FOUND));
 
-    final Friend memberToFriend = friendRepository.findByMemberRequestAndFriendAndStatus(requestMember, friend, FRIEND_ACCEPTED)
+    final Friend memberToFriend = friendRepository.findByMemberRequestIdAndFriendIdAndStatus(requestMember.getId(), friend.getId(), FRIEND_ACCEPTED)
         .orElseThrow(() -> new FriendException(FRIEND_NOT_FOUND));
 
-    final Friend friendToMember = friendRepository.findByMemberRequestAndFriendAndStatus(friend, requestMember, FRIEND_ACCEPTED)
+    final Friend friendToMember = friendRepository.findByMemberRequestIdAndFriendIdAndStatus(friend.getId(), requestMember.getId(), FRIEND_ACCEPTED)
         .orElseThrow(() -> new FriendException(FRIEND_NOT_FOUND));
 
     memberToFriend.modifyFriendStatus(FRIEND_DELETE);

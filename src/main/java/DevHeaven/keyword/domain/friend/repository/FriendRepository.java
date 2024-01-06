@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FriendRepository extends JpaRepository<Friend, Long> {
 
-  Optional<Friend> findByMemberRequestAndFriendAndStatus(Member memberRequest, Member friend, FriendStatus friendStatus);
+  Optional<Friend> findByMemberRequestIdAndFriendIdAndStatus(Long memberRequest, Long friend, FriendStatus friendStatus);
 }
