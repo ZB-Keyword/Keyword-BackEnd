@@ -41,7 +41,7 @@ public class Friend extends BaseTimeEntity {
     private Member memberRequest;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "friend_id") // 변경된 부분
+    @JoinColumn(name = "member_id") // 변경된 부분
     private Member friend;
 
     public void modifyFriendStatus(final FriendStatus friendStatus){

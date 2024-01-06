@@ -44,9 +44,9 @@ class FriendServiceTest {
     Friend memberToFriend=new Friend();
     Friend friendToMember=new Friend();
 
-    given(memberRepository.findById(anyLong())).willReturn(Optional.of(friend));
-    given(friendRepository.findByMemberRequestAndFriendAndStatus(any(),any(),any())).willReturn(Optional.of(memberToFriend));
-    given(friendRepository.findByMemberRequestAndFriendAndStatus(any(),any(),any())).willReturn(Optional.of(friendToMember));
+    given(memberRepository.findById(1L)).willReturn(Optional.of(friend));
+    given(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any())).willReturn(Optional.of(memberToFriend));
+    given(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any())).willReturn(Optional.of(friendToMember));
 
     //when
     FriendDeleteResponse deleteResponse = friendService.deleteFriend(memberRequestId);
@@ -54,12 +54,12 @@ class FriendServiceTest {
     //then
     assertThat(deleteResponse.getIsFriendDelete()).isTrue();
     verify(memberRepository, times(1)).findById(anyLong());
-    verify(friendRepository, times(2)).findByMemberRequestAndFriendAndStatus(any(),any(),any());
+    verify(friendRepository, times(2)).findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any());
   }
 
   @Test
-  @DisplayName("친구 삭제 - 실패 : 친구를 회워 DB에서 찾을 수 없음")
-  void deleteFriend_fail_not_found_member() throws Exception {
+  @DisplayName("친구 삭제 - 실패 : 친구를 회원 DB에서 찾을 수 없음")
+  void deleteFriend_fail_not_found_member() {
     //given
     Long memberRequestId=1L;
 
@@ -69,24 +69,24 @@ class FriendServiceTest {
     //then
     Assertions.assertThrows(MemberException.class,()-> friendService.deleteFriend(memberRequestId));
     verify(memberRepository, times(1)).findById(anyLong());
-    verify(friendRepository, times(0)).findByMemberRequestAndFriendAndStatus(any(),any(),any());
+    verify(friendRepository, times(0)).findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any());
   }
 
   @Test
   @DisplayName("친구 삭제 - 실패 : 친구 목록에서 ACCEPT 인 상태를 찾을 수 없음")
-  void deleteFriend_fail_not_found_accepted_memberRequest() throws Exception {
+  void deleteFriend_fail_not_found_accepted_memberRequest() {
     //given
     Long memberRequestId=1L;
     Member friend = new Member();
 
     given(memberRepository.findById(anyLong())).willReturn(Optional.of(friend));
-    given(friendRepository.findByMemberRequestAndFriendAndStatus(any(),any(),any())).willReturn(Optional.empty());
+    given(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any())).willReturn(Optional.empty());
 
     //when
     //then
     Assertions.assertThrows(FriendException.class,()-> friendService.deleteFriend(memberRequestId));
     verify(memberRepository, times(1)).findById(anyLong());
-    verify(friendRepository, times(1)).findByMemberRequestAndFriendAndStatus(any(),any(),any());
+    verify(friendRepository, times(1)).findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any());
   }
 
 }
