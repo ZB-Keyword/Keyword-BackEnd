@@ -21,41 +21,9 @@ jobs:
       with:
         java-version: '8'
         distribution: 'temurin'
-
-    - name: Make application.yml
-      run : |
-        mkdir -p ./src/main/resources
-        touch ./src/main/resources/application.yml
-        echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./src/main/resources/application.yml
-        cat ./src/main/resources/application.yml
-
-    - name: Shutdown Ubuntu MySQL (SUDO)
-      run: sudo service mysql stop
-      
-    - name: Start MariaDB
-      uses: getong/mariadb-action@v1.1
-      with:
-        container port: 3306
-        mariadb version: 'latest'
-        character set server: 'utf8'
-        mysql database: 'keyWord'
-        mysql user: 'keyWord'
-        mysql password: ${{ secrets.MARIADB_PASSWORD }}
-    - name: check docker ps
-      run: docker ps
       
     - name: grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Wait for MariaDB to start
-      run: sleep 15
+
     - name: Build with Gradle
       run : ./gradlew build --info
-
-    - name: Store Test Reports
-      uses: actions/upload-artifact@v2
-      with:
-        name: test-reports
-        path: build/reports/tests/test
-
-
-            
