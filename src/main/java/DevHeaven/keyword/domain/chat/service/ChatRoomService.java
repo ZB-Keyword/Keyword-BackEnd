@@ -35,11 +35,13 @@ public class ChatRoomService {
     private final ScheduleRepository scheduleRepository;
     private final ScheduleFriendRepository scheduleFriendRepository;
 
-    public void createChatRoom(final Long scheduleId) {
+    public boolean createChatRoom(final Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
             .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
         chatRoomRepository.save(ChatRoom.createRoom(schedule));
+
+        return true;
     }
 
     public Page<ChatRoomListResponse> getChatRoomList(Pageable pageable) {

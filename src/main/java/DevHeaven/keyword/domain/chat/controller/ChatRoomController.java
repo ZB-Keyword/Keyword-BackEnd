@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,26 +26,32 @@ public class ChatRoomController {
     private final ChatService chatService;
 
     @PostMapping("/room/{scheduleId}")
-    public void createChatRoom(final Long scheduleId) {
-        chatRoomService.createChatRoom(scheduleId);
+    public ResponseEntity<Boolean> createChatRoom(final Long scheduleId) {
+        return ResponseEntity.ok(
+            chatRoomService.createChatRoom(scheduleId));
+
+
     }
 
     @GetMapping("/room")
-    public Page<ChatRoomListResponse> getChatRoomList(Pageable pageable) {
+    public ResponseEntity<Page<ChatRoomListResponse>> getChatRoomList(
+        Pageable pageable) {
         //파라미터로 UserAdapter 추가하고 서비스 단에 넘겨줘야함
-        return chatRoomService.getChatRoomList(pageable);
+        return ResponseEntity.ok(
+            chatRoomService.getChatRoomList(pageable));
     }
 
     /**
      * 채팅방 조회
      */
-    @GetMapping("/{chatRoomId}")
-    public List<ChatDTO> enterChatRoom(
+    @GetMapping("/room/{chatRoomId}")
+    public ResponseEntity<List<ChatDTO>> enterChatRoom(
         @PathVariable Long chatRoomId,
         Model model) {
         //파라미터로 UserAdapter 추가해야함
         //서비스 단에 넘겨줘야함
-        return chatRoomService.enterChatRoom(chatRoomId);
+        return ResponseEntity.ok(
+            chatRoomService.enterChatRoom(chatRoomId));
     }
 
 }
