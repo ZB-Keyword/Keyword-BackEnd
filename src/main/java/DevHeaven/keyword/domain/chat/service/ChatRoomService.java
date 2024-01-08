@@ -42,10 +42,7 @@ public class ChatRoomService {
         chatRoomRepository.save(ChatRoom.createRoom(schedule));
     }
 
-    /**
-     * 회원 자신의 채팅방 목록 조회
-     */
-    public Page<ChatRoomListResponse> getChatRoom(Pageable pageable) {
+    public Page<ChatRoomListResponse> getChatRoomList(Pageable pageable) {
 
 //          UserAdapter 통해 member entity 추출 로직 필요
         Member member = new Member();

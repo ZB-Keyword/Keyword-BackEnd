@@ -29,14 +29,10 @@ public class ChatRoomController {
         chatRoomService.createChatRoom(scheduleId);
     }
 
-    /**
-     * 자신의 채팅방 목록 조회
-     */
     @GetMapping("/room")
-    public Page<ChatRoomListResponse> getChatRoom(Pageable pageable) {
-        //파라미터로 UserAdapter 추가하고
-        //서비스 단에 넘겨줘야함
-        return chatRoomService.getChatRoom(pageable);
+    public Page<ChatRoomListResponse> getChatRoomList(Pageable pageable) {
+        //파라미터로 UserAdapter 추가하고 서비스 단에 넘겨줘야함
+        return chatRoomService.getChatRoomList(pageable);
     }
 
     /**
