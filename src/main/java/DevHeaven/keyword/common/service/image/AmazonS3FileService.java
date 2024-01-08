@@ -9,6 +9,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
-public class ImageUploadService {
+public class AmazonS3FileService {
 
   private final AmazonS3 amazonS3;
   private final ApplicationEventPublisher publisher;
@@ -41,7 +43,7 @@ public class ImageUploadService {
     final String fileName = createFileName(imgFile.getOriginalFilename());
     final ObjectMetadata objectMetadata = createObjectMetadata(imgFile);
     uploadImageToS3(folderName+fileName, imgFile, objectMetadata);
-    return domainUrl+"/"+fileName;
+    return fileName;
   }
 
 
@@ -76,5 +78,13 @@ public class ImageUploadService {
 
   public void deleteFile(final String fileName){
     publisher.publishEvent(new S3ImageEvent(fileName));
+  }
+
+  public URL createUrl(final String fileName){
+    try {
+      return new URL(domainUrl+"/"+fileName);
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
