@@ -29,17 +29,19 @@ public class ImageUploadService {
   @Value("${aws.s3.bucket}")
   private String bucketName;
 
+  @Value("${aws.s3.domain}")
+  private String domainUrl;
+
   private static final String FILENAME_SEPARATOR = "-";
   private static final String EXTENSION_SEPARATOR = ".";
 
   public String saveImage(final MultipartFile imgFile){
     validateImage(imgFile);
 
-    final String s3Key = folderName + createFileName(imgFile.getOriginalFilename());
+    final String fileName = createFileName(imgFile.getOriginalFilename());
     final ObjectMetadata objectMetadata = createObjectMetadata(imgFile);
-    uploadImageToS3(s3Key, imgFile, objectMetadata);
-
-    return amazonS3.getUrl(bucketName, s3Key).toString();
+    uploadImageToS3(folderName+fileName, imgFile, objectMetadata);
+    return domainUrl+"/"+fileName;
   }
 
 
@@ -63,10 +65,10 @@ public class ImageUploadService {
     return objectMetadata;
   }
 
-  private void uploadImageToS3(final String s3Key ,final MultipartFile imgFile ,
+  private void uploadImageToS3(final String fileName ,final MultipartFile imgFile ,
       final ObjectMetadata objectMetadata) {
     try {
-      amazonS3.putObject(new PutObjectRequest(bucketName, s3Key, imgFile.getInputStream(), objectMetadata));
+      amazonS3.putObject(new PutObjectRequest(bucketName, fileName, imgFile.getInputStream(), objectMetadata));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
