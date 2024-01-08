@@ -3,6 +3,7 @@ package DevHeaven.keyword.domain.chat.controller;
 import DevHeaven.keyword.domain.chat.dto.ChatDTO;
 import DevHeaven.keyword.domain.chat.dto.ChatRoomListResponse;
 import DevHeaven.keyword.domain.chat.service.ChatRoomService;
+import DevHeaven.keyword.domain.chat.service.ChatService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
+    private final ChatService chatService;
 
     /**
      * 일정 생성 버튼 누름 동시에
@@ -43,7 +45,7 @@ public class ChatRoomController {
     }
 
     /**
-     * 채팅방 입장
+     * 채팅방 조회
      */
     @GetMapping("/{chatRoomId}")
     public List<ChatDTO> enterChatRoom(
@@ -51,7 +53,6 @@ public class ChatRoomController {
         Model model) {
         //파라미터로 UserAdapter 추가해야함
         //서비스 단에 넘겨줘야함
-        chatRoomService.enterChatRoom(chatRoomId);
         return chatRoomService.enterChatRoom(chatRoomId);
     }
 

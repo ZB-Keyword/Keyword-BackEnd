@@ -6,8 +6,19 @@ springdoc:
     path: /docs/swagger
 
 spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/keyword
+    username: keyword
+    password: soni
+  jpa:
+    properties:
+      hibernate:
+        format_sql: 'true'
+        ddl-auto: create
+    show-sql: 'true'
   flyway:
     enabled: true
-    user: root
-    password:
+    user: keyword
+    password: soni
     baselineOnMigrate: true

@@ -1,5 +1,7 @@
 package DevHeaven.keyword.domain.chat.entity;
 
+import static DevHeaven.keyword.domain.chat.type.ChatRoomStatus.VALID;
+
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
 import DevHeaven.keyword.domain.chat.dto.ChatRoomListResponse;
 import DevHeaven.keyword.domain.chat.type.ChatRoomStatus;
@@ -43,6 +45,14 @@ public class ChatRoom extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private ChatRoomStatus status;
+
+    public static ChatRoom createRoom(Schedule schedule) {
+        return ChatRoom.builder()
+            .schedule(schedule)
+            .member(schedule.getMember())
+            .status(VALID)
+            .build();
+    }
 
     public static ChatRoomListResponse from(ChatRoom chatRoom) {
         return ChatRoomListResponse.builder()
