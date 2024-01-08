@@ -26,12 +26,12 @@ public class ChatRoomController {
 
     /**
      * 일정 생성 버튼 누름 동시에
-     * 채팅방 생성, 일정 멤버들이 이 채팅방 구독
+     * 채팅방 생성
      * 필요 정보 파라미터 : 일정 id
      */
-    @PostMapping("/{scheduleId}")
-    public void createChatRoom(final Long scheduleId) {
-        chatRoomService.createChatRoom(scheduleId);
+    @PostMapping("/room/{scheduleId}")
+    public void createChatRoom(final Long scheduleId, Pageable pageable) {
+        chatRoomService.createChatRoom(scheduleId, pageable);
     }
 
     /**

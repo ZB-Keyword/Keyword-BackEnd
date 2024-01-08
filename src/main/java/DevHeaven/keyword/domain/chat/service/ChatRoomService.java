@@ -36,25 +36,14 @@ public class ChatRoomService {
     private final ScheduleFriendRepository scheduleFriendRepository;
 
     /**
-     * 채팅방 생성 + 멤버들이 채팅방 구독
-     *
-     * @param
+     * 채팅방 생성
      */
-    public void createChatRoom(final Long scheduleId) {
-
+    public void createChatRoom(
+        final Long scheduleId, Pageable pageable) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
-            .orElseThrow(() ->
-                new ScheduleException(SCHEDULE_NOT_FOUND));
+            .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
-        // 채팅방 생성 후 db 저장
         chatRoomRepository.save(ChatRoom.createRoom(schedule));
-
-        //멤버들이 채팅방 구독
-        //일정 수정애서 멤버 수정할 때도 되어야 함...
-
-//        ChatRoomDTO room = ChatRoomDTO.create(name);
-//
-//        chatRoomRepository.save(room.toEntity());
     }
 
     /**
@@ -86,7 +75,7 @@ public class ChatRoomService {
     }
 
     /**
-     * 채팅방 입장
+     * 채팅방 조회
      */
     public List<ChatDTO> enterChatRoom(Long chatRoomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
