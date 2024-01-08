@@ -46,12 +46,4 @@ public class Chat extends BaseTimeEntity {
             .message(content)
             .build();
     }
-
-    public static Chat createChat(ChatRoom chatRoom, Member sender, String content) {
-        return Chat.builder()
-            .chatRoom(chatRoom)
-            .sender(sender)
-            .content(content)
-            .build();
-    }
 }

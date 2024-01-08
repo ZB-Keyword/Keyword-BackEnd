@@ -29,8 +29,6 @@ public class ChatRoomController {
     public ResponseEntity<Boolean> createChatRoom(final Long scheduleId) {
         return ResponseEntity.ok(
             chatRoomService.createChatRoom(scheduleId));
-
-
     }
 
     @GetMapping("/room")
@@ -41,9 +39,6 @@ public class ChatRoomController {
             chatRoomService.getChatRoomList(pageable));
     }
 
-    /**
-     * 채팅방 입장
-     */
     @GetMapping("/room/{chatRoomId}")
     public ResponseEntity<List<ChatResponse>> enterChatRoom(
         @PathVariable Long chatRoomId,
