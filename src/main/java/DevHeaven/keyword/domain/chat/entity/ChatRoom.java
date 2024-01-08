@@ -3,7 +3,7 @@ package DevHeaven.keyword.domain.chat.entity;
 import static DevHeaven.keyword.domain.chat.type.ChatRoomStatus.VALID;
 
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
-import DevHeaven.keyword.domain.chat.dto.ChatRoomListResponse;
+import DevHeaven.keyword.domain.chat.dto.response.ChatRoomListResponse;
 import DevHeaven.keyword.domain.chat.type.ChatRoomStatus;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;

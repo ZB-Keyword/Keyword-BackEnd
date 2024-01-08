@@ -1,4 +1,4 @@
-package DevHeaven.keyword.domain.chat.dto;
+package DevHeaven.keyword.domain.chat.dto.response;
 
 
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class ChatDTO {
+public class ChatResponse {
     private String sender;
     private String profileImageUrl;
     private String message;

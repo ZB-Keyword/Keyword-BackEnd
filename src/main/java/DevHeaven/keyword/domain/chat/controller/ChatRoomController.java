@@ -1,7 +1,7 @@
 package DevHeaven.keyword.domain.chat.controller;
 
-import DevHeaven.keyword.domain.chat.dto.ChatDTO;
-import DevHeaven.keyword.domain.chat.dto.ChatRoomListResponse;
+import DevHeaven.keyword.domain.chat.dto.response.ChatResponse;
+import DevHeaven.keyword.domain.chat.dto.response.ChatRoomListResponse;
 import DevHeaven.keyword.domain.chat.service.ChatRoomService;
 import DevHeaven.keyword.domain.chat.service.ChatService;
 import java.util.List;
@@ -42,10 +42,10 @@ public class ChatRoomController {
     }
 
     /**
-     * 채팅방 조회
+     * 채팅방 입장
      */
     @GetMapping("/room/{chatRoomId}")
-    public ResponseEntity<List<ChatDTO>> enterChatRoom(
+    public ResponseEntity<List<ChatResponse>> enterChatRoom(
         @PathVariable Long chatRoomId,
         Model model) {
         //파라미터로 UserAdapter 추가해야함

@@ -1,6 +1,6 @@
 package DevHeaven.keyword.domain.chat.controller;
 
-import DevHeaven.keyword.domain.chat.dto.ChatRequest;
+import DevHeaven.keyword.domain.chat.dto.request.ChatRequest;
 import DevHeaven.keyword.domain.chat.entity.Chat;
 import DevHeaven.keyword.domain.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +23,9 @@ public class StompChatController {
     public void message(ChatRequest message) {
 
         //db에 메세지 저장
-        Chat chat = chatService.createChat(message);
+        chatService.createChat(message);
         //구독하고 있는 클라이언트에 메세지 전송
-        template.convertAndSend("/sub/chats/" + message.getRoomId(), message);
+        template.convertAndSend("/sub/chats/room" + message.getRoomId(), message);
 
     }
 }

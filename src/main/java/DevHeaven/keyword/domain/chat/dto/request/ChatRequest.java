@@ -1,4 +1,4 @@
-package DevHeaven.keyword.domain.chat.dto;
+package DevHeaven.keyword.domain.chat.dto.request;
 
 import DevHeaven.keyword.domain.chat.entity.Chat;
 import DevHeaven.keyword.domain.chat.entity.ChatRoom;

@@ -2,19 +2,17 @@ package DevHeaven.keyword.domain.chat.service;
 
 import static DevHeaven.keyword.common.exception.type.ErrorCode.CHATROOM_NOT_FOUND;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.SCHEDULE_NOT_FOUND;
-import static DevHeaven.keyword.domain.chat.type.ChatRoomStatus.VALID;
 
 import DevHeaven.keyword.common.exception.ChatException;
 import DevHeaven.keyword.common.exception.ScheduleException;
-import DevHeaven.keyword.domain.chat.dto.ChatDTO;
-import DevHeaven.keyword.domain.chat.dto.ChatRoomListResponse;
+import DevHeaven.keyword.domain.chat.dto.response.ChatResponse;
+import DevHeaven.keyword.domain.chat.dto.response.ChatRoomListResponse;
 import DevHeaven.keyword.domain.chat.entity.Chat;
 import DevHeaven.keyword.domain.chat.entity.ChatRoom;
 import DevHeaven.keyword.domain.chat.repository.ChatRepository;
 import DevHeaven.keyword.domain.chat.repository.ChatRoomRepository;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
-import DevHeaven.keyword.domain.schedule.entity.ScheduleFriend;
 import DevHeaven.keyword.domain.schedule.repository.ScheduleFriendRepository;
 import DevHeaven.keyword.domain.schedule.repository.ScheduleRepository;
 import java.util.ArrayList;
@@ -72,7 +70,7 @@ public class ChatRoomService {
     /**
      * 채팅방 조회
      */
-    public List<ChatDTO> enterChatRoom(Long chatRoomId) {
+    public List<ChatResponse> enterChatRoom(Long chatRoomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new ChatException(CHATROOM_NOT_FOUND));
 

@@ -1,7 +1,7 @@
 package DevHeaven.keyword.domain.chat.entity;
 
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
-import DevHeaven.keyword.domain.chat.dto.ChatDTO;
+import DevHeaven.keyword.domain.chat.dto.response.ChatResponse;
 import DevHeaven.keyword.domain.member.entity.Member;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -39,8 +39,8 @@ public class Chat extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    public ChatDTO from() {
-        return ChatDTO.builder()
+    public ChatResponse from() {
+        return ChatResponse.builder()
             .sender(this.sender.getName())
             .profileImageUrl(this.sender.getImageUrl())
             .message(content)

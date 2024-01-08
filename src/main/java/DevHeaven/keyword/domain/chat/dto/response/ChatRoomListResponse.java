@@ -1,4 +1,4 @@
-package DevHeaven.keyword.domain.chat.dto;
+package DevHeaven.keyword.domain.chat.dto.response;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
