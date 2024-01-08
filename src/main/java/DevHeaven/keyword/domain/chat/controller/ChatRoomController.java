@@ -24,20 +24,15 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final ChatService chatService;
 
-    /**
-     * 일정 생성 버튼 누름 동시에
-     * 채팅방 생성
-     * 필요 정보 파라미터 : 일정 id
-     */
     @PostMapping("/room/{scheduleId}")
-    public void createChatRoom(final Long scheduleId, Pageable pageable) {
-        chatRoomService.createChatRoom(scheduleId, pageable);
+    public void createChatRoom(final Long scheduleId) {
+        chatRoomService.createChatRoom(scheduleId);
     }
 
     /**
      * 자신의 채팅방 목록 조회
      */
-    @GetMapping
+    @GetMapping("/room")
     public Page<ChatRoomListResponse> getChatRoom(Pageable pageable) {
         //파라미터로 UserAdapter 추가하고
         //서비스 단에 넘겨줘야함

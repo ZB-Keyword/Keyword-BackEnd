@@ -35,11 +35,7 @@ public class ChatRoomService {
     private final ScheduleRepository scheduleRepository;
     private final ScheduleFriendRepository scheduleFriendRepository;
 
-    /**
-     * 채팅방 생성
-     */
-    public void createChatRoom(
-        final Long scheduleId, Pageable pageable) {
+    public void createChatRoom(final Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
             .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
