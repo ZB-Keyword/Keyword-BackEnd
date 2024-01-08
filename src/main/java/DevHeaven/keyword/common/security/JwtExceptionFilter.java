@@ -9,6 +9,7 @@ import static DevHeaven.keyword.common.exception.type.ErrorCode.UNSUPPORTED_JWT_
 import DevHeaven.keyword.common.exception.JwtException;
 import DevHeaven.keyword.common.exception.dto.ErrorResponse;
 import DevHeaven.keyword.common.exception.type.ErrorCode;
+import DevHeaven.keyword.common.exception.util.ErrorResponseUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Objects;
@@ -27,7 +28,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtExceptionFilter extends OncePerRequestFilter {
 
-  private final ObjectMapper objectMapper;
+  private final ErrorResponseUtils errorResponseUtils;
 
   @Override
   protected void doFilterInternal(
@@ -37,19 +38,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     try {
       filterChain.doFilter(request, response);
     } catch (JwtException e) {
-      sendErrorResponse(response, e.getErrorCode());
+      errorResponseUtils.sendErrorResponse(response, e.getErrorCode());
     }
-  }
-
-  private void sendErrorResponse(HttpServletResponse response, final ErrorCode errorCode)
-      throws IOException {
-    response.setCharacterEncoding("UTF-8");
-    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-    response.setStatus(errorCode.getHttpStatus().value());
-    response.getWriter().write(getJsonByErrorCode(errorCode));
-  }
-
-  private String getJsonByErrorCode(final ErrorCode errorCode) throws JsonProcessingException {
-    return objectMapper.writeValueAsString(ErrorResponse.from(errorCode));
   }
 }

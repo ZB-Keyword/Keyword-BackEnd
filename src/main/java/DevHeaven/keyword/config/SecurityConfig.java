@@ -1,5 +1,7 @@
 package DevHeaven.keyword.config;
 
+import DevHeaven.keyword.common.security.JwtAccessDeniedHandler;
+import DevHeaven.keyword.common.security.JwtAuthenticationEntryPoint;
 import DevHeaven.keyword.common.security.JwtAuthenticationFilter;
 import DevHeaven.keyword.common.security.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final JwtExceptionFilter jwtExceptionFilter;
+  private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+  private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
   private static final String[] PERMIT_URL_PATTERNS = {
       "/members/signup",
@@ -44,8 +48,8 @@ public class SecurityConfig {
 
         .and()
         .exceptionHandling()
-        .authenticationEntryPoint(null)
-        .accessDeniedHandler(null)
+        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+        .accessDeniedHandler(jwtAccessDeniedHandler)
 
         .and()
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
