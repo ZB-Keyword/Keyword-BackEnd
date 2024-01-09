@@ -44,7 +44,7 @@
                 },
                 "examples" : {
                   "friends/delete/success" : {
-                    "value" : "{\n  \"isFriendDelete\" : true\n}"
+                    "value" : "true"
                   }
                 }
               }
@@ -76,13 +76,7 @@
     "schemas" : {
       "Friend Delete Response" : {
         "title" : "Friend Delete Response",
-        "type" : "object",
-        "properties" : {
-          "isFriendDelete" : {
-            "type" : "boolean",
-            "description" : "친구 삭제 성공 유무"
-          }
-        }
+        "type" : "object"
       }
     }
   }
