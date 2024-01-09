@@ -5,7 +5,6 @@ import static DevHeaven.keyword.domain.friend.type.FriendStatus.*;
 
 import DevHeaven.keyword.common.exception.FriendException;
 import DevHeaven.keyword.common.exception.MemberException;
-import DevHeaven.keyword.domain.friend.dto.response.FriendDeleteResponse;
 import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.repository.FriendRepository;
 import DevHeaven.keyword.domain.member.entity.Member;
@@ -21,9 +20,11 @@ public class FriendService {
   private final FriendRepository friendRepository;
   private final MemberRepository memberRepository;
   @Transactional
-  public FriendDeleteResponse deleteFriend(final Long memberRequestId) {
+  public boolean deleteFriend(final Long memberRequestId) {
     // TODO : 시큐리티 적용후 멤버관련 유효성 검사 추가 (임시 방편으로 해둠)
-    final Member requestMember = new Member();
+    final Member requestMember = Member.builder()
+        .id(1L)
+        .build();
 
     final Member friend = memberRepository.findById(memberRequestId)
         .orElseThrow(() -> new MemberException(
@@ -38,8 +39,6 @@ public class FriendService {
     memberToFriend.modifyFriendStatus(FRIEND_DELETE);
     friendToMember.modifyFriendStatus(FRIEND_DELETE);
 
-    return FriendDeleteResponse.builder()
-        .isFriendDelete(true)
-        .build();
+    return true;
   }
 }

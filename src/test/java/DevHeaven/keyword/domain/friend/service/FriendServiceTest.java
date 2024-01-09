@@ -1,20 +1,29 @@
 package DevHeaven.keyword.domain.friend.service;
 
+import static DevHeaven.keyword.support.fixture.FriendFixture.FRIEND_ACCEPT_1;
+import static DevHeaven.keyword.support.fixture.FriendFixture.FRIEND_ACCEPT_2;
+import static DevHeaven.keyword.support.fixture.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import DevHeaven.keyword.common.exception.FriendException;
 import DevHeaven.keyword.common.exception.MemberException;
-import DevHeaven.keyword.domain.friend.dto.response.FriendDeleteResponse;
 import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.repository.FriendRepository;
+import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
+import DevHeaven.keyword.support.fixture.FriendFixture;
+import DevHeaven.keyword.support.fixture.MemberFixture;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import org.elasticsearch.monitor.os.OsStats.Mem;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,24 +44,27 @@ class FriendServiceTest {
   @InjectMocks
   private FriendService friendService;
 
+
   @Test
   @DisplayName("친구 삭제 - 성공")
   void deleteFriend_success(){
     //given
-    Long memberRequestId=1L;
-    Member friend = new Member();
-    Friend memberToFriend=new Friend();
-    Friend friendToMember=new Friend();
 
-    given(memberRepository.findById(1L)).willReturn(Optional.of(friend));
-    given(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any())).willReturn(Optional.of(memberToFriend));
-    given(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any())).willReturn(Optional.of(friendToMember));
+    Member memberRequest = DOG.createMember();
+    Member friend = CAT.createMember();
+
+    Friend memberToFriend= FRIEND_ACCEPT_1.createFriend(memberRequest,friend);
+    Friend friendToMember= FRIEND_ACCEPT_2.createFriend(friend,memberRequest);
+
+    when(memberRepository.findById(1L)).thenReturn(Optional.of(friend));
+    when(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(memberRequest.getId(), friend.getId(), FriendStatus.FRIEND_ACCEPTED)).thenReturn(Optional.of(memberToFriend));
+    when(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(friend.getId(), memberRequest.getId(), FriendStatus.FRIEND_ACCEPTED)).thenReturn(Optional.of(friendToMember));
 
     //when
-    FriendDeleteResponse deleteResponse = friendService.deleteFriend(memberRequestId);
+    boolean deleteResponse = friendService.deleteFriend(memberRequest.getId());
 
     //then
-    assertThat(deleteResponse.getIsFriendDelete()).isTrue();
+    assertThat(deleteResponse).isTrue();
     verify(memberRepository, times(1)).findById(anyLong());
     verify(friendRepository, times(2)).findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any());
   }
@@ -63,7 +75,7 @@ class FriendServiceTest {
     //given
     Long memberRequestId=1L;
 
-    given(memberRepository.findById(anyLong())).willReturn(Optional.empty());
+    given(memberRepository.findById(memberRequestId)).willReturn(Optional.empty());
 
     //when
     //then
@@ -77,9 +89,9 @@ class FriendServiceTest {
   void deleteFriend_fail_not_found_accepted_memberRequest() {
     //given
     Long memberRequestId=1L;
-    Member friend = new Member();
+    Member friend = CAT.createMember();
 
-    given(memberRepository.findById(anyLong())).willReturn(Optional.of(friend));
+    given(memberRepository.findById(memberRequestId)).willReturn(Optional.of(friend));
     given(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any())).willReturn(Optional.empty());
 
     //when
