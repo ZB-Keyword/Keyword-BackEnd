@@ -26,7 +26,7 @@ public class ChatRoomController {
     private final ChatService chatService;
 
     @PostMapping("/room/{scheduleId}")
-    public ResponseEntity<Boolean> createChatRoom(final Long scheduleId) {
+    public ResponseEntity<Boolean> createChatRoom(@PathVariable final Long scheduleId) {
         return ResponseEntity.ok(
             chatRoomService.createChatRoom(scheduleId));
     }
