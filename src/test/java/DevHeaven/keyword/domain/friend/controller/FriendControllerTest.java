@@ -6,6 +6,8 @@ import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -14,6 +16,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import DevHeaven.keyword.common.exception.FriendException;
+import DevHeaven.keyword.common.exception.GlobalExceptionHandler;
 import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.domain.friend.service.FriendService;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -22,31 +25,43 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
-@AutoConfigureRestDocs
-@AutoConfigureMockMvc
-@WebMvcTest(FriendController.class)
+@ExtendWith({RestDocumentationExtension.class ,MockitoExtension.class})
 class FriendControllerTest {
 
-  @Autowired
   private MockMvc mockMvc;
 
-  @Autowired
-  private ObjectMapper objectMapper;
-
-  @MockBean
+  @Mock
   private FriendService friendService;
+
+  @InjectMocks
+  private FriendController friendController;
+
+  @BeforeEach
+  public void setup(RestDocumentationContextProvider restDocumentation) {
+
+    this.mockMvc = MockMvcBuilders.standaloneSetup(friendController)
+        .setControllerAdvice(new GlobalExceptionHandler())
+        .addFilters(new CharacterEncodingFilter("UTF-8", true))
+        .apply(documentationConfiguration(restDocumentation))
+        .build();
+
+  }
+
   protected  ResourceSnippetParameters friendDeleteErrorResponse() {
     return ResourceSnippetParameters.builder()
         .tag("Friend API")
@@ -69,6 +84,8 @@ class FriendControllerTest {
     //given
     Long memberId=1L;
 
+    when(friendService.deleteFriend(memberId)).thenReturn(true);
+
     //when
     //then
     mockMvc.perform(delete("/friends/{memberId}",memberId)
@@ -76,7 +93,6 @@ class FriendControllerTest {
         )
         .andDo(print())
         .andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(jsonPath("$.isFriendDelete").value(true))
         .andDo(MockMvcRestDocumentationWrapper.document("friends/delete/success",
             preprocessRequest(prettyPrint()),
             preprocessResponse(prettyPrint()),
@@ -88,10 +104,6 @@ class FriendControllerTest {
                         headerWithName("Authorization").description("Bearer AccessToken")
                     )
                     .pathParameters(parameterWithName("memberId").description("친구 삭제할 Member Id"))
-                    .responseFields(
-                        fieldWithPath("isFriendDelete").type(JsonFieldType.BOOLEAN).description("친구 삭제 성공 유무")
-                    )
-                    .responseSchema(Schema.schema("Friend Delete Response"))
                     .build()
             )));
 
@@ -104,7 +116,7 @@ class FriendControllerTest {
     Long memberId = 1L;
 
     //when
-    doThrow(new MemberException(MEMBER_NOT_FOUND)).when(friendService).deleteFriend(anyLong());
+    doThrow(new MemberException(MEMBER_NOT_FOUND)).when(friendService).deleteFriend(memberId);
 
     //then
     mockMvc.perform(delete("/friends/{memberId}",memberId)
@@ -128,7 +140,7 @@ class FriendControllerTest {
     Long memberId=1L;
 
     //when
-    doThrow(new FriendException(FRIEND_NOT_FOUND)).when(friendService).deleteFriend(anyLong());
+    doThrow(new FriendException(FRIEND_NOT_FOUND)).when(friendService).deleteFriend(memberId);
 
     //then
     mockMvc.perform(delete("/friends/{memberId}",memberId)

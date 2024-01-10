@@ -1,6 +1,5 @@
 package DevHeaven.keyword.domain.friend.controller;
 
-import DevHeaven.keyword.domain.friend.dto.response.FriendDeleteResponse;
 import DevHeaven.keyword.domain.friend.service.FriendService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +17,7 @@ public class FriendController {
 
   // TODO : 시큐리티 적용후 @AuthPrincipal 파라미터 추가 예정
   @DeleteMapping("/{memberReqId}")
-  public ResponseEntity <FriendDeleteResponse> deleteFriend(@PathVariable(required = true,name = "memberReqId") final Long memberRequestId){
-    friendService.deleteFriend(memberRequestId);
-    return ResponseEntity.ok(FriendDeleteResponse.builder()
-        .isFriendDelete(true)
-        .build());
+  public ResponseEntity <Boolean> deleteFriend(@PathVariable(name = "memberReqId") final Long memberRequestId){
+    return ResponseEntity.ok(friendService.deleteFriend(memberRequestId));
   }
 }
