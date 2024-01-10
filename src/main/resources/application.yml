@@ -22,3 +22,5 @@ spring:
     user: keyword
     password: soni
     baselineOnMigrate: true
+  jwt:
+    secret: ZeRoBaSe+TeAm+PrOJeCt=DeVhEaVen+KeYwOrD/SeCrEtKeY
