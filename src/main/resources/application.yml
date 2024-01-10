@@ -6,8 +6,12 @@ springdoc:
     path: /docs/swagger
 
 spring:
-  flyway:
-    enabled: true
-    user: root
-    password:
-    baselineOnMigrate: true
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: create
+    show-sql: true
+
+  jwt:
+    secret: ZeRoBaSe+TeAm+PrOJeCt=DeVhEaVen+KeYwOrD/SeCrEtKeY
