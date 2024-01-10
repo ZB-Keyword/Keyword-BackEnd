@@ -84,29 +84,29 @@ public class MemberService {
 
   // validate method
 
-  private Member getMemberById(long memberId) {
+  private Member getMemberById(final long memberId) {
     return memberRepository.findById(memberId)
         .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
   }
 
-  private Member getMemberByEmail(String email) {
+  private Member getMemberByEmail(final String email) {
      return memberRepository.findByEmail(email)
         .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
   }
 
-  private void validateMemberByEmail(String email) {
+  private void validateMemberByEmail(final String email) {
     if(memberRepository.existsByEmail(email)) {
       throw new MemberException(ALREADY_EXISTS_EMAIL);
     }
   }
 
-  private void validateMemberByPassword(String targetPassword, Member member) {
+  private void validateMemberByPassword(final String targetPassword, final Member member) {
     if(!passwordEncoder.matches(targetPassword, member.getPassword())) {
       throw new MemberException(MISMATCH_PASSWORD);
     }
   }
 
-  private void validateMemberByStatus(Member member) {
+  private void validateMemberByStatus(final Member member) {
     switch (member.getStatus()) {
       case BLOCKED:
         throw new MemberException(BLOCKED_MEMBER);

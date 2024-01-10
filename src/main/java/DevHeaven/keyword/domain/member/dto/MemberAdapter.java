@@ -23,7 +23,7 @@ public class MemberAdapter implements UserDetails {
   private MemberStatus status;
   private MemberRole role;
 
-  public static MemberAdapter from(Member member) {
+  public static MemberAdapter from(final Member member) {
     return MemberAdapter.builder()
         .email(member.getEmail())
         .password(member.getPassword())

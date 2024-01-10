@@ -53,7 +53,7 @@ public class ErrorResponse {
             .build();
     }
 
-    public static String getFirstErrorMessageByBindingResults(BindingResult bindingResult) {
+    public static String getFirstErrorMessageByBindingResults(final BindingResult bindingResult) {
         if(!bindingResult.hasErrors()) {
             return "No errors were found in binding result";
         }

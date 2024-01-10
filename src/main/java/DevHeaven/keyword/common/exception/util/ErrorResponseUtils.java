@@ -16,7 +16,7 @@ public class ErrorResponseUtils {
 
   private final ObjectMapper objectMapper;
 
-  public void sendErrorResponse(HttpServletResponse response, final ErrorCode errorCode)
+  public void sendErrorResponse(final HttpServletResponse response, final ErrorCode errorCode)
       throws IOException {
     response.setCharacterEncoding("UTF-8");
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);

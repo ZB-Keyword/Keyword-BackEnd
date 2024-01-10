@@ -58,7 +58,7 @@ public class JwtUtils {
     key = Keys.hmacShaKeyFor(keyBytes);
   }
 
-  public TokenResponse createTokens(String email) {
+  public TokenResponse createTokens(final String email) {
     Date tokenCreatedDate = new Date();
 
     Claims claims = Jwts.claims();
@@ -89,7 +89,7 @@ public class JwtUtils {
         .build();
   }
 
-  public String extractTokenByRequest(HttpServletRequest request) {
+  public String extractTokenByRequest(final HttpServletRequest request) {
     String tokenHeader = request.getHeader(TOKEN_HEADER);
 
     if (!StringUtils.hasLength(tokenHeader) || !tokenHeader.startsWith(TOKEN_PREFIX)) {
@@ -104,7 +104,7 @@ public class JwtUtils {
     return new BCryptPasswordEncoder();
   }
 
-  public Claims getClaimsByToken(String token) {
+  public Claims getClaimsByToken(final String token) {
     try {
       return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     } catch (ExpiredJwtException e) {
@@ -120,7 +120,7 @@ public class JwtUtils {
     }
   }
 
-  public boolean validateToken(String token) {
+  public boolean validateToken(final String token) {
     if(!StringUtils.hasText(token)) {
       return false;
     }
@@ -128,7 +128,7 @@ public class JwtUtils {
     return !getClaimsByToken(token).getExpiration().before(new Date());
   }
 
-  public Authentication getAuthenticationByToken(String token) {
+  public Authentication getAuthenticationByToken(final String token) {
     UserDetails userDetails = memberDetailsService.loadUserByUsername(getClaimsByToken(token).getSubject());
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }

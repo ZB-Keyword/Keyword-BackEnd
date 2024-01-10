@@ -18,8 +18,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final JwtUtils jwtUtils;
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
+      final FilterChain filterChain) throws ServletException, IOException {
     String token = jwtUtils.extractTokenByRequest(request);
 
     if(jwtUtils.validateToken(token)) {

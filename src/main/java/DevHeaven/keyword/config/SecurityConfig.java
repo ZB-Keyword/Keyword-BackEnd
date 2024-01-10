@@ -32,7 +32,7 @@ public class SecurityConfig {
   };
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+  public SecurityFilterChain filterChain(final HttpSecurity httpSecurity) throws Exception {
     httpSecurity
         .httpBasic().disable()
         .formLogin().disable()

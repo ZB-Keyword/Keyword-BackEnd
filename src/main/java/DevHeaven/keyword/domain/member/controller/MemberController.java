@@ -29,22 +29,22 @@ public class MemberController {
   private final MemberService memberService;
 
   @GetMapping("")
-  public ResponseEntity<MyInfoResponse> getMyInfo(@AuthenticationPrincipal MemberAdapter memberAdapter) {
+  public ResponseEntity<MyInfoResponse> getMyInfo(final @AuthenticationPrincipal MemberAdapter memberAdapter) {
     return ResponseEntity.ok(memberService.getMyInfo(memberAdapter));
   }
 
   @GetMapping("/{memberId}")
-  public ResponseEntity<MemberInfoResponse> getMemberInfo(@PathVariable Long memberId) {
+  public ResponseEntity<MemberInfoResponse> getMemberInfo(final @PathVariable Long memberId) {
     return ResponseEntity.ok(memberService.getMemberInfo(memberId));
   }
 
   @PostMapping("/signup")
-  public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
+  public ResponseEntity<SignupResponse> signup(final @Valid @RequestBody SignupRequest signupRequest) {
     return ResponseEntity.ok(memberService.signup(signupRequest));
   }
 
   @PostMapping("/signin")
-  public ResponseEntity<TokenResponse> signin(@RequestBody SigninRequest signinRequest) {
+  public ResponseEntity<TokenResponse> signin(final @RequestBody SigninRequest signinRequest) {
     return ResponseEntity.ok(memberService.signin(signinRequest));
   }
 }
