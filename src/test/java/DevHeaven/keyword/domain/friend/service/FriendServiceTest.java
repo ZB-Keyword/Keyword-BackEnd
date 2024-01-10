@@ -1,5 +1,9 @@
 package DevHeaven.keyword.domain.friend.service;
 
+import static DevHeaven.keyword.domain.friend.type.FriendStatus.FRIEND_ACCEPTED;
+import static DevHeaven.keyword.domain.friend.type.FriendStatus.FRIEND_CHECKING;
+import static DevHeaven.keyword.domain.friend.type.FriendStatus.FRIEND_DELETE;
+import static DevHeaven.keyword.domain.friend.type.FriendStatus.FRIEND_REFUSED;
 import static DevHeaven.keyword.support.fixture.FriendFixture.FRIEND_ACCEPT_1;
 import static DevHeaven.keyword.support.fixture.FriendFixture.FRIEND_ACCEPT_2;
 import static DevHeaven.keyword.support.fixture.MemberFixture.CAT;
@@ -19,7 +23,9 @@ import DevHeaven.keyword.domain.friend.repository.FriendRepository;
 import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
+import DevHeaven.keyword.support.fixture.FriendFixture;
 import java.util.Optional;
+import org.elasticsearch.core.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,6 +46,26 @@ class FriendServiceTest {
   @InjectMocks
   private FriendService friendService;
 
+  @Test
+  @DisplayName("친구 요청 - 성공")
+  void requestFriend_success(){
+    //given
+    Member memberRequest = DOG.createMember();
+    Member friend = CAT.createMember();
+    Friend memberToFriend = FriendFixture.FRIEND_DELETE_1.createFriend(memberRequest, friend);
+
+    when(memberRepository.findById(friend.getId())).thenReturn(Optional.of(friend));
+    when(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(memberRequest.getId(), friend.getId(), FRIEND_ACCEPTED))
+        .thenReturn(Optional.empty());
+    when(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(friend.getId(), memberRequest.getId(), FRIEND_CHECKING))
+        .thenReturn(Optional.empty());
+    when(friendRepository.findFriendRequest(memberRequest.getId(), friend.getId(), List.of(FRIEND_REFUSED.toString() ,
+        FRIEND_DELETE.toString()))).thenReturn(Optional.of(memberToFriend));
+
+    //when
+    //then
+    friendService.requestFriend(friend.getId());
+  }
   @Test
   @DisplayName("친구 삭제 - 성공")
   void deleteFriend_success(){
