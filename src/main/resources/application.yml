@@ -9,21 +9,9 @@ spring:
   jpa:
     properties:
       hibernate:
-        format_sql: 'true'
+        format_sql: true
         ddl-auto: create
-    show-sql: 'true'
-
-  flyway:
-    enabled: true
-    user: root
-    password: maria950912
-    baselineOnMigrate: true
-
-  datasource:
-    username: root
-    url: jdbc:mariadb://localhost:3307/keyword
-    driverClassName: org.mariadb.jdbc.Driver
-    password: maria950912
+    show-sql: true
 
   jwt:
-    secret: ZeRoBaSe_@KeYwOrD_PrOJeCt-#DeVhEaVen
+    secret: ZeRoBaSe+TeAm+PrOJeCt=DeVhEaVen+KeYwOrD/SeCrEtKeY

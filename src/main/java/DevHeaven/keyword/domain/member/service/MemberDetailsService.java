@@ -1,5 +1,7 @@
 package DevHeaven.keyword.domain.member.service;
 
+import DevHeaven.keyword.domain.member.dto.MemberAdapter;
+import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +19,9 @@ public class MemberDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return memberRepository.findByEmail(username)
+        Member member = memberRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException(USER_NAME_NOT_FOUND_MESSAGE));
+
+        return MemberAdapter.from(member);
     }
 }

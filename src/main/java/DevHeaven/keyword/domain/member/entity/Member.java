@@ -31,11 +31,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Member extends BaseTimeEntity implements UserDetails {
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long memberId;
 
     private String imageUrl;
 
@@ -66,37 +66,4 @@ public class Member extends BaseTimeEntity implements UserDetails {
     
     @OneToMany
     private List<Friend> friendList;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
-        grantedAuthorityList.add(new SimpleGrantedAuthority(this.getRole().name()));
-
-        return grantedAuthorityList;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return this.status != MemberStatus.BLOCKED;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.status == MemberStatus.ACTIVE;
-    }
 }
