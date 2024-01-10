@@ -21,6 +21,7 @@ import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.domain.friend.service.FriendService;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
@@ -62,21 +63,116 @@ class FriendControllerTest {
 
   }
 
-  protected  ResourceSnippetParameters friendDeleteErrorResponse() {
+  protected  ResourceSnippetParameters friendErrorResponse() {
     return ResourceSnippetParameters.builder()
         .tag("Friend API")
-        .summary("친구 삭제 API")
+        .summary("친구  API")
         .requestHeaders(
             headerWithName("Authorization").description("Bearer AccessToken")
         )
-        .pathParameters(parameterWithName("memberId").description("친구 삭제할 Member Id"))
+        .pathParameters(parameterWithName("memberId").description("친구  Member Id"))
         .responseFields(
-            fieldWithPath("errorCode").type(JsonFieldType.STRING).description("친구 삭제 실패 code"),
-            fieldWithPath("errorMessage").type(JsonFieldType.STRING).description("친구 삭제 실패 에러 메세지"),
-            fieldWithPath("httpStatus").type(JsonFieldType.STRING).description("친구 삭제 실패 http status")
+            fieldWithPath("errorCode").type(JsonFieldType.STRING).description("친구 실패 code"),
+            fieldWithPath("errorMessage").type(JsonFieldType.STRING).description("친구 실패 에러 메세지"),
+            fieldWithPath("httpStatus").type(JsonFieldType.STRING).description("친구 실패 http status")
         )
         .responseSchema(Schema.schema("Friend Delete Response"))
         .build();
+  }
+
+  @Test
+  @DisplayName("친구 요청 - 성공")
+  void requestFriend_success() throws Exception {
+    //given
+    Long memberId = 1L;
+    //when
+    when(friendService.requestFriend(memberId)).thenReturn(true);
+    //then
+    mockMvc.perform(post("/friends/{memberId}",memberId)
+            .header("Authorization", "Bearer yourAccessToken")
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(MockMvcRestDocumentationWrapper.document("friends/request/success",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            resource(
+                ResourceSnippetParameters.builder()
+                    .tag("Friend API")
+                    .summary("친구 요청 API")
+                    .requestHeaders(
+                        headerWithName("Authorization").description("Bearer AccessToken")
+                    )
+                    .pathParameters(parameterWithName("memberId").description("친구 요청하는 MemberId"))
+                    .build()
+            )
+        ));
+  }
+
+  @Test
+  @DisplayName("친구 요청 - 실패 : 회원 db에서 찾을 수 없음")
+  void requestFriend_fail_not_found_member() throws Exception {
+    //given
+    Long memberId = 1L;
+    //when
+    doThrow(new MemberException(MEMBER_NOT_FOUND)).when(friendService).requestFriend(memberId);
+    //then
+    mockMvc.perform(post("/friends/{memberId}",memberId)
+            .header("Authorization", "Bearer yourAccessToken")
+        )
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andDo(MockMvcRestDocumentationWrapper.document("friends/request/fail/notMember",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            resource(
+                friendErrorResponse()
+            )
+        ));
+  }
+
+  @Test
+  @DisplayName("친구 요청 - 실패 : 이미 친구가 맺어져있음")
+  void requestFriend_fail_friend_already() throws Exception {
+    //given
+    Long memberId = 1L;
+    //when
+    doThrow(new FriendException(FRIEND_ALREADY)).when(friendService).requestFriend(memberId);
+    //then
+    mockMvc.perform(post("/friends/{memberId}",memberId)
+            .header("Authorization", "Bearer yourAccessToken")
+        )
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andDo(MockMvcRestDocumentationWrapper.document("friends/request/fail/alreadyFriend",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            resource(
+                friendErrorResponse()
+            )
+        ));
+  }
+
+  @Test
+  @DisplayName("친구 요청 - 실패 : 이미 요청한 친구쪽에서 친구 요청을 보냄")
+  void requestFriend_fail_request_already() throws Exception {
+    //given
+    Long memberId = 1L;
+    //when
+    doThrow(new FriendException(FRIEND_REQUEST_ALREADY)).when(friendService).requestFriend(memberId);
+    //then
+    mockMvc.perform(post("/friends/{memberId}",memberId)
+            .header("Authorization", "Bearer yourAccessToken")
+        )
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andDo(MockMvcRestDocumentationWrapper.document("friends/request/fail/alreadyRequest",
+            preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            resource(
+                friendErrorResponse()
+            )
+        ));
   }
   @Test
   @DisplayName("친구 삭제 - 성공")
@@ -128,7 +224,7 @@ class FriendControllerTest {
             preprocessRequest(prettyPrint()),
             preprocessResponse(prettyPrint()),
             resource(
-                friendDeleteErrorResponse()
+                friendErrorResponse()
             )));
 
     verify(friendService).deleteFriend(memberId);
@@ -152,7 +248,7 @@ class FriendControllerTest {
             preprocessRequest(prettyPrint()),
             preprocessResponse(prettyPrint()),
             resource(
-                friendDeleteErrorResponse()
+                friendErrorResponse()
             )));
 
     verify(friendService).deleteFriend(memberId);
