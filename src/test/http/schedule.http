@@ -1,6 +1,7 @@
 ### create schedule
 POST http://localhost:8080/schedules
 Content-Type: application/json
+Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYmNAbmF2ZXIuY29tIiwiaWF0IjoxNzA0OTc2NjAyLCJleHAiOjE3MDQ5ODc0MDJ9._wu0LFTpi1efvHq4Oo-KF39ZQRVHDHGeXFvCDgPGZTE"
 
 {
   "contents": "치킨먹으러가기",
@@ -12,6 +13,13 @@ Content-Type: application/json
   "status": "EXIST",
   "title": "치킨모임",
   "scheduleFriendList" : [
-
+    {
+      "memberId":"2",
+      "name":"조현준"
+    },
+    {
+      "memberId":"3",
+      "name":"김나나"
+    }
   ]
 }
