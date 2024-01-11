@@ -5,6 +5,8 @@ import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +30,7 @@ public class Schedule extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long scheduleId;
 
     @Column(nullable = false)
     private String title;
@@ -52,7 +54,8 @@ public class Schedule extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime remindAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
     private Member member;
 
     @OneToMany

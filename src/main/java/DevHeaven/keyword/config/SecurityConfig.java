@@ -28,7 +28,8 @@ public class SecurityConfig {
   private static final String[] PERMIT_URL_PATTERNS = {
       "/members/signup",
       "/members/signin",
-      "/members/reissue"
+      "/members/reissue",
+      "/chats/**"
   };
 
   @Bean

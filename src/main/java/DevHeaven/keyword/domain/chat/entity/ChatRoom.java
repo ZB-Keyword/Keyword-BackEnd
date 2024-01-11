@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,11 +30,12 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name = "chatroom")
 public class ChatRoom extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long chatRoomId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
@@ -56,7 +58,7 @@ public class ChatRoom extends BaseTimeEntity {
 
     public static ChatRoomListResponse from(ChatRoom chatRoom) {
         return ChatRoomListResponse.builder()
-            .chatRoomId(chatRoom.getId())
+            .chatRoomId(chatRoom.getChatRoomId())
             .scheduleTitle(chatRoom.schedule.getTitle())
             .friendsName(
                 chatRoom.schedule.getScheduleFriendList()
