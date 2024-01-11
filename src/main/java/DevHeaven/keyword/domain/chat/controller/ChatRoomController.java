@@ -4,12 +4,14 @@ import DevHeaven.keyword.domain.chat.dto.response.ChatResponse;
 import DevHeaven.keyword.domain.chat.dto.response.ChatRoomListResponse;
 import DevHeaven.keyword.domain.chat.service.ChatRoomService;
 import DevHeaven.keyword.domain.chat.service.ChatService;
+import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,27 +28,30 @@ public class ChatRoomController {
     private final ChatService chatService;
 
     @PostMapping("/room/{scheduleId}")
-    public ResponseEntity<Boolean> createChatRoom(@PathVariable final Long scheduleId) {
+    public ResponseEntity<Boolean> createChatRoom(
+        @PathVariable final Long scheduleId) {
+
         return ResponseEntity.ok(
             chatRoomService.createChatRoom(scheduleId));
     }
 
     @GetMapping("/room")
     public ResponseEntity<Page<ChatRoomListResponse>> getChatRoomList(
+        @AuthenticationPrincipal MemberAdapter memberAdapter,
         Pageable pageable) {
-        //파라미터로 UserAdapter 추가하고 서비스 단에 넘겨줘야함
+
         return ResponseEntity.ok(
-            chatRoomService.getChatRoomList(pageable));
+            chatRoomService.getChatRoomList(memberAdapter, pageable));
     }
 
     @GetMapping("/room/{chatRoomId}")
     public ResponseEntity<List<ChatResponse>> enterChatRoom(
         @PathVariable Long chatRoomId,
+        @AuthenticationPrincipal MemberAdapter memberAdapter,
         Model model) {
-        //파라미터로 UserAdapter 추가해야함
-        //서비스 단에 넘겨줘야함
+
         return ResponseEntity.ok(
-            chatRoomService.enterChatRoom(chatRoomId));
+            chatRoomService.enterChatRoom(memberAdapter, chatRoomId));
     }
 
 }

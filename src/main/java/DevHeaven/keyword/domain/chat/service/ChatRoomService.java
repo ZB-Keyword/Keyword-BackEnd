@@ -1,9 +1,11 @@
 package DevHeaven.keyword.domain.chat.service;
 
 import static DevHeaven.keyword.common.exception.type.ErrorCode.CHATROOM_NOT_FOUND;
+import static DevHeaven.keyword.common.exception.type.ErrorCode.EMAIL_NOT_FOUND;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.SCHEDULE_NOT_FOUND;
 
 import DevHeaven.keyword.common.exception.ChatException;
+import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.common.exception.ScheduleException;
 import DevHeaven.keyword.domain.chat.dto.response.ChatResponse;
 import DevHeaven.keyword.domain.chat.dto.response.ChatRoomListResponse;
@@ -11,7 +13,9 @@ import DevHeaven.keyword.domain.chat.entity.Chat;
 import DevHeaven.keyword.domain.chat.entity.ChatRoom;
 import DevHeaven.keyword.domain.chat.repository.ChatRepository;
 import DevHeaven.keyword.domain.chat.repository.ChatRoomRepository;
+import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
+import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
 import DevHeaven.keyword.domain.schedule.repository.ScheduleFriendRepository;
 import DevHeaven.keyword.domain.schedule.repository.ScheduleRepository;
@@ -31,7 +35,7 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRepository chatRepository;
     private final ScheduleRepository scheduleRepository;
-    private final ScheduleFriendRepository scheduleFriendRepository;
+    private final MemberRepository memberRepository;
 
     public boolean createChatRoom(final Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
@@ -42,17 +46,16 @@ public class ChatRoomService {
         return true;
     }
 
-    public Page<ChatRoomListResponse> getChatRoomList(Pageable pageable) {
+    public Page<ChatRoomListResponse> getChatRoomList(final MemberAdapter memberAdapter, Pageable pageable) {
 
-//          UserAdapter 통해 member entity 추출 로직 필요
-        Member member = new Member();
+        Member member = getMemberByEmail(memberAdapter.getEmail());
+
 
 //          회원 정보로 ScheduleFriend 레코드 찾는 로직 필요
 //          일정 참여 친구 목록 테이블에서 일정 참여친구로 들어있는 나를 뽑아올 수 있음
-        //아래 삭제 예정
-//        List<ScheduleFriend> scheduleFriendList =
-//            scheduleFriendRepository.findByMember(member);
-        List<Schedule> scheduleList = scheduleRepository.getScheduleList(member.getId());
+
+        List<Schedule> scheduleList =
+            scheduleRepository.getScheduleList(member.getMemberId());
 
         // "내"가 포함된 일정 목록에서 일정 아이디로 채팅방 조회
         List<ChatRoom> chatRoomList = new ArrayList<>();
@@ -67,10 +70,16 @@ public class ChatRoomService {
             .map(ChatRoom::from);
     }
 
+    private Member getMemberByEmail(final String email) {
+        return memberRepository.findByEmail(email)
+            .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
+    }
     /**
      * 채팅방 조회
      */
-    public List<ChatResponse> enterChatRoom(Long chatRoomId) {
+    public List<ChatResponse> enterChatRoom(
+        final MemberAdapter memberAdapter, final Long chatRoomId) {
+
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new ChatException(CHATROOM_NOT_FOUND));
 
