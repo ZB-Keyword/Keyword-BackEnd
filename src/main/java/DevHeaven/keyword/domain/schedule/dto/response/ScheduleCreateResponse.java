@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class ScheduleCreateResponse {
 
-  private Boolean isScheduleRequest;
+  private Long scheduleId;
 
 
 }
