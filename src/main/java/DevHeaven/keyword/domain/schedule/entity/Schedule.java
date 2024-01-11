@@ -5,7 +5,7 @@ import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,13 +20,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Schedule extends BaseTimeEntity {
+public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,14 +56,21 @@ public class Schedule extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime remindAt;
 
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
     @ManyToOne
     private Member member;
 
-    @ManyToMany
+    @OneToMany
     @JoinTable(name = "ScheduleFriend",
     joinColumns = @JoinColumn(name = "schedule_id"),
         inverseJoinColumns = @JoinColumn(name = "member_id")
     )
     private List<Member> schduleFriendList = new ArrayList<>();
+
 
 }

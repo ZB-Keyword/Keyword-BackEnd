@@ -1,0 +1,17 @@
+### create schedule
+POST http://localhost:8080/schedules
+Content-Type: application/json
+
+{
+  "contents": "치킨먹으러가기",
+  "latitude": 111,
+  "locationExplanation": "남부순환로222",
+  "longitude": 222,
+  "remindAt": "2024-12-25T08:00",
+  "scheduleAt": "2024-12-25T11:00",
+  "status": "EXIST",
+  "title": "치킨모임",
+  "scheduleFriendList" : [
+
+  ]
+}
