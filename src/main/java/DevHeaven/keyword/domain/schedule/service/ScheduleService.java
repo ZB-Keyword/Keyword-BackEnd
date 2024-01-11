@@ -11,6 +11,7 @@ import DevHeaven.keyword.domain.schedule.dto.response.ScheduleCreateResponse;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
 import DevHeaven.keyword.domain.schedule.repository.ScheduleRepository;
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,14 @@ public class ScheduleService {
 
     Member member = memberRepository.findByEmail(memberAdapter.getEmail())
         .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
+
+    // friend 상태 확인
+    for (Member friend : request.getScheduleFriendList()) {
+      Optional<Member> friendInfomation = memberRepository.findById(friend.getMemberId());
+      if (!friendInfomation.get().getStatus().equals("ACTIVE")) {
+        throw new RuntimeException(friendInfomation.get().getName() + "님의 계정이 초대할 수 없는 상태입니다.");
+      }
+    }
 
     Schedule schedule = Schedule.builder()
         .member(member)
