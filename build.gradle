@@ -37,6 +37,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-mysql'
+//	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
@@ -57,12 +61,36 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+openapi3 {
+	server = "http://localhost:8087"
+	title = "THT API 문서"
+	description = "Spring REST Docs with SwaggerUI."
+	version = "0.0.1"
+	outputFileNamePrefix = 'open-api-3.0.1'
+	format = 'json'
+	outputDirectory= 'build/resources/main/static/docs'
+}
 
-tasks.withType(GenerateSwaggerUI){
-	dependsOn'openapi3'
+tasks.withType(GenerateSwaggerUI) {
+	dependsOn 'openapi3'
 
-	delete file('scr/main/resources/static/docs')
-	copy{
+	delete file('src/main/resources/static/docs')
+
+	doFirst {
+		def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.json")
+
+		def securitySchemesContent = "  securitySchemes:\n" +
+				"    APIKey:\n" +
+				"      type: apiKey\n" +
+				"      in: header\n" +
+				"      name: Authorization\n" +
+				"security:\n" +
+				"  - APIKey: []  # Apply the security scheme here"
+
+		swaggerUIFile.text = securitySchemesContent
+	}
+
+	copy {
 		from "build/resources/main/static/docs"
 		into "src/main/resources/static/docs"
 	}
@@ -70,14 +98,4 @@ tasks.withType(GenerateSwaggerUI){
 
 bootJar {
 	dependsOn('openapi3')
-}
-
-openapi3 {
-	server = "http://localhost:8086"
-	title = "THT API 문서"
-	description = "Spring REST Docs with SwaggerUI."
-	version = "0.0.1"
-	outputFileNamePrefix = 'open-api-3.0.1'
-	format = 'json'
-	outputDirectory= 'build/resources/main/static/docs'
 }
