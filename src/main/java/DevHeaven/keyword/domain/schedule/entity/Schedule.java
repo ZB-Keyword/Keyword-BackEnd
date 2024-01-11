@@ -3,10 +3,12 @@ package DevHeaven.keyword.domain.schedule.entity;
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,7 +60,13 @@ public class Schedule extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+/*    @OneToMany
+    private List<Member> scheduleFriendList;*/
     @OneToMany
-    private List<Member> scheduleFriendList;
+    @JoinTable(name = "schedulefriend",
+        joinColumns = @JoinColumn(name = "schedule_id"),
+        inverseJoinColumns = @JoinColumn(name = "member_id")
+    )
+    private List<Member> schduleFriendList = new ArrayList<>();
 
 }
