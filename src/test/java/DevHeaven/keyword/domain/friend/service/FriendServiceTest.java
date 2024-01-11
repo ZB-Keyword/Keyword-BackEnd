@@ -51,17 +51,17 @@ class FriendServiceTest {
     Friend memberToFriend= FRIEND_ACCEPT_1.createFriend(memberRequest,friend);
     Friend friendToMember= FRIEND_ACCEPT_2.createFriend(friend,memberRequest);
 
-    when(memberRepository.findById(friend.getId())).thenReturn(Optional.of(friend));
-    when(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(memberRequest.getId(), friend.getId(), FriendStatus.FRIEND_ACCEPTED)).thenReturn(Optional.of(memberToFriend));
-    when(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(friend.getId(), memberRequest.getId(), FriendStatus.FRIEND_ACCEPTED)).thenReturn(Optional.of(friendToMember));
+    when(memberRepository.findById(friend.getMemberId())).thenReturn(Optional.of(friend));
+    when(friendRepository.findByMemberRequestAndFriendAndStatus(memberRequest.getMemberId(), friend.getMemberId(), FriendStatus.FRIEND_ACCEPTED)).thenReturn(Optional.of(memberToFriend));
+    when(friendRepository.findByMemberRequestAndFriendAndStatus(friend.getMemberId(), memberRequest.getMemberId(), FriendStatus.FRIEND_ACCEPTED)).thenReturn(Optional.of(friendToMember));
 
     //when
-    boolean deleteResponse = friendService.deleteFriend(friend.getId());
+    boolean deleteResponse = friendService.deleteFriend(friend.getMemberId());
 
     //then
     assertThat(deleteResponse).isTrue();
     verify(memberRepository, times(1)).findById(anyLong());
-    verify(friendRepository, times(2)).findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any());
+    verify(friendRepository, times(2)).findByMemberRequestAndFriendAndStatus(any(),any(),any());
   }
 
   @Test
@@ -76,7 +76,7 @@ class FriendServiceTest {
     //then
     Assertions.assertThrows(MemberException.class,()-> friendService.deleteFriend(memberRequestId));
     verify(memberRepository, times(1)).findById(anyLong());
-    verify(friendRepository, times(0)).findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any());
+    verify(friendRepository, times(0)).findByMemberRequestAndFriendAndStatus(any(),any(),any());
   }
 
   @Test
@@ -87,13 +87,13 @@ class FriendServiceTest {
     Member friend = CAT.createMember();
 
     given(memberRepository.findById(memberRequestId)).willReturn(Optional.of(friend));
-    given(friendRepository.findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any())).willReturn(Optional.empty());
+    given(friendRepository.findByMemberRequestAndFriendAndStatus(any(),any(),any())).willReturn(Optional.empty());
 
     //when
     //then
     Assertions.assertThrows(FriendException.class,()-> friendService.deleteFriend(memberRequestId));
     verify(memberRepository, times(1)).findById(anyLong());
-    verify(friendRepository, times(1)).findByMemberRequestIdAndFriendIdAndStatus(any(),any(),any());
+    verify(friendRepository, times(1)).findByMemberRequestAndFriendAndStatus(any(),any(),any());
   }
 
 }

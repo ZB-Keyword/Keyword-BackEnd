@@ -27,7 +27,7 @@ public enum MemberFixture {
 
   public Member createMember(){
     return Member.builder()
-        .id(this.id)
+        .memberId(this.id)
         .imageUrl(this.imageUrl)
         .name(this.name)
         .phone(this.phone)
