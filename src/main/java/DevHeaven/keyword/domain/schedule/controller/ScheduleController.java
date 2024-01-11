@@ -1,13 +1,14 @@
 package DevHeaven.keyword.domain.schedule.controller;
 
+import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleCreateRequest;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleCreateResponse;
 import DevHeaven.keyword.domain.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,12 +17,13 @@ public class ScheduleController {
 
   public final ScheduleService scheduleService;
 
+
+  // 스케줄 생성
   @PostMapping("/schedules")
   public ResponseEntity<ScheduleCreateResponse> createSchedule(
-      @RequestBody ScheduleCreateRequest request) {
+      @RequestBody ScheduleCreateRequest request,
+      @AuthenticationPrincipal MemberAdapter memberAdapter) {
 
-    scheduleService.createChedule(request);
-
-    return ResponseEntity.ok(ScheduleCreateResponse.builder().isScheduleRequest(true).build());
+    return ResponseEntity.ok(scheduleService.createSchedule(request, memberAdapter));
   }
 }
