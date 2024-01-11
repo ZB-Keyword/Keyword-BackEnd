@@ -1,8 +1,6 @@
 package DevHeaven.keyword.domain.schedule.dto.request;
 
-import DevHeaven.keyword.common.entity.BaseTimeEntity;
 import DevHeaven.keyword.domain.member.entity.Member;
-import DevHeaven.keyword.domain.schedule.entity.Schedule;
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +9,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ScheduleCreateRequest extends BaseTimeEntity {
+public class ScheduleCreateRequest {
+
+  private Long organizerId;
 
   private String title;
 
