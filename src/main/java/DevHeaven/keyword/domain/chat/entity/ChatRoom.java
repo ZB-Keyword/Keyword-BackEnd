@@ -57,13 +57,14 @@ public class ChatRoom extends BaseTimeEntity {
     }
 
     public static ChatRoomListResponse from(ChatRoom chatRoom) {
-        return ChatRoomListResponse.builder()
-            .chatRoomId(chatRoom.getChatRoomId())
-            .scheduleTitle(chatRoom.schedule.getTitle())
-            .friendsName(
-                chatRoom.schedule.getScheduleFriendList()
-                    .stream().map(Object::toString)
-                    .collect(Collectors.toList()))
-            .build();
+//        return ChatRoomListResponse.builder()
+//            .chatRoomId(chatRoom.getChatRoomId())
+//            .scheduleTitle(chatRoom.schedule.getTitle())
+//            .friendsName(
+//                chatRoom.schedule.getScheduleFriendList()
+//                    .stream().map(Object::toString)
+//                    .collect(Collectors.toList()))
+//            .build();
+        return null;
     }
 }
