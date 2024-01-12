@@ -10,12 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-//    @Query(value = "select * from schedule where schedule_id = ("
-//        + " select sf.schedule_id"
-//        + " from schedule_friend sf"
-//        + " where sf.memberId = :id)", nativeQuery = true)
-//    List<Schedule> getScheduleList(@Param("id") Long memberId);
-
     @Query(value = "SELECT * FROM schedule s WHERE s.schedule_id ="
             + " (SELECT sf.schedule_id"
             + " FROM schedulefriend sf"
