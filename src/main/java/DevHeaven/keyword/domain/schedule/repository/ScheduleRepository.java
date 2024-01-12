@@ -17,8 +17,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 //    List<Schedule> getScheduleList(@Param("id") Long memberId);
 
     @Query(value = "SELECT * FROM schedule s WHERE s.schedule_id ="
-            + " SELECT sf.schedule_id"
+            + " (SELECT sf.schedule_id"
             + " FROM schedulefriend sf"
-            + " WHERE member_id = :id", nativeQuery = true)
-    List<Schedule> getScheduleList(@Param("id") Long memberId);
+            + " WHERE sf.member_id = :id)", nativeQuery = true)
+    List<Schedule> getScheduleList(Long id);
 }
