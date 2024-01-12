@@ -17,7 +17,6 @@ import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
-import DevHeaven.keyword.domain.schedule.repository.ScheduleFriendRepository;
 import DevHeaven.keyword.domain.schedule.repository.ScheduleRepository;
 import java.util.ArrayList;
 import java.util.List;
