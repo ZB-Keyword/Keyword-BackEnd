@@ -30,7 +30,7 @@ public class ScheduleService {
     ) {
         Member member = getMemberByEmail(memberAdapter.getEmail());
         List<Schedule> scheduleList =
-                scheduleRepository.getScheduleList(member.getMemberId());
+                scheduleRepository.getScheduleListByMember(member.getMemberId());
 
         return new PageImpl<>(scheduleList.stream()
                 .map(Schedule::from)
