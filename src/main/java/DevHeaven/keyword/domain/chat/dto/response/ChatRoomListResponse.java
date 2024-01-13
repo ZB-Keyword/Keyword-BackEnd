@@ -1,6 +1,8 @@
 package DevHeaven.keyword.domain.chat.dto.response;
 
 import java.util.List;
+
+import DevHeaven.keyword.domain.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +17,7 @@ import lombok.Setter;
 public class ChatRoomListResponse {
     private Long chatRoomId;
     private String scheduleTitle;
-    private List<String> friendsName;
+    private List<Member> friendsName;
 
     public ChatRoomListResponse create(String name) {
         ChatRoomListResponse room = new ChatRoomListResponse();

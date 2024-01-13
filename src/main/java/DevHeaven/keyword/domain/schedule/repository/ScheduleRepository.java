@@ -1,7 +1,6 @@
 package DevHeaven.keyword.domain.schedule.repository;
 
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
-import io.lettuce.core.dynamic.annotation.Param;
 
 import java.util.List;
 
@@ -14,5 +13,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             + " (SELECT sf.schedule_id"
             + " FROM schedulefriend sf"
             + " WHERE sf.member_id = :id)", nativeQuery = true)
-    List<Schedule> getScheduleList(Long id);
+    List<Schedule> getScheduleListByMember(Long id);
 }

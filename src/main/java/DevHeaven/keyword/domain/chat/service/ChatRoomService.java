@@ -49,12 +49,11 @@ public class ChatRoomService {
 
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
-
 //          회원 정보로 ScheduleFriend 레코드 찾는 로직 필요
 //          일정 참여 친구 목록 테이블에서 일정 참여친구로 들어있는 나를 뽑아올 수 있음
 
         List<Schedule> scheduleList =
-            scheduleRepository.getScheduleList(member.getMemberId());
+            scheduleRepository.getScheduleListByMember(member.getMemberId());
 
         // "내"가 포함된 일정 목록에서 일정 아이디로 채팅방 조회
         List<ChatRoom> chatRoomList = new ArrayList<>();
