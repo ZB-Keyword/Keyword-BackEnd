@@ -9,11 +9,14 @@ import static DevHeaven.keyword.common.exception.type.ErrorCode.MISMATCH_PASSWOR
 import static DevHeaven.keyword.common.exception.type.ErrorCode.WITHDRAWN_MEMBER;
 import static DevHeaven.keyword.domain.member.type.MemberRole.MEMBER;
 import static DevHeaven.keyword.domain.member.type.MemberStatus.ACTIVE;
+import static DevHeaven.keyword.domain.member.type.MemberStatus.WITHDRAWN;
 
 import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.common.security.JwtUtils;
 import DevHeaven.keyword.common.security.dto.TokenResponse;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
+import DevHeaven.keyword.domain.member.dto.request.ModifyPasswordRequest;
+import DevHeaven.keyword.domain.member.dto.request.ReissueRequest;
 import DevHeaven.keyword.domain.member.dto.request.SigninRequest;
 import DevHeaven.keyword.domain.member.dto.request.SignupRequest;
 import DevHeaven.keyword.domain.member.dto.response.MemberInfoResponse;
@@ -25,6 +28,7 @@ import DevHeaven.keyword.domain.member.type.MemberStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -79,6 +83,42 @@ public class MemberService {
     // TODO : refresh token 은 redis 설정 merge 후 저장 예정 (임시 response)
 
     return jwtUtils.createTokens(member.getEmail());
+  }
+
+  public TokenResponse reissue(final ReissueRequest reissueRequest) {
+    // TODO : redis 설정 후 예정 (임시 response)
+
+    return null;
+  }
+
+  public Boolean modifyPassword(final MemberAdapter memberAdapter, final ModifyPasswordRequest modifyPasswordRequest) {
+    Member member = getMemberByEmail(memberAdapter.getEmail());
+
+    validateMemberByStatus(member);
+
+    memberRepository.save(member.modifyPassword(modifyPasswordRequest.getPassword()));
+
+    return true;
+  }
+
+  public Boolean modifyProfileImage(final MemberAdapter memberAdapter, final MultipartFile[] profileImage) {
+    Member member = getMemberByEmail(memberAdapter.getEmail());
+
+    validateMemberByStatus(member);
+
+    // TODO : S3 설정 후 작성
+    
+    return false;
+  }
+
+  public Boolean withdraw(final MemberAdapter memberAdapter) {
+    Member member = getMemberByEmail(memberAdapter.getEmail());
+
+    validateMemberByStatus(member);
+
+    memberRepository.save(member.modifyStatus(WITHDRAWN));
+
+    return true;
   }
 
 
