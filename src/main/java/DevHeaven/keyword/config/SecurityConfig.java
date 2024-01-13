@@ -29,7 +29,6 @@ public class SecurityConfig {
       "/members/signup",
       "/members/signin",
       "/members/reissue",
-      "/chats/**"
   };
 
   @Bean
