@@ -47,13 +47,13 @@ public class ChatRoomService {
     }
 
     public Page<ChatRoomListResponse> getChatRoomList(final MemberAdapter memberAdapter, Pageable pageable) {
+/*
 
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
 
 //          회원 정보로 ScheduleFriend 레코드 찾는 로직 필요
 //          일정 참여 친구 목록 테이블에서 일정 참여친구로 들어있는 나를 뽑아올 수 있음
-
         List<Schedule> scheduleList =
             scheduleRepository.getScheduleList(member.getMemberId());
 
@@ -73,6 +73,8 @@ public class ChatRoomService {
     private Member getMemberByEmail(final String email) {
         return memberRepository.findByEmail(email)
             .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
+*/
+        return null;
     }
     /**
      * 채팅방 조회
