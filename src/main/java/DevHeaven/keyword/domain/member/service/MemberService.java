@@ -6,11 +6,14 @@ import static DevHeaven.keyword.common.exception.type.ErrorCode.EMAIL_NOT_FOUND;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.INACTIVE_MEMBER;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.MEMBER_NOT_FOUND;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.MISMATCH_PASSWORD;
+import static DevHeaven.keyword.common.exception.type.ErrorCode.REFRESH_TOKEN_EXPIRED;
+import static DevHeaven.keyword.common.exception.type.ErrorCode.REFRESH_TOKEN_NOT_FOUND;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.WITHDRAWN_MEMBER;
 import static DevHeaven.keyword.domain.member.type.MemberRole.MEMBER;
 import static DevHeaven.keyword.domain.member.type.MemberStatus.ACTIVE;
 import static DevHeaven.keyword.domain.member.type.MemberStatus.WITHDRAWN;
 
+import DevHeaven.keyword.common.exception.JwtException;
 import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.common.security.JwtUtils;
 import DevHeaven.keyword.common.security.dto.TokenResponse;
@@ -24,8 +27,9 @@ import DevHeaven.keyword.domain.member.dto.response.MyInfoResponse;
 import DevHeaven.keyword.domain.member.dto.response.SignupResponse;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
-import DevHeaven.keyword.domain.member.type.MemberStatus;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,11 +38,15 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class MemberService {
 
+  private static final String REDIS_REFRESH_TOKEN_KEY_PREFIX = "reissueMemberEmail::";
+
   private final MemberRepository memberRepository;
+  private final RedisTemplate<String, Object> redisTemplate;
 
   private final JwtUtils jwtUtils;
 
   private final PasswordEncoder passwordEncoder;
+
 
   public MyInfoResponse getMyInfo(final MemberAdapter memberAdapter) {
     Member member = getMemberByEmail(memberAdapter.getEmail());
@@ -79,19 +87,34 @@ public class MemberService {
     validateMemberByPassword(signinRequest.getPassword(), member);
 
     validateMemberByStatus(member);
-    
-    // TODO : refresh token 은 redis 설정 merge 후 저장 예정 (임시 response)
 
-    return jwtUtils.createTokens(member.getEmail());
+    TokenResponse tokenResponse = jwtUtils.createTokens(member.getEmail());
+
+    String redisRefreshTokenKey = getRedisRefreshTokenKeyByMemberEmail(member.getEmail());
+
+    saveRefreshTokenInRedisByKey(redisRefreshTokenKey, tokenResponse.getRefreshToken());
+
+    return tokenResponse;
   }
 
   public TokenResponse reissue(final ReissueRequest reissueRequest) {
-    // TODO : redis 설정 후 예정 (임시 response)
+    String reissueRequestMemberEmail = jwtUtils.getClaimsByToken(reissueRequest.getRefreshToken())
+        .getSubject();
 
-    return null;
+    TokenResponse tokenResponse = jwtUtils.createTokens(
+        getMemberByEmail(reissueRequestMemberEmail).getEmail());
+
+    String redisRefreshTokenKey = getRedisRefreshTokenKeyByMemberEmail(reissueRequestMemberEmail);
+
+    validateRefreshTokenInRedisByKey(redisRefreshTokenKey);
+
+    saveRefreshTokenInRedisByKey(redisRefreshTokenKey, tokenResponse.getRefreshToken());
+
+    return tokenResponse;
   }
 
-  public Boolean modifyPassword(final MemberAdapter memberAdapter, final ModifyPasswordRequest modifyPasswordRequest) {
+  public Boolean modifyPassword(final MemberAdapter memberAdapter,
+      final ModifyPasswordRequest modifyPasswordRequest) {
     Member member = getMemberByEmail(memberAdapter.getEmail());
 
     validateMemberByStatus(member);
@@ -101,13 +124,14 @@ public class MemberService {
     return true;
   }
 
-  public Boolean modifyProfileImage(final MemberAdapter memberAdapter, final MultipartFile[] profileImage) {
+  public Boolean modifyProfileImage(final MemberAdapter memberAdapter,
+      final MultipartFile[] profileImage) {
     Member member = getMemberByEmail(memberAdapter.getEmail());
 
     validateMemberByStatus(member);
 
     // TODO : S3 설정 후 작성
-    
+
     return false;
   }
 
@@ -121,8 +145,7 @@ public class MemberService {
     return true;
   }
 
-
-  // validate method
+  // private method
 
   private Member getMemberById(final long memberId) {
     return memberRepository.findById(memberId)
@@ -130,18 +153,22 @@ public class MemberService {
   }
 
   private Member getMemberByEmail(final String email) {
-     return memberRepository.findByEmail(email)
+    return memberRepository.findByEmail(email)
         .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
   }
 
+  private String getRedisRefreshTokenKeyByMemberEmail(final String email) {
+    return REDIS_REFRESH_TOKEN_KEY_PREFIX + email;
+  }
+
   private void validateMemberByEmail(final String email) {
-    if(memberRepository.existsByEmail(email)) {
+    if (memberRepository.existsByEmail(email)) {
       throw new MemberException(ALREADY_EXISTS_EMAIL);
     }
   }
 
   private void validateMemberByPassword(final String targetPassword, final Member member) {
-    if(!passwordEncoder.matches(targetPassword, member.getPassword())) {
+    if (!passwordEncoder.matches(targetPassword, member.getPassword())) {
       throw new MemberException(MISMATCH_PASSWORD);
     }
   }
@@ -155,5 +182,24 @@ public class MemberService {
       case WITHDRAWN:
         throw new MemberException(WITHDRAWN_MEMBER);
     }
+  }
+
+  private String validateRefreshTokenInRedisByKey(final String redisRefreshTokenKey) {
+    String refreshToken = String.valueOf(redisTemplate.opsForValue().get(redisRefreshTokenKey));
+
+    if (refreshToken == null) {
+      throw new JwtException(REFRESH_TOKEN_NOT_FOUND);
+    }
+
+    if (!jwtUtils.validateToken(refreshToken)) {
+      throw new JwtException(REFRESH_TOKEN_EXPIRED);
+    }
+
+    return refreshToken;
+  }
+
+  private void saveRefreshTokenInRedisByKey(final String redisRefreshTokenKey, final String refreshToken) {
+    redisTemplate.opsForValue().set(redisRefreshTokenKey, refreshToken,
+        Duration.ofMillis(jwtUtils.getRefreshTokenValidTime()));
   }
 }

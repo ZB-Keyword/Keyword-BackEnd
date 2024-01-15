@@ -29,6 +29,8 @@ public class SecurityConfig {
   private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
   private static final String[] PERMIT_URL_PATTERNS = {
+      "/docs/**",
+      "/v3/api-docs/swagger-config",
       "/members/signup",
       "/members/signin",
       "/members/reissue",
@@ -63,6 +65,7 @@ public class SecurityConfig {
     return httpSecurity.build();
   }
 
+  @Bean
   public CorsConfigurationSource configurationSource() {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
     corsConfiguration.addAllowedHeader("*");

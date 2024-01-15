@@ -21,6 +21,10 @@ public enum ErrorCode {
     UNAUTHENTICATED_JWT_EXCEPTION(HttpStatus.BAD_REQUEST, "토큰 회원 인증에 실패하였습니다."),
     ACCESS_DENIED_JWT_EXCEPTION(HttpStatus.BAD_REQUEST, "올바른 권한의 접근이 아닙니다."),
 
+    REFRESH_TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "요청한 회원의 refresh token 을 찾을 수 없습니다."),
+
+    REFRESH_TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "요청한 회원의 refresh token 이 만료되었습니다."),
+
     // member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND,"해당 회원을 찾을 수 없습니다."),
     EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 이메일을 찾을 수 없습니다."),

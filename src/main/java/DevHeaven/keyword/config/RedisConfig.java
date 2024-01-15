@@ -16,6 +16,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 @RequiredArgsConstructor
 public class RedisConfig {
+
   @Value("${spring.redis.host}")
   private String redisHost;
 
@@ -37,8 +38,8 @@ public class RedisConfig {
     return new LettuceConnectionFactory(redisHost, redisPort);
   }
   @Bean
-  public RedisTemplate<String,Object> redisTemplate(){
-    RedisTemplate<String, Object > redisTemplate=new RedisTemplate<>();
+  public RedisTemplate<String, Object> redisTemplate(){
+    RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
     redisTemplate.setConnectionFactory(redisConnectionFactory());
     redisTemplate.setKeySerializer(new StringRedisSerializer());
     redisTemplate.setValueSerializer(new StringRedisSerializer());
