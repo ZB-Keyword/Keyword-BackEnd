@@ -14,4 +14,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             + " FROM schedulefriend sf"
             + " WHERE sf.member_id = :id)", nativeQuery = true)
     List<Schedule> getScheduleListByMember(Long id);
+
+
 }

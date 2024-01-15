@@ -20,42 +20,44 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-  private final JwtAuthenticationFilter jwtAuthenticationFilter;
-  private final JwtExceptionFilter jwtExceptionFilter;
-  private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-  private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-  private static final String[] PERMIT_URL_PATTERNS = {
-      "/members/signup",
-      "/members/signin",
-      "/members/reissue",
-  };
+    private static final String[] PERMIT_URL_PATTERNS = {
+            "/members/signup",
+            "/members/signin",
+            "/members/reissue",
+            "/docs/**",
+            "/v3/api-docs/swagger-config"
+    };
 
-  @Bean
-  public SecurityFilterChain filterChain(final HttpSecurity httpSecurity) throws Exception {
-    httpSecurity
-        .httpBasic().disable()
-        .formLogin().disable()
+    @Bean
+    public SecurityFilterChain filterChain(final HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .httpBasic().disable()
+                .formLogin().disable()
 
-        .cors().disable()   // TODO : 배포 후 cors 설정 예정
-        .csrf().disable()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .cors().disable()   // TODO : 배포 후 cors 설정 예정
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
-        .and()
-        .authorizeRequests()
-        .antMatchers(PERMIT_URL_PATTERNS).permitAll()
-        .anyRequest().authenticated()
+                .and()
+                .authorizeRequests()
+                .antMatchers(PERMIT_URL_PATTERNS).permitAll()
+                .anyRequest().authenticated()
 
-        .and()
-        .exceptionHandling()
-        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-        .accessDeniedHandler(jwtAccessDeniedHandler)
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
 
-        .and()
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
-    ;
+                .and()
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
+        ;
 
-    return httpSecurity.build();
-  }
+        return httpSecurity.build();
+    }
 }
