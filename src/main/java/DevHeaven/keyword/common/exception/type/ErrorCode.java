@@ -43,6 +43,13 @@ public enum ErrorCode {
 
     // chat
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다.");
+
+    // schedule
+
+
     private final HttpStatus httpStatus;
     private final String errorMessage;
+
+
+
 }
