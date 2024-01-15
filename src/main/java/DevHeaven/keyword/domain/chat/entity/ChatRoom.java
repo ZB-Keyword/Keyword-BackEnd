@@ -7,6 +7,7 @@ import DevHeaven.keyword.domain.chat.dto.response.ChatRoomListResponse;
 import DevHeaven.keyword.domain.chat.type.ChatRoomStatus;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
+
 import java.util.stream.Collectors;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -15,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,20 +52,17 @@ public class ChatRoom extends BaseTimeEntity {
 
     public static ChatRoom createRoom(Schedule schedule) {
         return ChatRoom.builder()
-            .schedule(schedule)
-            .member(schedule.getMember())
-            .status(VALID)
-            .build();
+                .schedule(schedule)
+                .member(schedule.getMember())
+                .status(VALID)
+                .build();
     }
 
     public static ChatRoomListResponse from(ChatRoom chatRoom) {
         return ChatRoomListResponse.builder()
-            .chatRoomId(chatRoom.getChatRoomId())
-            .scheduleTitle(chatRoom.schedule.getTitle())
-            .friendsName(
-                chatRoom.schedule.getScheduleFriendList()
-                    .stream().map(Object::toString)
-                    .collect(Collectors.toList()))
-            .build();
+                .chatRoomId(chatRoom.getChatRoomId())
+                .scheduleTitle(chatRoom.schedule.getTitle())
+                .friendsName(chatRoom.schedule.getFriendList())
+                .build();
     }
 }
