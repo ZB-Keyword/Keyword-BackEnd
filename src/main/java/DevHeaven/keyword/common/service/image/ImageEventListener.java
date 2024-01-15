@@ -2,6 +2,7 @@ package DevHeaven.keyword.common.service.image;
 
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
+import DevHeaven.keyword.common.exception.ImgException;
 import DevHeaven.keyword.common.service.image.dto.S3ImageEvent;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
@@ -35,12 +36,7 @@ public class ImageEventListener {
     if (imageName.equals(DEFAULT_IMAGE_NAME)) {
       return;
     }
-    System.out.println(folderName+imageName);
-    boolean b = amazonS3.doesBucketExistV2(bucketName);
-    System.out.println("b = " + b);
-    final String key = imageName;
-    boolean exist = amazonS3.doesObjectExist(bucketName , key);
-    System.out.println("exist = " + exist);
-    amazonS3.deleteObject(new DeleteObjectRequest(bucketName, folderName + key));
+    final String key = folderName+imageName;
+    amazonS3.deleteObject(new DeleteObjectRequest(bucketName,  key.trim()));
   }
 }
