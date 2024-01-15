@@ -1,6 +1,7 @@
 package DevHeaven.keyword.domain.member.service;
 
 import static DevHeaven.keyword.common.exception.type.ErrorCode.ALREADY_EXISTS_EMAIL;
+import static DevHeaven.keyword.common.exception.type.ErrorCode.ALREADY_EXISTS_PHONE;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.BLOCKED_MEMBER;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.EMAIL_NOT_FOUND;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.INACTIVE_MEMBER;
@@ -25,6 +26,7 @@ import DevHeaven.keyword.domain.member.dto.request.SignupRequest;
 import DevHeaven.keyword.domain.member.dto.response.MemberInfoResponse;
 import DevHeaven.keyword.domain.member.dto.response.MyInfoResponse;
 import DevHeaven.keyword.domain.member.dto.response.SignupResponse;
+import DevHeaven.keyword.domain.member.dto.response.TokenAndInfoResponse;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import java.time.Duration;
@@ -67,6 +69,8 @@ public class MemberService {
   public SignupResponse signup(final SignupRequest signupRequest) {
     validateMemberByEmail(signupRequest.getEmail());
 
+    validateMemberByPhone(signupRequest.getPhone());
+
     Member member = memberRepository.save(
         Member.builder()
             .name(signupRequest.getName())
@@ -81,7 +85,7 @@ public class MemberService {
     return new SignupResponse(member.getName());
   }
 
-  public TokenResponse signin(final SigninRequest signinRequest) {
+  public TokenAndInfoResponse signin(final SigninRequest signinRequest) {
     Member member = getMemberByEmail(signinRequest.getEmail());
 
     validateMemberByPassword(signinRequest.getPassword(), member);
@@ -94,15 +98,20 @@ public class MemberService {
 
     saveRefreshTokenInRedisByKey(redisRefreshTokenKey, tokenResponse.getRefreshToken());
 
-    return tokenResponse;
+    return TokenAndInfoResponse.builder()
+        .tokenResponse(tokenResponse)
+        .myInfoResponse(MyInfoResponse.from(member))
+        .build();
   }
 
-  public TokenResponse reissue(final ReissueRequest reissueRequest) {
+  public TokenAndInfoResponse reissue(final ReissueRequest reissueRequest) {
     String reissueRequestMemberEmail = jwtUtils.getClaimsByToken(reissueRequest.getRefreshToken())
         .getSubject();
 
+    Member member = getMemberByEmail(reissueRequestMemberEmail);
+
     TokenResponse tokenResponse = jwtUtils.createTokens(
-        getMemberByEmail(reissueRequestMemberEmail).getEmail());
+        member.getEmail());
 
     String redisRefreshTokenKey = getRedisRefreshTokenKeyByMemberEmail(reissueRequestMemberEmail);
 
@@ -110,7 +119,10 @@ public class MemberService {
 
     saveRefreshTokenInRedisByKey(redisRefreshTokenKey, tokenResponse.getRefreshToken());
 
-    return tokenResponse;
+    return TokenAndInfoResponse.builder()
+        .tokenResponse(tokenResponse)
+        .myInfoResponse(MyInfoResponse.from(member))
+        .build();
   }
 
   public Boolean modifyPassword(final MemberAdapter memberAdapter,
@@ -196,6 +208,12 @@ public class MemberService {
     }
 
     return refreshToken;
+  }
+
+  private void validateMemberByPhone(final String phone) {
+    if(memberRepository.existsByPhone(phone)) {
+      throw new MemberException(ALREADY_EXISTS_PHONE);
+    }
   }
 
   private void saveRefreshTokenInRedisByKey(final String redisRefreshTokenKey, final String refreshToken) {

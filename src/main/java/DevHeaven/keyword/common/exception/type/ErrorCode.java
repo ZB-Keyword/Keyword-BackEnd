@@ -32,6 +32,7 @@ public enum ErrorCode {
     SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND,"해당 회원을 찾을 수 없습니다."),
 
     ALREADY_EXISTS_EMAIL(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
+    ALREADY_EXISTS_PHONE(HttpStatus.BAD_REQUEST, "이미 존재하는 핸드폰 번호입니다."),
 
     BLOCKED_MEMBER(HttpStatus.BAD_REQUEST, "관리자에 의해 정지된 회원입니다."),
     INACTIVE_MEMBER(HttpStatus.BAD_REQUEST, "비활성화된 회원입니다."),
@@ -44,9 +45,11 @@ public enum ErrorCode {
     FILE_NOT_EXIST(HttpStatus.BAD_REQUEST, "업로드 될 파일이 존재하지 않습니다."),
     FILE_INCORRECT_FORMAT(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일입니다"),
 
-
     // chat
-    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다.");
+    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다."),
+
+
+    ;
     private final HttpStatus httpStatus;
     private final String errorMessage;
 }

@@ -9,6 +9,7 @@ import DevHeaven.keyword.domain.member.dto.request.SignupRequest;
 import DevHeaven.keyword.domain.member.dto.response.MemberInfoResponse;
 import DevHeaven.keyword.domain.member.dto.response.MyInfoResponse;
 import DevHeaven.keyword.domain.member.dto.response.SignupResponse;
+import DevHeaven.keyword.domain.member.dto.response.TokenAndInfoResponse;
 import DevHeaven.keyword.domain.member.service.MemberService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,12 +51,12 @@ public class MemberController {
   }
 
   @PostMapping("/signin")
-  public ResponseEntity<TokenResponse> signin(final @RequestBody SigninRequest signinRequest) {
+  public ResponseEntity<TokenAndInfoResponse> signin(final @RequestBody SigninRequest signinRequest) {
     return ResponseEntity.ok(memberService.signin(signinRequest));
   }
 
   @PostMapping("/reissue")
-  public ResponseEntity<TokenResponse> reissue(final @RequestBody ReissueRequest reissueRequest) {
+  public ResponseEntity<TokenAndInfoResponse> reissue(final @RequestBody ReissueRequest reissueRequest) {
     return ResponseEntity.ok(memberService.reissue(reissueRequest));
   }
 
