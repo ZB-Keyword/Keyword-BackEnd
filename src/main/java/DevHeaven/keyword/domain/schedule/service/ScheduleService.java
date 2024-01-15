@@ -3,9 +3,12 @@ package DevHeaven.keyword.domain.schedule.service;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.EMAIL_NOT_FOUND;
 
 import DevHeaven.keyword.common.exception.MemberException;
+import DevHeaven.keyword.common.exception.ScheduleException;
+import DevHeaven.keyword.common.exception.type.ErrorCode;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
+import DevHeaven.keyword.domain.member.type.MemberStatus;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleCreateRequest;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleCreateResponse;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
@@ -31,7 +34,7 @@ public class ScheduleService {
     // friend 상태 확인
     for (Member friend : request.getScheduleFriendList()) {
       Optional<Member> friendInfomation = memberRepository.findById(friend.getMemberId());
-      if (!friendInfomation.get().getStatus().equals("ACTIVE")) {
+      if (!friendInfomation.get().getStatus().equals(MemberStatus.ACTIVE)) {
         throw new RuntimeException(friendInfomation.get().getName() + "님의 계정이 초대할 수 없는 상태입니다.");
       }
     }
