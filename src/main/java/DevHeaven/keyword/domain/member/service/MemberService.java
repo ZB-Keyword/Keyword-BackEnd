@@ -106,7 +106,7 @@ public class MemberService {
     }
   }
 
-  private void validateMemberByStatus(final Member member) {
+  public void validateMemberByStatus(final Member member) {
     switch (member.getStatus()) {
       case BLOCKED:
         throw new MemberException(BLOCKED_MEMBER);
