@@ -174,6 +174,7 @@ public class MemberService {
     return true;
   }
 
+
   // private method
 
   private Member getMemberById(final long memberId) {
