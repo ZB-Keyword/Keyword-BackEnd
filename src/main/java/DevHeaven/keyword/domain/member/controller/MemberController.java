@@ -63,14 +63,14 @@ public class MemberController {
   @PatchMapping("/password")
   public ResponseEntity<Boolean> modifyPassword(
       final @AuthenticationPrincipal MemberAdapter memberAdapter,
-      final @RequestBody ModifyPasswordRequest modifyPasswordRequest) {
+      final @Valid @RequestBody ModifyPasswordRequest modifyPasswordRequest) {
     return ResponseEntity.ok(memberService.modifyPassword(memberAdapter, modifyPasswordRequest));
   }
 
   @PatchMapping("/profile-image")
   public ResponseEntity<Boolean> modifyProfileImage(
       final @AuthenticationPrincipal MemberAdapter memberAdapter,
-      final @RequestPart MultipartFile[] profileImage) {
+      final @RequestPart(required = false) MultipartFile profileImage) {
     return ResponseEntity.ok(memberService.modifyProfileImage(memberAdapter, profileImage));
   }
 
