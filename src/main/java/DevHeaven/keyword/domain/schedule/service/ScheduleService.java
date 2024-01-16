@@ -63,7 +63,7 @@ public class ScheduleService {
             Member friendInfomation = memberRepository.findById(friend.getMemberId())
                 .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
 
-            memberService.validateMemberByStatus(friendInfomation);
+            memberService.validateMemberByStatus(friendInfomation.getStatus());
 
         }
 
@@ -86,10 +86,11 @@ public class ScheduleService {
     }
   
    public boolean deleteSchedule(MemberAdapter memberAdapter, final Long scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+       Schedule schedule = scheduleRepository.findById(scheduleId)
+           .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
-        schedule.setScheduleStatus();
+       schedule.setScheduleStatus();
 
-        return true;
+       return true;
+   }
 }
