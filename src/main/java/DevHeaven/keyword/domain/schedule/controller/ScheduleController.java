@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ScheduleController {
     private final ScheduleService scheduleService;
   
-      @PostMapping
+    @PostMapping
     public ResponseEntity<ScheduleCreateResponse> createSchedule(
         @RequestBody ScheduleCreateRequest request,
         @AuthenticationPrincipal MemberAdapter memberAdapter) {

@@ -52,7 +52,7 @@ public class Schedule extends BaseTimeEntity {
     private ScheduleStatus status;
 
     @Column(nullable = false)
-    private LocalDateTime remindAt;
+    private Long remindAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

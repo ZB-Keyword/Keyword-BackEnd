@@ -62,7 +62,10 @@ public class ChatRoom extends BaseTimeEntity {
         return ChatRoomListResponse.builder()
                 .chatRoomId(chatRoom.getChatRoomId())
                 .scheduleTitle(chatRoom.schedule.getTitle())
-                .friendsName(chatRoom.schedule.getFriendList())
+                .friendsName(
+                        chatRoom.schedule.getFriendList().stream()
+                                .map(Member::getName)
+                                .collect(Collectors.toList()))
                 .build();
     }
 }

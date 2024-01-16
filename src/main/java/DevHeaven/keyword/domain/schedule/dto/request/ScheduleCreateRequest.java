@@ -11,8 +11,6 @@ import lombok.Getter;
 @Builder
 public class ScheduleCreateRequest {
 
-  private Long organizerId;
-
   private String title;
 
   private String contents;
@@ -25,10 +23,8 @@ public class ScheduleCreateRequest {
 
   private Double longitude;
 
-  private ScheduleStatus status;
+  private Long remindAt;
 
-  private LocalDateTime remindAt;
-
-  private List<Member> scheduleFriendList;
+  private List<ScheduleFriendRequest> scheduleFriendList;
 
 }
