@@ -18,8 +18,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import org.elasticsearch.monitor.os.OsStats.Mem;
+
 
 @Getter
 @Builder
@@ -37,7 +36,7 @@ public class Friend extends BaseTimeEntity {
     private FriendStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_request_id") // 변경된 부분
+    @JoinColumn(name = "member_req_id") // 변경된 부분
     private Member memberRequest;
 
     @ManyToOne(fetch = FetchType.LAZY)
