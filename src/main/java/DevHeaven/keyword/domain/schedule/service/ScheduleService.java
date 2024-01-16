@@ -8,6 +8,7 @@ import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.member.service.MemberService;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleCreateRequest;
+import DevHeaven.keyword.domain.schedule.dto.request.ScheduleFriendRequest;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleCreateResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleListResponse;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
@@ -50,47 +51,51 @@ public class ScheduleService {
                 .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
     }
 
-  
-    public ScheduleCreateResponse createSchedule(ScheduleCreateRequest request,
-        MemberAdapter memberAdapter) {
 
-        Member member = memberRepository.findByEmail(memberAdapter.getEmail())
-            .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
+    public ScheduleCreateResponse createSchedule(ScheduleCreateRequest request,
+                                                 MemberAdapter memberAdapter) {
+
+        Member member = getMemberByEmail(memberAdapter.getEmail());
 
         // friend 상태 확인
-
-        for (Member friend : request.getScheduleFriendList()) {
+        for (ScheduleFriendRequest friend : request.getScheduleFriendList()) {
             Member friendInfomation = memberRepository.findById(friend.getMemberId())
-                .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
+                    .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
 
             memberService.validateMemberByStatus(friendInfomation);
 
         }
 
         Schedule schedule = Schedule.builder()
-            .member(member)
-            .title(request.getTitle())
-            .contents(request.getContents())
-            .scheduleAt(request.getScheduleAt())
-            .locationExplanation(request.getLocationExplanation())
-            .latitude(request.getLatitude())
-            .longitude(request.getLongitude())
-            .status(ScheduleStatus.ONGOING)
-            .remindAt(request.getRemindAt())
-            .friendList(request.getScheduleFriendList())
-            .build();
+                .title(request.getTitle())
+                .contents(request.getContents())
+                .scheduleAt(request.getScheduleAt())
+                .locationExplanation(request.getLocationExplanation())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
+                .status(ScheduleStatus.ONGOING)
+                .remindAt(request.getRemindAt())
+                .member(member)
+                .friendList(toMemberList(request.getScheduleFriendList()))
+                .build();
 
         scheduleRepository.save(schedule);
 
         return ScheduleCreateResponse.builder().scheduleId(schedule.getScheduleId()).build();
     }
-  
-   public boolean deleteSchedule(MemberAdapter memberAdapter, final Long scheduleId) {
-       Schedule schedule = scheduleRepository.findById(scheduleId)
-               .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
-       schedule.setScheduleStatus();
+    private List<Member> toMemberList(List<ScheduleFriendRequest> scheduleFriendRequestList) {
+        return scheduleFriendRequestList.stream()
+                .map(x -> memberRepository.findById(x.getMemberId()).get())
+                .collect(Collectors.toList());
+    }
 
-       return true;
-   }
+    public boolean deleteSchedule(MemberAdapter memberAdapter, final Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+
+        schedule.setScheduleStatus();
+
+        return true;
+    }
 }

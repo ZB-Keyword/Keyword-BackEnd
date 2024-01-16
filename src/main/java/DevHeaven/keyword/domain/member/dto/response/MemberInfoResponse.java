@@ -19,7 +19,7 @@ public class MemberInfoResponse {
     return MemberInfoResponse.builder()
         .name(member.getName())
         .email(member.getEmail())
-        .imageUrl(member.getImageUrl())
+        .imageUrl(member.getProfileImageFileName())
         .build();
   }
 }

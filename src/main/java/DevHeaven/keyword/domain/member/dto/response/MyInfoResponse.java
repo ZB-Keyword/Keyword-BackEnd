@@ -21,7 +21,7 @@ public class MyInfoResponse {
         .name(member.getName())
         .email(member.getEmail())
         .phone(member.getPhone())
-        .imageUrl(member.getImageUrl())
+        .imageUrl(member.getProfileImageFileName())
         .build();
   }
 }

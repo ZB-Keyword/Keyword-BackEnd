@@ -37,7 +37,7 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
-    private String imageUrl;
+    private String profileImageFileName;
 
     @Column(nullable = false)
     private String name;

@@ -10,81 +10,47 @@
   } ],
   "tags" : [ ],
   "paths" : {
-    "/friends/{memberId}" : {
+    "/chats/room/{scheduleId}" : {
       "post" : {
-        "tags" : [ "Friend API" ],
-        "summary" : "친구 요청 API",
-        "description" : "친구 요청 API",
-        "operationId" : "friends/request/",
+        "tags" : [ "Chat API" ],
+        "summary" : "채팅방 생성  API",
+        "description" : "일정 생성 후에 바로 동작히는 API로 채팅방 생성 및 일정 멤버에게 채팅방을 할당해줌.",
+        "operationId" : "chats/room/",
         "parameters" : [ {
-          "name" : "memberId",
+          "name" : "scheduleId",
           "in" : "path",
-          "description" : "친구 요청하는 MemberId",
+          "description" : "",
           "required" : true,
           "schema" : {
             "type" : "string"
           }
-        }, {
-          "name" : "Authorization",
-          "in" : "header",
-          "description" : "Bearer AccessToken",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          },
-          "example" : "Bearer yourAccessToken"
         } ],
         "responses" : {
           "200" : {
             "description" : "200",
             "content" : {
-              "application/json;charset=UTF-8" : {
+              "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/friends-memberId486549215"
+                  "$ref" : "#/components/schemas/testResponse"
                 },
                 "examples" : {
-                  "friends/request/success" : {
-                    "value" : "true"
-                  }
-                }
-              }
-            }
-          },
-          "400" : {
-            "description" : "400",
-            "content" : {
-              "application/json;charset=UTF-8" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Friend Delete Response"
-                },
-                "examples" : {
-                  "friends/request/fail/alreadyFriend" : {
-                    "value" : "{\n  \"errorCode\" : \"FRIEND_ALREADY\",\n  \"errorMessage\" : \"이미 친구 입니다.\",\n  \"httpStatus\" : \"BAD_REQUEST\"\n}"
+                  "chats/room/create/fail" : {
+                    "value" : "false"
                   },
-                  "friends/request/fail/alreadyRequest" : {
-                    "value" : "{\n  \"errorCode\" : \"FRIEND_REQUEST_ALREADY\",\n  \"errorMessage\" : \"이미 요청한 친구쪽에서 친구 요청을 보냈습니다\",\n  \"httpStatus\" : \"BAD_REQUEST\"\n}"
-                  }
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "404",
-            "content" : {
-              "application/json;charset=UTF-8" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Friend Delete Response"
-                },
-                "examples" : {
-                  "friends/request/fail/notMember" : {
-                    "value" : "{\n  \"errorCode\" : \"MEMBER_NOT_FOUND\",\n  \"errorMessage\" : \"해당 회원을 찾을 수 없습니다.\",\n  \"httpStatus\" : \"NOT_FOUND\"\n}"
+                  "chats/room/create/success" : {
+                    "value" : "true"
+                  },
+                  "chats/room/success" : {
+                    "value" : "true"
                   }
                 }
               }
             }
           }
         }
-      },
+      }
+    },
+    "/friends/{memberId}" : {
       "delete" : {
         "tags" : [ "Friend API" ],
         "summary" : "친구 삭제 API",
@@ -106,9 +72,27 @@
           "schema" : {
             "type" : "string"
           },
-          "example" : "Bearer AccessToken"
+          "example" : "Bearer yourAccessToken"
         } ],
         "responses" : {
+          "404" : {
+            "description" : "404",
+            "content" : {
+              "application/json;charset=UTF-8" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Friend Delete Response"
+                },
+                "examples" : {
+                  "friends/delete/fail/notFriend" : {
+                    "value" : "{\r\n  \"errorCode\" : \"FRIEND_NOT_FOUND\",\r\n  \"errorMessage\" : \"해당 친구를 찾을 수 없습니다.\",\r\n  \"httpStatus\" : \"NOT_FOUND\"\r\n}"
+                  },
+                  "friends/delete/fail/notMember" : {
+                    "value" : "{\r\n  \"errorCode\" : \"MEMBER_NOT_FOUND\",\r\n  \"errorMessage\" : \"해당 회원을 찾을 수 없습니다.\",\r\n  \"httpStatus\" : \"NOT_FOUND\"\r\n}"
+                  }
+                }
+              }
+            }
+          },
           "200" : {
             "description" : "200",
             "content" : {
@@ -119,24 +103,6 @@
                 "examples" : {
                   "friends/delete/success" : {
                     "value" : "true"
-                  }
-                }
-              }
-            }
-          },
-          "404" : {
-            "description" : "404",
-            "content" : {
-              "application/json;charset=UTF-8" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Friend Delete Response"
-                },
-                "examples" : {
-                  "friends/delete/fail/notMember" : {
-                    "value" : "{\n  \"errorCode\" : \"MEMBER_NOT_FOUND\",\n  \"errorMessage\" : \"해당 회원을 찾을 수 없습니다.\",\n  \"httpStatus\" : \"NOT_FOUND\"\n}"
-                  },
-                  "friends/delete/fail/notFriend" : {
-                    "value" : "{\n  \"errorCode\" : \"FRIEND_NOT_FOUND\",\n  \"errorMessage\" : \"해당 친구를 찾을 수 없습니다.\",\n  \"httpStatus\" : \"NOT_FOUND\"\n}"
                   }
                 }
               }
@@ -154,17 +120,21 @@
         "properties" : {
           "httpStatus" : {
             "type" : "string",
-            "description" : "친구 실패 http status"
+            "description" : "친구 삭제 실패 http status"
           },
           "errorMessage" : {
             "type" : "string",
-            "description" : "친구 실패 에러 메세지"
+            "description" : "친구 삭제 실패 에러 메세지"
           },
           "errorCode" : {
             "type" : "string",
-            "description" : "친구 실패 code"
+            "description" : "친구 삭제 실패 code"
           }
         }
+      },
+      "testResponse" : {
+        "title" : "testResponse",
+        "type" : "object"
       },
       "friends-memberId486549215" : {
         "type" : "object"
