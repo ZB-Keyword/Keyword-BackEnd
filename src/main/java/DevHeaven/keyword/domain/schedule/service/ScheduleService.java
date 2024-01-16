@@ -57,14 +57,9 @@ public class ScheduleService {
 
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
-        // friend 상태 확인
-        for (ScheduleFriendRequest friend : request.getScheduleFriendList()) {
-            Member friendInfomation = memberRepository.findById(friend.getMemberId())
-                    .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
-
-            memberService.validateMemberByStatus(friendInfomation);
-
-        }
+        request.getScheduleFriendList().add(
+                new ScheduleFriendRequest(member.getMemberId(), member.getName())
+        );
 
         Schedule schedule = Schedule.builder()
                 .title(request.getTitle())

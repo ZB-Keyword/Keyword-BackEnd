@@ -17,15 +17,5 @@ import lombok.Setter;
 public class ChatRoomListResponse {
     private Long chatRoomId;
     private String scheduleTitle;
-    private List<Member> friendsName;
-
-    public ChatRoomListResponse create(String name) {
-        ChatRoomListResponse room = new ChatRoomListResponse();
-
-        //room.roomId = UUID.randomUUID().toString();
-        room.scheduleTitle = name;
-
-        return room;
-    }
-
+    private List<String> friendsName;
 }
