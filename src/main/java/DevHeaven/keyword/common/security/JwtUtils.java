@@ -132,4 +132,8 @@ public class JwtUtils {
     UserDetails userDetails = memberDetailsService.loadUserByUsername(getClaimsByToken(token).getSubject());
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
+
+  public long getRefreshTokenValidTime() {
+    return this.REFRESH_TOKEN_VALID_TIME;
+  }
 }

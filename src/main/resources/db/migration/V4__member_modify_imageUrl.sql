@@ -1,0 +1,1 @@
+ALTER TABLE Member CHANGE image_url profile_image_file_name VARCHAR(100);

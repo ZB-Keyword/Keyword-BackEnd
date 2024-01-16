@@ -14,6 +14,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @Configuration
@@ -28,6 +31,8 @@ public class SecurityConfig {
   private final Oauth2UserService oauth2UserService;
 
   private static final String[] PERMIT_URL_PATTERNS = {
+      "/docs/**",
+      "/v3/api-docs/swagger-config",
       "/members/signup",
       "/members/signin",
       "/members/reissue",
@@ -40,7 +45,7 @@ public class SecurityConfig {
         .httpBasic().disable()
         .formLogin().disable()
 
-        .cors().disable()   // TODO : 배포 후 cors 설정 예정
+        .cors().configurationSource(configurationSource()).and()
         .csrf().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
@@ -67,5 +72,19 @@ public class SecurityConfig {
         .failureUrl("/login/failure");
 
     return httpSecurity.build();
+  }
+
+  @Bean
+  public CorsConfigurationSource configurationSource() {
+    CorsConfiguration corsConfiguration = new CorsConfiguration();
+    corsConfiguration.addAllowedHeader("*");
+    corsConfiguration.addAllowedMethod("*");
+    corsConfiguration.addAllowedOriginPattern("*");
+    corsConfiguration.setAllowCredentials(true);
+    corsConfiguration.addExposedHeader("Authorization");
+
+    UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+    urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+    return urlBasedCorsConfigurationSource;
   }
 }
