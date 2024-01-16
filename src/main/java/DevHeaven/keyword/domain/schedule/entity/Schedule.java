@@ -14,14 +14,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
+
+import static DevHeaven.keyword.domain.schedule.type.ScheduleStatus.DELETE;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@DynamicUpdate
 public class Schedule extends BaseTimeEntity {
 
     @Id
@@ -70,5 +74,9 @@ public class Schedule extends BaseTimeEntity {
                 .locationExplanation(this.getLocationExplanation())
                 .status(this.getStatus())
                 .build();
+    }
+
+    public void setScheduleStatus() {
+        this.status = DELETE;
     }
 }

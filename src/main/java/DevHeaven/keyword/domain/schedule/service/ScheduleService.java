@@ -1,6 +1,7 @@
 package DevHeaven.keyword.domain.schedule.service;
 
 import DevHeaven.keyword.common.exception.MemberException;
+import DevHeaven.keyword.common.exception.ScheduleException;
 import DevHeaven.keyword.common.exception.type.ErrorCode;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static DevHeaven.keyword.common.exception.type.ErrorCode.EMAIL_NOT_FOUND;
+import static DevHeaven.keyword.common.exception.type.ErrorCode.SCHEDULE_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +50,7 @@ public class ScheduleService {
                 .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
     }
 
+  
     public ScheduleCreateResponse createSchedule(ScheduleCreateRequest request,
         MemberAdapter memberAdapter) {
 
@@ -81,4 +84,12 @@ public class ScheduleService {
 
         return ScheduleCreateResponse.builder().scheduleId(schedule.getScheduleId()).build();
     }
+  
+   public boolean deleteSchedule(MemberAdapter memberAdapter, final Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+
+        schedule.setScheduleStatus();
+
+        return true;
 }
