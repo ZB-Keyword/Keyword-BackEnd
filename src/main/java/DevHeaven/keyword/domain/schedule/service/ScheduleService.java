@@ -21,10 +21,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static DevHeaven.keyword.common.exception.type.ErrorCode.EMAIL_NOT_FOUND;
-import static DevHeaven.keyword.common.exception.type.ErrorCode.SCHEDULE_NOT_FOUND;
+import static DevHeaven.keyword.common.exception.type.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -45,12 +45,6 @@ public class ScheduleService {
                 .map(Schedule::from)
                 .collect(Collectors.toList()), pageable, scheduleList.size());
     }
-
-    private Member getMemberByEmail(final String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
-    }
-
 
     public ScheduleCreateResponse createSchedule(ScheduleCreateRequest request,
                                                  MemberAdapter memberAdapter) {
@@ -86,11 +80,30 @@ public class ScheduleService {
     }
 
     public boolean deleteSchedule(MemberAdapter memberAdapter, final Long scheduleId) {
+        Member member = getMemberByEmail(memberAdapter.getEmail());
+
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+
+        validateOrganizerSchedule(member, schedule);
 
         schedule.setScheduleStatus();
 
         return true;
+    }
+
+    private void validateOrganizerSchedule(Member member, Schedule schedule) {
+        Schedule savedSchedule =
+                scheduleRepository.findByMember(member)
+                .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+
+        if (!Objects.equals(savedSchedule.getScheduleId(), schedule.getScheduleId())) {
+            throw new ScheduleException(MEMBER_NOT_ORGANIZER);
+        }
+    }
+
+    private Member getMemberByEmail(final String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
     }
 }
