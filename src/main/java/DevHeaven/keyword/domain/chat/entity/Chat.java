@@ -42,7 +42,7 @@ public class Chat extends BaseTimeEntity {
     public ChatResponse from() {
         return ChatResponse.builder()
             .sender(this.sender.getName())
-            .profileImageUrl(this.sender.getImageUrl())
+            .profileImageUrl(this.sender.getProfileImageFileName())
             .message(content)
             .build();
     }

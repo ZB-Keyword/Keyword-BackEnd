@@ -63,7 +63,7 @@ public class ScheduleService {
             Member friendInfomation = memberRepository.findById(friend.getMemberId())
                 .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
 
-            memberService.validateMemberByStatus(friendInfomation);
+            memberService.validateMemberByStatus(friendInfomation.getStatus());
 
         }
 
