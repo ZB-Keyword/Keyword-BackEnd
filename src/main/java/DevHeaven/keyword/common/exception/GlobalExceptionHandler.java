@@ -18,13 +18,13 @@ import static DevHeaven.keyword.common.exception.type.ErrorCode.METHOD_ARGUMENT_
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(Exception.class)
+/*  @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleException(Exception exception) {
     log.error("{} : {}", exception.getClass().getName(), exception.getMessage());
 
     return ResponseEntity.status(INTERNAL_SERVER_ERROR.getHttpStatus())
         .body(ErrorResponse.from(exception, INTERNAL_SERVER_ERROR));
-  }
+  }*/
 
   @ExceptionHandler(CustomException.class)
   public ResponseEntity<ErrorResponse> handleCustomException(CustomException exception) {
