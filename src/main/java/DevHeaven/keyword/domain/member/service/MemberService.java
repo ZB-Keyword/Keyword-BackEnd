@@ -75,7 +75,7 @@ public class MemberService {
     validateMemberByPassword(signinRequest.getPassword(), member);
 
     validateMemberByStatus(member);
-    
+
     // TODO : refresh token 은 redis 설정 merge 후 저장 예정 (임시 response)
 
     return jwtUtils.createTokens(member.getEmail());
@@ -90,7 +90,7 @@ public class MemberService {
   }
 
   private Member getMemberByEmail(final String email) {
-     return memberRepository.findByEmail(email)
+    return memberRepository.findByEmail(email)
         .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
   }
 

@@ -39,7 +39,7 @@ public class Member extends BaseTimeEntity {
 
     private String imageUrl;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String name;
 
     @Column(nullable = false)
@@ -56,6 +56,12 @@ public class Member extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private MemberRole role;
+
+    @Column(nullable = false)
+    private String provider;
+
+    @Column
+    private String providerId;
 
     // TODO : OneToMany 알아보고 삭제 결정
     @OneToMany
