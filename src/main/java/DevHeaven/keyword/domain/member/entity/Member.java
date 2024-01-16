@@ -57,13 +57,13 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
-    // TODO : OneToMany 알아보고 삭제 결정
-    @OneToMany
-    private List<Notice> noticeList;
+    public Member modifyStatus(final MemberStatus status) {
+        this.status = status;
+        return this;
+    }
 
-    @OneToMany
-    private List<Schedule> scheduleList;
-    
-    @OneToMany
-    private List<Friend> friendList;
+    public Member modifyPassword(final String password) {
+        this.password = password;
+        return this;
+    }
 }
