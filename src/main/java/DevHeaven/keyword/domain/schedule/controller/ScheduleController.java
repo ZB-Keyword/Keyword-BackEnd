@@ -2,11 +2,8 @@ package DevHeaven.keyword.domain.schedule.controller;
 
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleListResponse;
-<<<<<<< HEAD
-=======
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleCreateRequest;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleCreateResponse;
->>>>>>> e024059bb06bffcdf8ca0228cdf5e4943efdd267
 import DevHeaven.keyword.domain.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
