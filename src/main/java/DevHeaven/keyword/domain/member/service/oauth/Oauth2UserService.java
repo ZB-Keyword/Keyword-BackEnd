@@ -46,7 +46,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
     //OAuth2User의 attribute
     Map<String, Object> attributes = oAuth2User.getAttributes();
 
-    // 출력: userRequest의 클라이언트 등록 정보, AccessToken, 사용자 정보
+    //userRequest의 클라이언트 등록 정보, AccessToken, 사용자 정보
     System.out.println("userRequest: " + userRequest.getClientRegistration());
     System.out.println("getAccessToken: " + userRequest.getAccessToken().getTokenValue());
     System.out.println("getAttributes: " + super.loadUser(userRequest).getAttributes());
@@ -67,8 +67,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
     }
 
     // 사용자 정보로부터 회원 엔티티 조회
-    Optional<Member> memberEntityOptional = memberRepository.findByEmail(
-        oAuth2UserInfo.getProvider() + "_" + oAuth2UserInfo.getProviderId());
+    Optional<Member> memberEntityOptional = memberRepository.findByEmail(oAuth2UserInfo.getEmail());
 
     // 만약 회원 엔티티가 존재하지 않으면 새로운 회원 엔티티를 생성하고 저장
     Member member;
@@ -80,7 +79,6 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
           .password(passwordEncoder.encode("설정비밀번호")) // 실제로는 안전한 방식으로 비밀번호를 저장해야 함
           .email(oAuth2UserInfo.getEmail())
           .provider(oAuth2UserInfo.getProvider())
-          .providerId(oAuth2UserInfo.getProviderId())
           .phone(oAuth2UserInfo.getPhone())
           .status(ACTIVE)
           .role(MEMBER)

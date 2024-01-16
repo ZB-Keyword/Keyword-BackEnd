@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SocialLoginController {
 
+
+
     @GetMapping("/social")
     public ResponseEntity<String> loginSuccess(final @AuthenticationPrincipal PrincipalDetails principalDetails) {
         // 소셜 로그인 성공 후 로직을 추가하거나 세션에 사용자 정보를 저장하는 등의 작업을 수행
@@ -28,4 +30,6 @@ public class SocialLoginController {
     public String login() {
         return "login";
     }
+
+
 }

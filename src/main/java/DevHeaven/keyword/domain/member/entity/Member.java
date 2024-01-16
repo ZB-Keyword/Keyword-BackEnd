@@ -60,9 +60,6 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String provider;
 
-    @Column
-    private String providerId;
-
     // TODO : OneToMany 알아보고 삭제 결정
     @OneToMany
     private List<Notice> noticeList;
