@@ -4,6 +4,7 @@ import DevHeaven.keyword.common.security.JwtAccessDeniedHandler;
 import DevHeaven.keyword.common.security.JwtAuthenticationEntryPoint;
 import DevHeaven.keyword.common.security.JwtAuthenticationFilter;
 import DevHeaven.keyword.common.security.JwtExceptionFilter;
+import DevHeaven.keyword.domain.member.service.oauth.Oauth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.springframework.context.annotation.Bean;
@@ -27,14 +28,15 @@ public class SecurityConfig {
     private final JwtExceptionFilter jwtExceptionFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
-  private static final String[] PERMIT_URL_PATTERNS = {
-      "/docs/**",
-      "/v3/api-docs/swagger-config",
-      "/members/signup",
-      "/members/signin",
-      "/members/reissue",
-  };
+    private final Oauth2UserService oauth2UserService;
+    private static final String[] PERMIT_URL_PATTERNS = {
+            "/docs/**",
+            "/v3/api-docs/swagger-config",
+            "/members/signup",
+            "/members/signin",
+            "/members/reissue",
+            "/login/oauth2/code/naver",
+    };
 
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity httpSecurity) throws Exception {
@@ -42,9 +44,9 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
 
-        .cors().configurationSource(configurationSource()).and()
-        .csrf().disable()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .cors().configurationSource(configurationSource()).and()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers(PERMIT_URL_PATTERNS).permitAll()
@@ -54,26 +56,37 @@ public class SecurityConfig {
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
 
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
-        ;
 
-    return httpSecurity.build();
-  }
+                //Naver 소셜 로그인 설정
+                .oauth2Login()
+                .userInfoEndpoint()
+                .userService(oauth2UserService)
+                .and()
+                .defaultSuccessUrl("/login/success")
+                .failureUrl("/login/failure");
 
-  @Bean
-  public CorsConfigurationSource configurationSource() {
-    CorsConfiguration corsConfiguration = new CorsConfiguration();
-    corsConfiguration.addAllowedHeader("*");
-    corsConfiguration.addAllowedMethod("*");
-    corsConfiguration.addAllowedOriginPattern("*");
-    corsConfiguration.setAllowCredentials(true);
-    corsConfiguration.addExposedHeader("Authorization");
+        return httpSecurity.build();
+    }
 
-    UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-    urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
-    return urlBasedCorsConfigurationSource;
-  }
+    @Bean
+    public CorsConfigurationSource configurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedOriginPattern("*");
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.addExposedHeader("Authorization");
+
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        return urlBasedCorsConfigurationSource;
+    }
 }

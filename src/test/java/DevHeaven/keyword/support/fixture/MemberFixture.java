@@ -35,7 +35,7 @@ public enum MemberFixture {
   public Member createMember() {
     return Member.builder()
         .memberId(this.memberId)
-        .imageUrl(this.imageUrl)
+        .profileImageFileName(this.imageUrl)
         .name(this.name)
         .phone(this.phone)
         .email(this.email)

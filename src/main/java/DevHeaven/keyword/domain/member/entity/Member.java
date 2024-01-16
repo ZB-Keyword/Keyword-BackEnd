@@ -1,18 +1,13 @@
 package DevHeaven.keyword.domain.member.entity;
 
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
-import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.member.type.MemberRole;
 import DevHeaven.keyword.domain.member.type.MemberStatus;
-import DevHeaven.keyword.domain.notice.entity.Notice;
-import DevHeaven.keyword.domain.schedule.entity.Schedule;
+import javax.swing.JFileChooser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,10 +16,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 @Getter
 @Builder
@@ -39,7 +30,7 @@ public class Member extends BaseTimeEntity {
 
     private String profileImageFileName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String name;
 
     @Column(nullable = false)
@@ -57,6 +48,9 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
+    @Column(nullable = false)
+    private String provider; 
+
     public Member modifyStatus(final MemberStatus status) {
         this.status = status;
         return this;
@@ -64,6 +58,11 @@ public class Member extends BaseTimeEntity {
 
     public Member modifyPassword(final String password) {
         this.password = password;
+        return this;
+    }
+
+    public Member modifyProfileImageFileName(final String fileName) {
+        this.profileImageFileName = fileName;
         return this;
     }
 }

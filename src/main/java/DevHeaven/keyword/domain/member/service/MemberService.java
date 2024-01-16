@@ -18,6 +18,7 @@ import DevHeaven.keyword.common.exception.JwtException;
 import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.common.security.JwtUtils;
 import DevHeaven.keyword.common.security.dto.TokenResponse;
+import DevHeaven.keyword.common.service.image.AmazonS3FileService;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.dto.request.ModifyPasswordRequest;
 import DevHeaven.keyword.domain.member.dto.request.ReissueRequest;
@@ -29,6 +30,8 @@ import DevHeaven.keyword.domain.member.dto.response.SignupResponse;
 import DevHeaven.keyword.domain.member.dto.response.TokenAndInfoResponse;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
+import DevHeaven.keyword.domain.member.type.MemberStatus;
+import java.net.URL;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -45,6 +48,8 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final RedisTemplate<String, Object> redisTemplate;
 
+  private final AmazonS3FileService amazonS3FileService;
+
   private final JwtUtils jwtUtils;
 
   private final PasswordEncoder passwordEncoder;
@@ -53,17 +58,17 @@ public class MemberService {
   public MyInfoResponse getMyInfo(final MemberAdapter memberAdapter) {
     Member member = getMemberByEmail(memberAdapter.getEmail());
 
-    validateMemberByStatus(member);
+    validateMemberByStatus(member.getStatus());
 
-    return MyInfoResponse.from(member);
+    return MyInfoResponse.from(member, getURLByFileName(member.getProfileImageFileName()));
   }
 
   public MemberInfoResponse getMemberInfo(final Long memberId) {
     Member member = getMemberById(memberId);
 
-    validateMemberByStatus(member);
+    validateMemberByStatus(member.getStatus());
 
-    return MemberInfoResponse.from(member);
+    return MemberInfoResponse.from(member, getURLByFileName(member.getProfileImageFileName()));
   }
 
   public SignupResponse signup(final SignupRequest signupRequest) {
@@ -90,7 +95,7 @@ public class MemberService {
 
     validateMemberByPassword(signinRequest.getPassword(), member);
 
-    validateMemberByStatus(member);
+    validateMemberByStatus(member.getStatus());
 
     TokenResponse tokenResponse = jwtUtils.createTokens(member.getEmail());
 
@@ -100,7 +105,7 @@ public class MemberService {
 
     return TokenAndInfoResponse.builder()
         .tokenResponse(tokenResponse)
-        .myInfoResponse(MyInfoResponse.from(member))
+        .myInfoResponse(MyInfoResponse.from(member, getURLByFileName(member.getProfileImageFileName())))
         .build();
   }
 
@@ -121,7 +126,7 @@ public class MemberService {
 
     return TokenAndInfoResponse.builder()
         .tokenResponse(tokenResponse)
-        .myInfoResponse(MyInfoResponse.from(member))
+        .myInfoResponse(MyInfoResponse.from(member, getURLByFileName(member.getProfileImageFileName())))
         .build();
   }
 
@@ -129,28 +134,40 @@ public class MemberService {
       final ModifyPasswordRequest modifyPasswordRequest) {
     Member member = getMemberByEmail(memberAdapter.getEmail());
 
-    validateMemberByStatus(member);
+    validateMemberByStatus(member.getStatus());
 
-    memberRepository.save(member.modifyPassword(modifyPasswordRequest.getPassword()));
+    memberRepository.save(member.modifyPassword(
+        passwordEncoder.encode(modifyPasswordRequest.getPassword())));
 
     return true;
   }
 
   public Boolean modifyProfileImage(final MemberAdapter memberAdapter,
-      final MultipartFile[] profileImage) {
+      final MultipartFile requestedProfileImage) {
     Member member = getMemberByEmail(memberAdapter.getEmail());
 
-    validateMemberByStatus(member);
+    validateMemberByStatus(member.getStatus());
 
-    // TODO : S3 설정 후 작성
+    String memberProfileImageFileName = member.getProfileImageFileName();
 
-    return false;
+    if (memberProfileImageFileName != null) {
+      amazonS3FileService.deleteFile(memberProfileImageFileName);
+      member.modifyProfileImageFileName(null);
+    }
+
+    if (requestedProfileImage != null) {
+      member.modifyProfileImageFileName(amazonS3FileService.saveImage(requestedProfileImage));
+    }
+
+    memberRepository.save(member);
+
+    return true;
   }
 
   public Boolean withdraw(final MemberAdapter memberAdapter) {
     Member member = getMemberByEmail(memberAdapter.getEmail());
 
-    validateMemberByStatus(member);
+    validateMemberByStatus(member.getStatus());
 
     memberRepository.save(member.modifyStatus(WITHDRAWN));
 
@@ -173,6 +190,14 @@ public class MemberService {
     return REDIS_REFRESH_TOKEN_KEY_PREFIX + email;
   }
 
+  private URL getURLByFileName(String fileName) {
+    if(fileName == null) {
+      return null;
+    }
+
+    return amazonS3FileService.createUrl(fileName);
+  }
+
   private void validateMemberByEmail(final String email) {
     if (memberRepository.existsByEmail(email)) {
       throw new MemberException(ALREADY_EXISTS_EMAIL);
@@ -185,8 +210,8 @@ public class MemberService {
     }
   }
 
-  public void validateMemberByStatus(final Member member) {
-    switch (member.getStatus()) {
+  public void validateMemberByStatus(final MemberStatus status) {
+    switch (status) {
       case BLOCKED:
         throw new MemberException(BLOCKED_MEMBER);
       case INACTIVE:
@@ -211,12 +236,13 @@ public class MemberService {
   }
 
   private void validateMemberByPhone(final String phone) {
-    if(memberRepository.existsByPhone(phone)) {
+    if (memberRepository.existsByPhone(phone)) {
       throw new MemberException(ALREADY_EXISTS_PHONE);
     }
   }
 
-  private void saveRefreshTokenInRedisByKey(final String redisRefreshTokenKey, final String refreshToken) {
+  private void saveRefreshTokenInRedisByKey(final String redisRefreshTokenKey,
+      final String refreshToken) {
     redisTemplate.opsForValue().set(redisRefreshTokenKey, refreshToken,
         Duration.ofMillis(jwtUtils.getRefreshTokenValidTime()));
   }

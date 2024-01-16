@@ -51,9 +51,21 @@ public class ScheduleService {
 
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
+<<<<<<<HEAD
         request.getScheduleFriendList().add(
                 new ScheduleFriendRequest(member.getMemberId(), member.getName())
         );
+=======
+        // friend 상태 확인
+
+        for (Member friend : request.getScheduleFriendList()) {
+            Member friendInfomation = memberRepository.findById(friend.getMemberId())
+                    .orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
+
+            memberService.validateMemberByStatus(friendInfomation.getStatus());
+
+        }
+>>>>>>>9f 85e ee84ed6a122169646241913c0cd1cc450c3
 
         Schedule schedule = Schedule.builder()
                 .title(request.getTitle())
@@ -72,6 +84,7 @@ public class ScheduleService {
 
         return ScheduleCreateResponse.builder().scheduleId(schedule.getScheduleId()).build();
     }
+<<<<<<<HEAD
 
     private List<Member> toMemberList(List<ScheduleFriendRequest> scheduleFriendRequestList) {
         return scheduleFriendRequestList.stream()
@@ -95,7 +108,7 @@ public class ScheduleService {
     private void validateOrganizerSchedule(Member member, Schedule schedule) {
         Schedule savedSchedule =
                 scheduleRepository.findByMember(member)
-                .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+                        .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
         if (!Objects.equals(savedSchedule.getScheduleId(), schedule.getScheduleId())) {
             throw new ScheduleException(MEMBER_NOT_ORGANIZER);
