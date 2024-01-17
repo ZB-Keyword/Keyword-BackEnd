@@ -1,6 +1,7 @@
 package DevHeaven.keyword.domain.member.entity;
 
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
+import DevHeaven.keyword.domain.member.type.MemberProviderType;
 import DevHeaven.keyword.domain.member.type.MemberRole;
 import DevHeaven.keyword.domain.member.type.MemberStatus;
 import javax.swing.JFileChooser;
@@ -49,7 +50,8 @@ public class Member extends BaseTimeEntity {
     private MemberRole role;
 
     @Column(nullable = false)
-    private String provider; 
+    @Enumerated(EnumType.STRING)
+    private MemberProviderType provider;
 
     public Member modifyStatus(final MemberStatus status) {
         this.status = status;

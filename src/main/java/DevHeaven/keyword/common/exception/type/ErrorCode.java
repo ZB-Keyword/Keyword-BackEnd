@@ -37,6 +37,7 @@ public enum ErrorCode {
     WITHDRAWN_MEMBER(HttpStatus.BAD_REQUEST, "탈퇴한 회원입니다."),
 
     MISMATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    MISMATCH_PROVIDER(HttpStatus.BAD_REQUEST, "소셜 회원은 소셜 로그인을 통해 접근해야 합니다."),
   
     // friend
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 친구를 찾을 수 없습니다."),

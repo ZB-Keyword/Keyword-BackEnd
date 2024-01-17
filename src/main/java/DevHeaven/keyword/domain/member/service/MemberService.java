@@ -7,9 +7,12 @@ import static DevHeaven.keyword.common.exception.type.ErrorCode.EMAIL_NOT_FOUND;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.INACTIVE_MEMBER;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.MEMBER_NOT_FOUND;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.MISMATCH_PASSWORD;
+import static DevHeaven.keyword.common.exception.type.ErrorCode.MISMATCH_PROVIDER;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.REFRESH_TOKEN_EXPIRED;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.REFRESH_TOKEN_NOT_FOUND;
 import static DevHeaven.keyword.common.exception.type.ErrorCode.WITHDRAWN_MEMBER;
+import static DevHeaven.keyword.domain.member.type.MemberProviderType.KEYWORD;
+import static DevHeaven.keyword.domain.member.type.MemberProviderType.NAVER;
 import static DevHeaven.keyword.domain.member.type.MemberRole.MEMBER;
 import static DevHeaven.keyword.domain.member.type.MemberStatus.ACTIVE;
 import static DevHeaven.keyword.domain.member.type.MemberStatus.WITHDRAWN;
@@ -30,6 +33,7 @@ import DevHeaven.keyword.domain.member.dto.response.SignupResponse;
 import DevHeaven.keyword.domain.member.dto.response.TokenAndInfoResponse;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
+import DevHeaven.keyword.domain.member.type.MemberProviderType;
 import DevHeaven.keyword.domain.member.type.MemberStatus;
 import java.net.URL;
 import java.time.Duration;
@@ -84,6 +88,7 @@ public class MemberService {
             .password(passwordEncoder.encode(signupRequest.getPassword()))
             .status(ACTIVE)   // 추후 이메일 인증이 구현되면 수정 예정
             .role(MEMBER)   // 추후 role 이 추가되면 수정 예정
+            .provider(MemberProviderType.KEYWORD)
             .build()
     );
 
@@ -92,6 +97,8 @@ public class MemberService {
 
   public TokenAndInfoResponse signin(final SigninRequest signinRequest) {
     Member member = getMemberByEmail(signinRequest.getEmail());
+
+    validateMemberProvider(member.getProvider());
 
     validateMemberByPassword(signinRequest.getPassword(), member);
 
@@ -238,6 +245,16 @@ public class MemberService {
   private void validateMemberByPhone(final String phone) {
     if (memberRepository.existsByPhone(phone)) {
       throw new MemberException(ALREADY_EXISTS_PHONE);
+    }
+  }
+
+  private void validateMemberProvider(final MemberProviderType provider) {
+    if(provider == null) {
+      throw new MemberException(MEMBER_NOT_FOUND);
+    }
+
+    if (provider != KEYWORD) {
+      throw new MemberException(MISMATCH_PROVIDER);
     }
   }
 
