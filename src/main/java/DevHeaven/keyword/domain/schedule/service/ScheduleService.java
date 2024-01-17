@@ -3,6 +3,9 @@ package DevHeaven.keyword.domain.schedule.service;
 import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.common.exception.ScheduleException;
 import DevHeaven.keyword.common.exception.type.ErrorCode;
+import DevHeaven.keyword.domain.chat.entity.ChatRoom;
+import DevHeaven.keyword.domain.chat.repository.ChatRoomRepository;
+import DevHeaven.keyword.domain.chat.type.ChatRoomStatus;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
@@ -32,6 +35,7 @@ public class ScheduleService {
     private final MemberRepository memberRepository;
     private final ScheduleRepository scheduleRepository;
     private final MemberService memberService;
+    private final ChatRoomRepository chatRoomRepository;
 
     public Page<ScheduleListResponse> getScheduleList(
             MemberAdapter memberAdapter,
@@ -88,6 +92,9 @@ public class ScheduleService {
         validateOrganizerSchedule(member, schedule);
 
         schedule.setScheduleStatus();
+
+        ChatRoom chatRoom = chatRoomRepository.findBySchedule(schedule);
+        chatRoom.setStatus(ChatRoomStatus.INVALID);
 
         return true;
     }
