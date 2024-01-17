@@ -1,3 +1,5 @@
+server:
+  port: 8087
 springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
@@ -6,29 +8,34 @@ springdoc:
     path: /docs/swagger
 
 spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
   jwt:
-    secret: ${JWT_SECRET}
+    secret: ZeRoBaSe+TeAm+PrOJeCt=DeVhEaVen+KeYwOrD/SeCrEtKeY
   datasource:
-    url: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_DATABASE}
+    url: jdbc:mariadb://localhost:3307/keyWord
     driverClassName: org.mariadb.jdbc.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: root
+    password: 1234
   flyway:
     enabled: true
-    user: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    user: root
+    password: 1234
     baselineOnMigrate: true
   redis:
-    port: ${REDIS_PORT}
-    host: ${REDIS_HOST}
+    port: 6379
+    host: localhost
 
   security:
     oauth2:
       client:
         registration:
           naver:
-            client-id: ${OAUTH_CLIENT_ID}
-            client-secret: ${OAUTH_CLIENT_SECRET}
+            client-id: yfmDtQ8a9IaOAcj4s88G
+            client-secret: Q9U0K6grRk
             scope:
               - name
               - email
@@ -47,8 +54,8 @@ spring:
 cloud:
   aws:
     credentials:
-      access-key: ${CLOUD_ACCESS}
-      secret-key: ${CLOUD_SECRET}
+      access-key: AKIATWDUJVX5R2YGP7KS
+      secret-key: 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
     region:
       static: ap-northeast-2
     stack:
@@ -56,9 +63,9 @@ cloud:
 
 aws:
   s3:
-    bucket: ${S3_BUCKET}
-    folder: ${S3_FOLDER}
-    domain: ${S3_DOMAIN}
+    bucket: keyword-img
+    folder: keyWord/
+    domain: https://d19jzgrojjrozm.cloudfront.net
 
 logging:
   level:
