@@ -1,34 +1,36 @@
 package DevHeaven.keyword.domain.friend.service;
 
-import static DevHeaven.keyword.common.exception.type.ErrorCode.*;
-import static DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest.*;
-import static DevHeaven.keyword.domain.friend.type.FriendStatus.*;
-
 import DevHeaven.keyword.common.aop.DistributedLock;
 import DevHeaven.keyword.common.exception.FriendException;
 import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.common.exception.NoticeException;
 import DevHeaven.keyword.common.exception.type.ErrorCode;
 import DevHeaven.keyword.common.service.image.AmazonS3FileService;
+import DevHeaven.keyword.domain.friend.dto.request.FriendApproveRequest;
 import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
 import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
 import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.repository.FriendRepository;
-import DevHeaven.keyword.domain.friend.type.FriendState;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.notice.entity.Notice;
 import DevHeaven.keyword.domain.notice.repository.NoticeRepository;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static DevHeaven.keyword.common.exception.type.ErrorCode.*;
+import static DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest.REQUEST;
+import static DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest.REQUESTED;
+import static DevHeaven.keyword.domain.friend.type.FriendStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -161,6 +163,24 @@ public class FriendService {
 
     memberToFriend.modifyFriendStatus(FRIEND_DELETE);
     friendToMember.modifyFriendStatus(FRIEND_DELETE);
+
+    return true;
+  }
+
+  @Transactional
+  public boolean handleFriendRequest(final MemberAdapter memberAdapter, final Long memberReqId, final FriendApproveRequest friendApproveRequest) {
+
+    final Member acceptingMember = memberRepository.findByEmail(memberAdapter.getEmail())
+            .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+    final Friend friendRequest = friendRepository.findById(memberReqId)
+            .orElseThrow(() -> new FriendException(FRIEND_NOT_FOUND));
+
+    if (!friendRequest.getFriend().equals(acceptingMember)) {
+      throw new FriendException(FRIEND_REQUEST_INVALID);
+    }
+
+    friendRequest.modifyFriendStatus(friendApproveRequest.getFriendStatus());
 
     return true;
   }
