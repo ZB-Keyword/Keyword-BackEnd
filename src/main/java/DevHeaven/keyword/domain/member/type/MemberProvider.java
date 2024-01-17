@@ -1,6 +1,6 @@
 package DevHeaven.keyword.domain.member.type;
 
-public enum MemberProviderType {
+public enum MemberProvider {
   KEYWORD,
   NAVER
 }

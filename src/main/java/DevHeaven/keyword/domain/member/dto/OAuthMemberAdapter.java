@@ -19,7 +19,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 @Getter
 @Builder
 @AllArgsConstructor
-public class OAuthMemberAdapter implements UserDetails, OAuth2User {
+public class OAuthMemberAdapter implements OAuth2User, UserDetails {
 
     private String email;
     private String password;
@@ -38,7 +38,6 @@ public class OAuthMemberAdapter implements UserDetails, OAuth2User {
             .build();
     }
 
-    // OAuth2User
     @Override
     public <A> A getAttribute(String name) {
         return OAuth2User.super.getAttribute(name);
@@ -54,7 +53,6 @@ public class OAuthMemberAdapter implements UserDetails, OAuth2User {
         return email;
     }
 
-    // UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();

@@ -4,7 +4,7 @@ import DevHeaven.keyword.common.security.JwtAccessDeniedHandler;
 import DevHeaven.keyword.common.security.JwtAuthenticationEntryPoint;
 import DevHeaven.keyword.common.security.JwtAuthenticationFilter;
 import DevHeaven.keyword.common.security.JwtExceptionFilter;
-import DevHeaven.keyword.domain.member.service.oauth.OAuth2UserService;
+import DevHeaven.keyword.domain.member.service.OAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,8 +33,9 @@ public class SecurityConfig {
             "/v3/api-docs/swagger-config",
             "/members/signup",
             "/members/signin",
+            "/members/signin/oauth",
             "/members/reissue",
-            "/login/oauth2/code/naver",
+            "/login/oauth2/code/naver"
     };
 
     @Bean
@@ -69,8 +70,10 @@ public class SecurityConfig {
                 .userInfoEndpoint()
                 .userService(oauth2UserService)
                 .and()
-                .defaultSuccessUrl("/login/success")
-                .failureUrl("/login/failure");
+                .defaultSuccessUrl("/members/signin/oauth", true)
+                //.failureUrl("")
+
+            ;
 
         return httpSecurity.build();
     }

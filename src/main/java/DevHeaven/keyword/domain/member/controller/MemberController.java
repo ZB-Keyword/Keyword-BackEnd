@@ -1,6 +1,7 @@
 package DevHeaven.keyword.domain.member.controller;
 
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
+import DevHeaven.keyword.domain.member.dto.OAuthMemberAdapter;
 import DevHeaven.keyword.domain.member.dto.request.ModifyPasswordRequest;
 import DevHeaven.keyword.domain.member.dto.request.ReissueRequest;
 import DevHeaven.keyword.domain.member.dto.request.SigninRequest;
@@ -9,7 +10,7 @@ import DevHeaven.keyword.domain.member.dto.response.MemberInfoResponse;
 import DevHeaven.keyword.domain.member.dto.response.MyInfoResponse;
 import DevHeaven.keyword.domain.member.dto.response.SignupResponse;
 import DevHeaven.keyword.domain.member.service.MemberService;
-import DevHeaven.keyword.domain.member.service.oauth.OAuth2UserService;
+import DevHeaven.keyword.domain.member.service.OAuth2UserService;
 import DevHeaven.keyword.domain.member.dto.response.TokenAndInfoResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,13 @@ public class MemberController {
   @PostMapping("/signin")
   public ResponseEntity<TokenAndInfoResponse> signin(final @RequestBody SigninRequest signinRequest) {
     return ResponseEntity.ok(memberService.signin(signinRequest));
+  }
+
+  // TODO : principal 로 전달 안 됨. 영속성 컨텍스트가 끊겨서 그런 듯. 방법 찾기
+  @GetMapping("/signin/oauth")
+  public ResponseEntity<TokenAndInfoResponse> signinOAuth(
+      final @AuthenticationPrincipal OAuthMemberAdapter OAuthMemberAdapter) {
+    return ResponseEntity.ok(memberService.signinOAuth(OAuthMemberAdapter));
   }
 
   @PostMapping("/reissue")

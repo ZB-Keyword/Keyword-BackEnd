@@ -1,14 +1,18 @@
-package DevHeaven.keyword.domain.member.service.oauth;
+package DevHeaven.keyword.domain.member.service;
 
 import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.member.dto.OAuthMemberAdapter;
-import DevHeaven.keyword.domain.member.service.oauth.provider.NaverUserInfo;
-import DevHeaven.keyword.domain.member.service.oauth.provider.OAuth2UserInfo;
-import DevHeaven.keyword.domain.member.type.MemberProviderType;
+import DevHeaven.keyword.domain.member.dto.provider.NaverUserInfo;
+import DevHeaven.keyword.domain.member.dto.provider.OAuth2UserInfo;
+import DevHeaven.keyword.domain.member.type.MemberProvider;
+import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -31,6 +35,9 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder;
 
+  @Value("${spring.security.oauth2.client.provider.naver.user-name-attribute}")
+  private String NAVER_ATTRIBUTE_KEY;
+
   // 네이버로 부터 받은 userRequest 데이터에 대한 후 처리 함수
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -39,27 +46,26 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     // userRequest 정보 -> loadUser 함수 호출 -> Oauth2(네이버)로 부터 정보 받아옴.
     OAuth2User oAuth2User = super.loadUser(userRequest);
 
-    // OAuth2User의 attribute
-    Map<String, Object> attributes = oAuth2User.getAttributes();
-
     // 사용자 정보를 제공하는 서비스 제공자 (Google, Naver 등)를 식별하기 위한 값
     ClientRegistration clientRegistration = userRequest.getClientRegistration();
     String clientId = clientRegistration.getClientId();
     String registrationId = clientRegistration.getRegistrationId();
 
     // 우리 서비스에서 제공하는 종류의 소셜 로그인인지 체크
-    MemberProviderType provider = null;
+    MemberProvider provider = null;
     try {
-      provider = Enum.valueOf(MemberProviderType.class, registrationId.toUpperCase());
+      provider = Enum.valueOf(MemberProvider.class, registrationId.toUpperCase());
     } catch (Exception e) {
       throw new MemberException(OAUTH_PROVIDER_NOT_VALID_EXCEPTION);
     }
 
     // Oauth2 사용자 정보 처리(Google, KaKao API 추가 시 변경)
     OAuth2UserInfo oAuth2UserInfo;
+    Map<String, Object> attributes = oAuth2User.getAttributes();
 
     switch (provider) {
       case NAVER:
+        attributes = (Map<String, Object>) attributes.get(NAVER_ATTRIBUTE_KEY);
         oAuth2UserInfo = NaverUserInfo.from(attributes, clientId, provider);
         break;
 

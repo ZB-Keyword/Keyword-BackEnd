@@ -37,7 +37,8 @@ public enum ErrorCode {
     WITHDRAWN_MEMBER(HttpStatus.BAD_REQUEST, "탈퇴한 회원입니다."),
 
     MISMATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
-    MISMATCH_PROVIDER(HttpStatus.BAD_REQUEST, "소셜 회원은 소셜 로그인을 통해 접근해야 합니다."),
+    MISMATCH_SIGN_IN_PROVIDER(HttpStatus.BAD_REQUEST, "일반 회원은 일반 로그인을 통해 접근해야 합니다."),
+    MISMATCH_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, "소셜 회원은 소셜 로그인을 통해 접근해야 합니다."),
 
     OAUTH_PROVIDER_NOT_VALID_EXCEPTION(HttpStatus.BAD_REQUEST, "제공되는 유효한 소셜 로그인 요청이 아닙니다."),
 

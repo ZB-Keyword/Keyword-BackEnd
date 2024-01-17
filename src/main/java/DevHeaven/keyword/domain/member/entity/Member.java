@@ -1,10 +1,9 @@
 package DevHeaven.keyword.domain.member.entity;
 
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
-import DevHeaven.keyword.domain.member.type.MemberProviderType;
+import DevHeaven.keyword.domain.member.type.MemberProvider;
 import DevHeaven.keyword.domain.member.type.MemberRole;
 import DevHeaven.keyword.domain.member.type.MemberStatus;
-import javax.swing.JFileChooser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,7 +50,7 @@ public class Member extends BaseTimeEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private MemberProviderType provider;
+    private MemberProvider provider;
 
     public Member modifyStatus(final MemberStatus status) {
         this.status = status;

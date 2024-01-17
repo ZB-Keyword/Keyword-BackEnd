@@ -1,15 +1,11 @@
-package DevHeaven.keyword.domain.member.service.oauth.provider;
+package DevHeaven.keyword.domain.member.dto.provider;
 
-import static DevHeaven.keyword.domain.member.type.MemberProviderType.NAVER;
-
-import DevHeaven.keyword.domain.member.type.MemberProviderType;
+import DevHeaven.keyword.domain.member.type.MemberProvider;
 import java.util.Map;
-import javax.persistence.Access;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 
 @Builder
 @Getter
@@ -23,12 +19,12 @@ public class NaverUserInfo implements OAuth2UserInfo {
 
     private Map<String, Object> attributes; // OAuth2회원이 들고 있는 getAttributes()
     private String providerId;
-    private MemberProviderType provider;
+    private MemberProvider provider;
     private String email;
     private String name;
     private String phone;
 
-    public static NaverUserInfo from(Map<String, Object> attributes, String providerId, MemberProviderType provider) {
+    public static NaverUserInfo from(Map<String, Object> attributes, String providerId, MemberProvider provider) {
         return NaverUserInfo.builder()
             .attributes(attributes)
             .providerId(providerId)
