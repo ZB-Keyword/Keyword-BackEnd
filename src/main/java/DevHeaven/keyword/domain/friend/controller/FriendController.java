@@ -1,9 +1,15 @@
 package DevHeaven.keyword.domain.friend.controller;
 
+import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
 import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
 import DevHeaven.keyword.domain.friend.service.FriendService;
+import DevHeaven.keyword.domain.friend.type.FriendState;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
+import DevHeaven.keyword.domain.member.entity.Member;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +32,15 @@ public class FriendController {
 
   private final FriendService friendService;
 
+  // TODO : 임시 메서드 명칭 (메서드 명이랑 DTO 바꿔주세요)
+  @GetMapping(params = {"keyword"})
+  public ResponseEntity<Page<Member>> searchFriend(
+      @AuthenticationPrincipal final MemberAdapter memberAdapter,
+      @RequestParam final String keyword,
+      final Pageable pageable) {
+    return ResponseEntity.ok(friendService.searchFriend(memberAdapter, keyword, pageable));
+  }
+  
   @GetMapping
   public ResponseEntity<List <FriendListResponse>> getFriendList(@AuthenticationPrincipal final MemberAdapter memberAdapter,
       @RequestParam(name = "friend-state") final FriendListStatusRequest friendState, @RequestParam(required = false) final Long noticeId,

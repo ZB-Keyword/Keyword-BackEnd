@@ -14,6 +14,7 @@ import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
 import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
 import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.repository.FriendRepository;
+import DevHeaven.keyword.domain.friend.type.FriendState;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +39,17 @@ public class FriendService {
   private final NoticeRepository noticeRepository;
   private final AmazonS3FileService fileService;
 
+  public Page<Member> searchFriend(final MemberAdapter memberAdapter,
+      final String keyword,
+      final Pageable pageable) {
+
+    // 현재는 임시로 멤버 정보만 가져옴
+    // TODO : ES 적용 후 pageable 처리 하여 멤버 가져오기
+    // TODO : 각 엔티티가 memberAdapter 로 넘어온 멤버와 어떤 관계 (friendStatus) 인지 DTO 로 생성
+    
+    return memberRepository.findAllByNameContainingOrEmailContaining(keyword, keyword, pageable);
+  }
+  
   public List <FriendListResponse> getFriendList(final MemberAdapter memberAdapter ,final FriendListStatusRequest friendState,
       final Long noticeId, final Pageable pageable){
     final Member requestMember = memberRepository.findByEmail(memberAdapter.getEmail())
@@ -78,8 +91,9 @@ public class FriendService {
         })
         .collect(Collectors.toList());
   }
+  
   @DistributedLock(key = "RequestFriend")
-  public boolean requestFriend(final MemberAdapter memberAdapter ,final Long friendId){
+  public boolean requestFriend(final MemberAdapter memberAdapter, final Long friendId) {
     final Member requestMember = memberRepository.findByEmail(memberAdapter.getEmail())
         .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
     final Member friend = memberRepository.findById(friendId)
@@ -89,14 +103,14 @@ public class FriendService {
     validateFriendRequest(requestMember, friend);
 
     //처음 친구 요청이면 insert하고 친구 삭제,거절후 또 요청한거면 update 실행
-    final Optional <Friend> friendRequest = friendRepository.findFriendRequest(requestMember.getMemberId() ,
-        friend.getMemberId() , Arrays.asList(FRIEND_REFUSED, FRIEND_DELETE));
+    final Optional<Friend> friendRequest = friendRepository.findFriendRequest(
+        requestMember.getMemberId(),
+        friend.getMemberId(), Arrays.asList(FRIEND_REFUSED, FRIEND_DELETE));
 
-
-    if(friendRequest.isPresent()){
+    if (friendRequest.isPresent()) {
       final Friend friendPreRequest = friendRequest.get();
       friendPreRequest.modifyFriendStatus(FRIEND_CHECKING);
-    }else{
+    } else {
       final Friend friendFirstRequest = Friend.builder()
           .memberRequest(requestMember)
           .friend(friend)
@@ -108,25 +122,26 @@ public class FriendService {
     return true;
   }
 
-  private void validateFriendRequest(final Member requestMember ,final Member friend) {
+  private void validateFriendRequest(final Member requestMember, final Member friend) {
     //요청 A, 요청받은 B
     //A -> B 가 이미 친구 인지
     final boolean friendExist = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
-        requestMember.getMemberId() , friend.getMemberId() , FRIEND_ACCEPTED).isPresent();
-    if(friendExist) {
+        requestMember.getMemberId(), friend.getMemberId(), FRIEND_ACCEPTED).isPresent();
+    if (friendExist) {
       throw new FriendException(ErrorCode.FRIEND_ALREADY);
     }
 
     //B -> A 가 이미 요청한 기록이 있는지
-    final boolean friendRequestExist = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(friend.getMemberId() ,
-        requestMember.getMemberId() , FRIEND_CHECKING).isPresent();
-    if(friendRequestExist) {
+    final boolean friendRequestExist = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+        friend.getMemberId(),
+        requestMember.getMemberId(), FRIEND_CHECKING).isPresent();
+    if (friendRequestExist) {
       throw new FriendException(ErrorCode.FRIEND_REQUEST_ALREADY);
     }
   }
 
   @Transactional
-  public boolean deleteFriend(final MemberAdapter memberAdapter ,final Long memberRequestId) {
+  public boolean deleteFriend(final MemberAdapter memberAdapter, final Long memberRequestId) {
     // TODO : 시큐리티 적용후 멤버관련 유효성 검사 추가 (임시 방편으로 해둠)
     final Member requestMember = memberRepository.findByEmail(memberAdapter.getEmail())
         .orElseThrow(() -> new MemberException(
@@ -136,10 +151,12 @@ public class FriendService {
         .orElseThrow(() -> new MemberException(
             MEMBER_NOT_FOUND));
 
-    final Friend memberToFriend = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(requestMember.getMemberId(), friend.getMemberId(), FRIEND_ACCEPTED)
+    final Friend memberToFriend = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+            requestMember.getMemberId(), friend.getMemberId(), FRIEND_ACCEPTED)
         .orElseThrow(() -> new FriendException(FRIEND_NOT_FOUND));
 
-    final Friend friendToMember = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(friend.getMemberId(), requestMember.getMemberId(), FRIEND_ACCEPTED)
+    final Friend friendToMember = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+            friend.getMemberId(), requestMember.getMemberId(), FRIEND_ACCEPTED)
         .orElseThrow(() -> new FriendException(FRIEND_NOT_FOUND));
 
     memberToFriend.modifyFriendStatus(FRIEND_DELETE);
