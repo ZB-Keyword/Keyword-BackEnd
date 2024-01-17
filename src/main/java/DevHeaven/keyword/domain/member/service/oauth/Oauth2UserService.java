@@ -1,15 +1,11 @@
 package DevHeaven.keyword.domain.member.service.oauth;
 
 import DevHeaven.keyword.common.exception.MemberException;
-import DevHeaven.keyword.common.security.JwtUtils;
-import DevHeaven.keyword.common.security.dto.TokenResponse;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.member.dto.PrincipalDetails;
 import DevHeaven.keyword.domain.member.service.oauth.provider.NaverUserInfo;
 import DevHeaven.keyword.domain.member.service.oauth.provider.OAuth2UserInfo;
-import DevHeaven.keyword.domain.member.type.MemberRole;
-import DevHeaven.keyword.domain.member.type.MemberStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,14 +1,22 @@
 package DevHeaven.keyword.domain.friend.controller;
 
+import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
+import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
 import DevHeaven.keyword.domain.friend.service.FriendService;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,13 +26,23 @@ public class FriendController {
 
   private final FriendService friendService;
 
+  @GetMapping
+  public ResponseEntity<List <FriendListResponse>> getFriendList(@AuthenticationPrincipal final MemberAdapter memberAdapter,
+      @RequestParam(name = "friend-state") final FriendListStatusRequest friendState, @RequestParam(required = false) final Long noticeId,
+      @PageableDefault(size = 5) final Pageable pageable
+      ) {
+
+    return ResponseEntity.ok(friendService.getFriendList(memberAdapter, friendState, noticeId, pageable));
+  }
   @PostMapping("/{memberId}")
-  public ResponseEntity<Boolean> requestFriend(@AuthenticationPrincipal final MemberAdapter memberAdapter ,@PathVariable final Long memberId){
+  public ResponseEntity<Boolean> requestFriend(@AuthenticationPrincipal final MemberAdapter memberAdapter
+      ,@PathVariable final Long memberId){
     return ResponseEntity.ok(friendService.requestFriend(memberAdapter,memberId));
   }
 
   @DeleteMapping("/{memberReqId}")
-  public ResponseEntity <Boolean> deleteFriend(@AuthenticationPrincipal final MemberAdapter memberAdapter ,@PathVariable(name = "memberReqId") final Long memberRequestId){
+  public ResponseEntity <Boolean> deleteFriend(@AuthenticationPrincipal final MemberAdapter memberAdapter
+      ,@PathVariable(name = "memberReqId") final Long memberRequestId){
     return ResponseEntity.ok(friendService.deleteFriend(memberAdapter ,memberRequestId));
   }
 }
