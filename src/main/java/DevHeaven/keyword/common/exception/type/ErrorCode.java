@@ -38,7 +38,9 @@ public enum ErrorCode {
 
     MISMATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
     MISMATCH_PROVIDER(HttpStatus.BAD_REQUEST, "소셜 회원은 소셜 로그인을 통해 접근해야 합니다."),
-  
+
+    OAUTH_PROVIDER_NOT_VALID_EXCEPTION(HttpStatus.BAD_REQUEST, "제공되는 유효한 소셜 로그인 요청이 아닙니다."),
+
     // friend
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 친구를 찾을 수 없습니다."),
     FILE_NOT_EXIST(HttpStatus.BAD_REQUEST, "업로드 될 파일이 존재하지 않습니다."),

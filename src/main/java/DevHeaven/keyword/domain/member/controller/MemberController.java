@@ -1,6 +1,5 @@
 package DevHeaven.keyword.domain.member.controller;
 
-import DevHeaven.keyword.common.security.dto.TokenResponse;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.dto.request.ModifyPasswordRequest;
 import DevHeaven.keyword.domain.member.dto.request.ReissueRequest;
@@ -10,10 +9,8 @@ import DevHeaven.keyword.domain.member.dto.response.MemberInfoResponse;
 import DevHeaven.keyword.domain.member.dto.response.MyInfoResponse;
 import DevHeaven.keyword.domain.member.dto.response.SignupResponse;
 import DevHeaven.keyword.domain.member.service.MemberService;
-import DevHeaven.keyword.domain.member.dto.PrincipalDetails;
 import DevHeaven.keyword.domain.member.service.oauth.Oauth2UserService;
 import DevHeaven.keyword.domain.member.dto.response.TokenAndInfoResponse;
-import DevHeaven.keyword.domain.member.service.MemberService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,30 +1,30 @@
 package DevHeaven.keyword.domain.member.dto;
 
-
-import DevHeaven.keyword.common.security.dto.TokenResponse;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.type.MemberStatus;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
-public class PrincipalDetails implements UserDetails, OAuth2User {
+@Getter
+@Builder
+@AllArgsConstructor
+public class OAuthMemberAdapter implements UserDetails, OAuth2User {
 
     private Member member;
     private Map<String, Object> attributes;
 
 
-    public PrincipalDetails(Member member, Map<String, Object> attributes) {
-        this.member = member;
-        this.attributes = attributes;
-    }
+    // OAuth2User
 
     @Override
     public <A> A getAttribute(String name) {
@@ -36,9 +36,20 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         return Collections.unmodifiableMap(attributes);
     }
 
+
+    // UserDetails
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
+        grantedAuthorityList.add(new SimpleGrantedAuthority(member.getRole().name()));
+
+        return grantedAuthorityList;
+    }
+
+    @Override
+    public String getName() {
+        return member.getEmail();
     }
 
     @Override
@@ -69,11 +80,6 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
     @Override
     public boolean isEnabled() {
         return member.getStatus() == MemberStatus.ACTIVE;
-    }
-
-    @Override
-    public String getName() {
-        return member.getEmail();
     }
 
 }

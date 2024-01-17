@@ -65,7 +65,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
 
-                //Naver 소셜 로그인 설정
+                // Naver 소셜 로그인 설정
                 .oauth2Login()
                 .userInfoEndpoint()
                 .userService(oauth2UserService)
