@@ -1,6 +1,7 @@
 package DevHeaven.keyword.domain.member.dto;
 
 import DevHeaven.keyword.domain.member.entity.Member;
+import DevHeaven.keyword.domain.member.type.MemberRole;
 import DevHeaven.keyword.domain.member.type.MemberStatus;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,12 +21,24 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 @AllArgsConstructor
 public class OAuthMemberAdapter implements UserDetails, OAuth2User {
 
-    private Member member;
+    private String email;
+    private String password;
+    private MemberStatus status;
+    private MemberRole role;
     private Map<String, Object> attributes;
 
 
-    // OAuth2User
+    public static OAuthMemberAdapter from(final Member member, final Map<String, Object> attributes) {
+        return OAuthMemberAdapter.builder()
+            .email(member.getEmail())
+            .password(member.getPassword())
+            .status(member.getStatus())
+            .role(member.getRole())
+            .attributes(attributes)
+            .build();
+    }
 
+    // OAuth2User
     @Override
     public <A> A getAttribute(String name) {
         return OAuth2User.super.getAttribute(name);
@@ -36,30 +49,28 @@ public class OAuthMemberAdapter implements UserDetails, OAuth2User {
         return Collections.unmodifiableMap(attributes);
     }
 
+    @Override
+    public String getName() {
+        return email;
+    }
 
     // UserDetails
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
-        grantedAuthorityList.add(new SimpleGrantedAuthority(member.getRole().name()));
+        grantedAuthorityList.add(new SimpleGrantedAuthority(role.name()));
 
         return grantedAuthorityList;
     }
 
     @Override
-    public String getName() {
-        return member.getEmail();
+    public String getUsername() {
+        return this.email;
     }
 
     @Override
     public String getPassword() {
-        return member.getPassword();
-    }
-
-    @Override
-    public String getUsername() {
-        return member.getEmail();
+        return this.password;
     }
 
     @Override
@@ -69,7 +80,7 @@ public class OAuthMemberAdapter implements UserDetails, OAuth2User {
 
     @Override
     public boolean isAccountNonLocked() {
-        return member.getStatus() != MemberStatus.BLOCKED;
+        return this.status != MemberStatus.BLOCKED;
     }
 
     @Override
@@ -79,7 +90,6 @@ public class OAuthMemberAdapter implements UserDetails, OAuth2User {
 
     @Override
     public boolean isEnabled() {
-        return member.getStatus() == MemberStatus.ACTIVE;
+        return this.status == MemberStatus.ACTIVE;
     }
-
 }
