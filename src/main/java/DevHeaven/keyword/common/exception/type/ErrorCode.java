@@ -64,6 +64,14 @@ public enum ErrorCode {
     SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND,"해당 일정을 찾을 수 없습니다."),
     SCHEDULE_MEMBER_UNMATCHED(HttpStatus.BAD_REQUEST, "해당 일정에 포함된 회원이 아닙니다."),
     MEMBER_NOT_ORGANIZER(HttpStatus.BAD_REQUEST, "해당 일정의 주최자가 아닙니다."),
+    FAIL_MODIFY_TITLE(HttpStatus.BAD_REQUEST, "제목 수정에 실패했습니다."),
+    FAIL_MODIFY_CONTENT(HttpStatus.BAD_REQUEST, "내용 수정에 실패했습니다."),
+    FAIL_MODIFY_SCHEDULEAT(HttpStatus.BAD_REQUEST, "일정 시간 수정에 실패했습니다."),
+    FAIL_MODIFY_LOCATIONEXPLANATION(HttpStatus.BAD_REQUEST, "위치 설명 수정에 실패했습니다."),
+    FAIL_MODIFY_LATITUDE(HttpStatus.BAD_REQUEST, "위도 수정에 실패했습니다."),
+    FAIL_MODIFY_LONGITUDE(HttpStatus.BAD_REQUEST, "경도 수정에 실패했습니다."),
+    FAIL_MODIFY_REMINDAT(HttpStatus.BAD_REQUEST, "알림 시간 수정에 실패했습니다."),
+    FAIL_MODIFY_REMINDAT_AFTER_SCHEDULEAT(HttpStatus.BAD_REQUEST, "알림 시간은 일정 시간 이전으로만 설정할 수 있습니다."),
 
     //notice
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND ,"해당 알림을 찾을 수 없습니다");

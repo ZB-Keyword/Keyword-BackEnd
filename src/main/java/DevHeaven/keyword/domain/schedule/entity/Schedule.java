@@ -75,7 +75,17 @@ public class Schedule extends BaseTimeEntity {
                 .status(this.getStatus())
                 .build();
     }
+    public void updateSchedule(String title, String contents, LocalDateTime scheduleAt,
+        String locationExplanation, Double latitude, Double longitude, Long remindAt) {
+        this.title = title;
+        this.contents = contents;
+        this.scheduleAt = scheduleAt;
+        this.locationExplanation = locationExplanation;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.remindAt = remindAt;
 
+    }
     public void setScheduleStatus() {
         this.status = DELETE;
     }
