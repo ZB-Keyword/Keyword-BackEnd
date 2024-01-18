@@ -182,9 +182,24 @@ public class FriendService {
     friendRequest.modifyFriendStatus(friendApproveRequest.getFriendStatus());
 
     //처음 친구 맺는 경우가 아니라면
-    friendRepository.findFriendRequest(friendRequest.getMemberRequest().getMemberId() , acceptingMember.getMemberId() ,
-        Arrays.asList(FRIEND_REFUSED , FRIEND_DELETE))
-        .ifPresent( friend -> friend.modifyFriendStatus(friendApproveRequest.getFriendStatus()));
+    Optional <Friend> friendToMember = friendRepository.findFriendRequest(
+        friendRequest.getMemberRequest().getMemberId() , acceptingMember.getMemberId() ,
+        Arrays.asList(FRIEND_REFUSED , FRIEND_DELETE));
+
+    if(friendToMember.isPresent()){
+      friendToMember.get().modifyFriendStatus(friendApproveRequest.getFriendStatus());
+    }else if(friendApproveRequest.getFriendStatus() == FRIEND_ACCEPTED){
+
+      final Friend friendFirstRequest = Friend.builder()
+          .memberRequest(acceptingMember)
+          .friend(friendRequest.getMemberRequest())
+          .status(friendApproveRequest.getFriendStatus())
+          .build();
+      friendRepository.save(friendFirstRequest);
+
+    }
+
+
 
 
     return true;
