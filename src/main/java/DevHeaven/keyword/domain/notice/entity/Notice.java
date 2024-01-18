@@ -32,8 +32,14 @@ public class Notice extends BaseTimeEntity {
     @Column(nullable = false)
     private Long informationId;
 
-    private boolean isRead;
+    private Boolean isRead;
 
     @ManyToOne
     private Member member;
+
+    public void modifyNoticeIsRead(){
+        if(this.isRead == false){
+            this.isRead = true;
+        }
+    }
 }

@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 public class MemberInfoResponse {
   private String name;
   private String email;
-  private URL imageUrl;
+  private String imageUrl;
 
-  public static MemberInfoResponse from(Member member, URL imageUrl) {
+  public static MemberInfoResponse from(Member member, String imageUrl) {
     return MemberInfoResponse.builder()
         .name(member.getName())
         .email(member.getEmail())
