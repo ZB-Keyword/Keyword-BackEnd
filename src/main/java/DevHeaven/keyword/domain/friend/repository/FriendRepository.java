@@ -33,4 +33,7 @@ public interface FriendRepository extends JpaRepository<Friend, Long>  {
       @Param("friendStatus") FriendStatus friendStatus,
       Pageable pageable);
 
+
+  Optional<Friend> findByIdAndStatus(Long friendId, FriendStatus friendStatus);
+
 }

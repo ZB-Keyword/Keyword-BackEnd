@@ -11,6 +11,7 @@ import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
 import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
 import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.repository.FriendRepository;
+import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
@@ -171,14 +172,35 @@ public class FriendService {
     final Member acceptingMember = memberRepository.findByEmail(memberAdapter.getEmail())
             .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-    final Friend friendRequest = friendRepository.findById(memberReqId)
+    final Friend friendRequest = friendRepository.findByIdAndStatus(memberReqId, FRIEND_CHECKING)
             .orElseThrow(() -> new FriendException(FRIEND_NOT_FOUND));
 
-    if (!friendRequest.getFriend().equals(acceptingMember)) {
+    if (friendRequest.getFriend().getMemberId() != acceptingMember.getMemberId()) {
       throw new FriendException(FRIEND_REQUEST_INVALID);
     }
 
     friendRequest.modifyFriendStatus(friendApproveRequest.getFriendStatus());
+
+    //처음 친구 맺는 경우가 아니라면
+    final Optional <Friend> friendToMember = friendRepository.findFriendRequest(
+        acceptingMember.getMemberId() , friendRequest.getMemberRequest().getMemberId() ,
+        Arrays.asList(FRIEND_REFUSED , FRIEND_DELETE));
+
+    if(friendToMember.isPresent()){
+      friendToMember.get().modifyFriendStatus(friendApproveRequest.getFriendStatus());
+    }else if(friendApproveRequest.getFriendStatus() == FRIEND_ACCEPTED){
+
+      final Friend friendFirstRequest = Friend.builder()
+          .memberRequest(acceptingMember)
+          .friend(friendRequest.getMemberRequest())
+          .status(friendApproveRequest.getFriendStatus())
+          .build();
+      friendRepository.save(friendFirstRequest);
+
+    }
+
+
+
 
     return true;
   }
