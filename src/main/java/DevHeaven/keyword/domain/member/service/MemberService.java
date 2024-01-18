@@ -190,7 +190,7 @@ public class MemberService {
     return REDIS_REFRESH_TOKEN_KEY_PREFIX + email;
   }
 
-  private URL getURLByFileName(String fileName) {
+  private String getURLByFileName(String fileName) {
     if(fileName == null) {
       return null;
     }
