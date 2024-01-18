@@ -20,6 +20,7 @@ import static DevHeaven.keyword.domain.chat.type.ChatRoomStatus.VALID;
 public class ChatRoomScheduler {
     private final ScheduleRepository scheduleRepository;
     private final ChatRoomRepository chatRoomRepository;
+
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void alterChatroomStatus() {

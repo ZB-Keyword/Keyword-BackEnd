@@ -16,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScheduleScheduler {
     private final ScheduleRepository scheduleRepository;
+
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     public void alterScheduleStatus() {
