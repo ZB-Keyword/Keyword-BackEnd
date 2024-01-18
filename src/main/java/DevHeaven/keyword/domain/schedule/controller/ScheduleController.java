@@ -29,7 +29,8 @@ public class ScheduleController {
         @RequestBody ScheduleCreateRequest request,
         @AuthenticationPrincipal MemberAdapter memberAdapter) {
 
-        return ResponseEntity.ok(scheduleService.createSchedule(request, memberAdapter));
+        return ResponseEntity.ok(
+                scheduleService.createSchedule(request, memberAdapter));
     }
 
     @GetMapping

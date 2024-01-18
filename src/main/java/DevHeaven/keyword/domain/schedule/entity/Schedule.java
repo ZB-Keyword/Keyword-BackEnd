@@ -5,9 +5,7 @@ import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleListResponse;
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -17,8 +15,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
-
-import static DevHeaven.keyword.domain.schedule.type.ScheduleStatus.DELETE;
 
 @Getter
 @Builder
@@ -37,7 +33,7 @@ public class Schedule extends BaseTimeEntity {
 
     private String contents;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime scheduleAt;
 
     private String locationExplanation;
@@ -49,6 +45,7 @@ public class Schedule extends BaseTimeEntity {
     private Double longitude;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ScheduleStatus status;
 
     @Column(nullable = false)
@@ -65,6 +62,10 @@ public class Schedule extends BaseTimeEntity {
     @OneToMany
     private List<Member> friendList;
 
+    public void setStatus(ScheduleStatus status) {
+        this.status = status;
+    }
+
     public ScheduleListResponse from() {
         return ScheduleListResponse
                 .builder()
@@ -74,9 +75,5 @@ public class Schedule extends BaseTimeEntity {
                 .locationExplanation(this.getLocationExplanation())
                 .status(this.getStatus())
                 .build();
-    }
-
-    public void setScheduleStatus() {
-        this.status = DELETE;
     }
 }
