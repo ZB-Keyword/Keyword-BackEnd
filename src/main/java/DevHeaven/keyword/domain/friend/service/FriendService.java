@@ -172,7 +172,7 @@ public class FriendService {
     final Member acceptingMember = memberRepository.findByEmail(memberAdapter.getEmail())
             .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-    final Friend friendRequest = friendRepository.findById(memberReqId)
+    final Friend friendRequest = friendRepository.findByIdAndStatus(memberReqId, FRIEND_CHECKING)
             .orElseThrow(() -> new FriendException(FRIEND_NOT_FOUND));
 
     if (friendRequest.getFriend().getMemberId() != acceptingMember.getMemberId()) {
@@ -182,8 +182,8 @@ public class FriendService {
     friendRequest.modifyFriendStatus(friendApproveRequest.getFriendStatus());
 
     //처음 친구 맺는 경우가 아니라면
-    Optional <Friend> friendToMember = friendRepository.findFriendRequest(
-        friendRequest.getMemberRequest().getMemberId() , acceptingMember.getMemberId() ,
+    final Optional <Friend> friendToMember = friendRepository.findFriendRequest(
+        acceptingMember.getMemberId() , friendRequest.getMemberRequest().getMemberId() ,
         Arrays.asList(FRIEND_REFUSED , FRIEND_DELETE));
 
     if(friendToMember.isPresent()){
