@@ -56,7 +56,6 @@ public class FriendService {
     List<FriendSearchListRequest> friendListResponses = findByKeywordMembers.stream().map(
         friendMember -> {
           //내가나를 요청하면 안되니까
-          System.out.println(member.getMemberId() + " " + friendMember.getMemberId());
           if (member.getMemberId() != friendMember.getMemberId()) {
             if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
                 friendMember.getMemberId() , member.getMemberId() , FRIEND_CHECKING
@@ -67,6 +66,7 @@ public class FriendService {
                   .email(friendMember.getEmail())
                   .imageUrl(
                       fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+
                   .status("FRIEND_REQUESTED")
                   .build();
             } else if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
@@ -80,6 +80,7 @@ public class FriendService {
                       fileService.createUrl(friendMember.getProfileImageFileName()).toString())
                   .status("FRIEND")
                   .build();
+
             } else if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
                 member.getMemberId() , friendMember.getMemberId() , FRIEND_CHECKING
             ).isPresent()) {
