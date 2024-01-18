@@ -1,4 +1,4 @@
-package DevHeaven.keyword.domain.chat;
+package DevHeaven.keyword.common.scheduler;
 
 import DevHeaven.keyword.domain.chat.repository.ChatRoomRepository;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;

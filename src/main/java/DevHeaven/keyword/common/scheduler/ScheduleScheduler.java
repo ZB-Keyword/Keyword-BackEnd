@@ -1,4 +1,4 @@
-package DevHeaven.keyword.domain.schedule;
+package DevHeaven.keyword.common.scheduler;
 
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
 import DevHeaven.keyword.domain.schedule.repository.ScheduleRepository;
