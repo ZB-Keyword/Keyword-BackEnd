@@ -56,49 +56,61 @@ public class FriendService {
     List<FriendSearchListRequest> friendListResponses = findByKeywordMembers.stream().map(
         friendMember -> {
           //내가나를 요청하면 안되니까
-          System.out.println(member.getMemberId() +" "+friendMember.getMemberId());
           if (member.getMemberId() != friendMember.getMemberId()) {
             if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
-                friendMember.getMemberId(), member.getMemberId(), FRIEND_CHECKING
+                friendMember.getMemberId() , member.getMemberId() , FRIEND_CHECKING
             ).isPresent()) {
               return FriendSearchListRequest.builder()
                   .memberId(friendMember.getMemberId())
                   .name(friendMember.getName())
                   .email(friendMember.getEmail())
-                  .imageUrl(fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+                  .imageUrl(
+                      fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+
                   .status("FRIEND_REQUESTED")
                   .build();
             } else if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
-                member.getMemberId(), friendMember.getMemberId(), FRIEND_ACCEPTED
+                member.getMemberId() , friendMember.getMemberId() , FRIEND_ACCEPTED
             ).isPresent()) {
               return FriendSearchListRequest.builder()
                   .memberId(friendMember.getMemberId())
                   .name(friendMember.getName())
                   .email(friendMember.getEmail())
-                  .imageUrl(fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+                  .imageUrl(
+                      fileService.createUrl(friendMember.getProfileImageFileName()).toString())
                   .status("FRIEND")
                   .build();
-            } else if(friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
-                member.getMemberId(), friendMember.getMemberId(), FRIEND_CHECKING
-            ).isPresent()){
+
+            } else if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+                member.getMemberId() , friendMember.getMemberId() , FRIEND_CHECKING
+            ).isPresent()) {
               return FriendSearchListRequest.builder()
                   .memberId(friendMember.getMemberId())
                   .name(friendMember.getName())
                   .email(friendMember.getEmail())
-                  .imageUrl(fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+                  .imageUrl(
+                      fileService.createUrl(friendMember.getProfileImageFileName()).toString())
                   .status("FRIEND_REQUEST")
                   .build();
-            }else{
+            } else {
               return FriendSearchListRequest.builder()
                   .memberId(friendMember.getMemberId())
                   .name(friendMember.getName())
                   .email(friendMember.getEmail())
-                  .imageUrl(fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+                  .imageUrl(
+                      fileService.createUrl(friendMember.getProfileImageFileName()).toString())
                   .status("NOT_FRIEND")
                   .build();
             }
-          } else {
-            return null;
+          }else{
+            return FriendSearchListRequest.builder()
+                .memberId(friendMember.getMemberId())
+                .name(friendMember.getName())
+                .email(friendMember.getEmail())
+                .imageUrl(
+                    fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+                .status("ME")
+                .build();
           }
         }
     ).collect(Collectors.toList());
