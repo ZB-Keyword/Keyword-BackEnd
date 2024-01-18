@@ -11,6 +11,7 @@ import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
 import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
 import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.repository.FriendRepository;
+import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
@@ -174,11 +175,17 @@ public class FriendService {
     final Friend friendRequest = friendRepository.findById(memberReqId)
             .orElseThrow(() -> new FriendException(FRIEND_NOT_FOUND));
 
-    if (!friendRequest.getFriend().equals(acceptingMember)) {
+    if (friendRequest.getFriend().getMemberId() != acceptingMember.getMemberId()) {
       throw new FriendException(FRIEND_REQUEST_INVALID);
     }
 
     friendRequest.modifyFriendStatus(friendApproveRequest.getFriendStatus());
+
+    //처음 친구 맺는 경우가 아니라면
+    friendRepository.findFriendRequest(friendRequest.getMemberRequest().getMemberId() , acceptingMember.getMemberId() ,
+        Arrays.asList(FRIEND_REFUSED , FRIEND_DELETE))
+        .ifPresent( friend -> friend.modifyFriendStatus(friendApproveRequest.getFriendStatus()));
+
 
     return true;
   }
