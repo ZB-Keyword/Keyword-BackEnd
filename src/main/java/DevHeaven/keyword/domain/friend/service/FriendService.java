@@ -56,6 +56,7 @@ public class FriendService {
     List<FriendSearchListRequest> friendListResponses = findByKeywordMembers.stream().map(
         friendMember -> {
           //내가나를 요청하면 안되니까
+          System.out.println(member.getMemberId() +" "+friendMember.getMemberId());
           if (member.getMemberId() != friendMember.getMemberId()) {
             if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
                 friendMember.getMemberId(), member.getMemberId(), FRIEND_CHECKING
@@ -65,7 +66,7 @@ public class FriendService {
                   .name(friendMember.getName())
                   .email(friendMember.getEmail())
                   .imageUrl(fileService.createUrl(friendMember.getProfileImageFileName()).toString())
-                  .status("FRIEND_REQUEST")
+                  .status("FRIEND_REQUESTED")
                   .build();
             } else if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
                 member.getMemberId(), friendMember.getMemberId(), FRIEND_ACCEPTED
@@ -77,7 +78,17 @@ public class FriendService {
                   .imageUrl(fileService.createUrl(friendMember.getProfileImageFileName()).toString())
                   .status("FRIEND")
                   .build();
-            } else {
+            } else if(friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+                member.getMemberId(), friendMember.getMemberId(), FRIEND_CHECKING
+            ).isPresent()){
+              return FriendSearchListRequest.builder()
+                  .memberId(friendMember.getMemberId())
+                  .name(friendMember.getName())
+                  .email(friendMember.getEmail())
+                  .imageUrl(fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+                  .status("FRIEND_REQUEST")
+                  .build();
+            }else{
               return FriendSearchListRequest.builder()
                   .memberId(friendMember.getMemberId())
                   .name(friendMember.getName())
@@ -87,8 +98,6 @@ public class FriendService {
                   .build();
             }
           } else {
-            // 내가 나를 처리하는 경우에 대한 반환 값 또는 다른 처리
-            // 여기서는 null을 반환하도록 예시로 작성하였습니다. 실제로는 다른 로직이 필요할 수 있습니다.
             return null;
           }
         }
