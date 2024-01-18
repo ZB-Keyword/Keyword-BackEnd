@@ -15,9 +15,9 @@ public class MyInfoResponse {
   private String name;
   private String email;
   private String phone;
-  private URL imageUrl;
+  private String imageUrl;
 
-  public static MyInfoResponse from(Member member, URL imageUrl) {
+  public static MyInfoResponse from(Member member, String imageUrl) {
     return MyInfoResponse.builder()
         .name(member.getName())
         .email(member.getEmail())

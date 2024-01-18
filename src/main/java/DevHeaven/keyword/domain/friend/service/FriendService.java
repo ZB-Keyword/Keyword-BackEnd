@@ -65,7 +65,7 @@ public class FriendService {
                   .name(friendMember.getName())
                   .email(friendMember.getEmail())
                   .imageUrl(
-                      fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+                      fileService.createUrl(friendMember.getProfileImageFileName()))
 
                   .status("FRIEND_REQUESTED")
                   .build();
@@ -77,7 +77,7 @@ public class FriendService {
                   .name(friendMember.getName())
                   .email(friendMember.getEmail())
                   .imageUrl(
-                      fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+                      fileService.createUrl(friendMember.getProfileImageFileName()))
                   .status("FRIEND")
                   .build();
 
@@ -89,7 +89,7 @@ public class FriendService {
                   .name(friendMember.getName())
                   .email(friendMember.getEmail())
                   .imageUrl(
-                      fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+                      fileService.createUrl(friendMember.getProfileImageFileName()))
                   .status("FRIEND_REQUEST")
                   .build();
             } else {
@@ -98,7 +98,7 @@ public class FriendService {
                   .name(friendMember.getName())
                   .email(friendMember.getEmail())
                   .imageUrl(
-                      fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+                      fileService.createUrl(friendMember.getProfileImageFileName()))
                   .status("NOT_FRIEND")
                   .build();
             }
@@ -108,7 +108,7 @@ public class FriendService {
                 .name(friendMember.getName())
                 .email(friendMember.getEmail())
                 .imageUrl(
-                    fileService.createUrl(friendMember.getProfileImageFileName()).toString())
+                    fileService.createUrl(friendMember.getProfileImageFileName()))
                 .status("ME")
                 .build();
           }
@@ -153,7 +153,7 @@ public class FriendService {
     return friendInfos.stream().map(
         friendInfo -> {
           FriendListResponse friendListResponse = FriendListResponse.from(friendInfo);
-          friendListResponse.modifyImageUrl(fileService.createUrl(friendInfo.getProfileImageFileName()).toString());
+          friendListResponse.modifyImageUrl(fileService.createUrl(friendInfo.getProfileImageFileName()));
           return friendListResponse;
         })
         .collect(Collectors.toList());
