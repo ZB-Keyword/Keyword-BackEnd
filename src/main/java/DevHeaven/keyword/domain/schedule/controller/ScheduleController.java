@@ -1,6 +1,7 @@
 package DevHeaven.keyword.domain.schedule.controller;
 
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
+import DevHeaven.keyword.domain.schedule.dto.response.ScheduleDetailResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleListResponse;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleCreateRequest;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleCreateResponse;
@@ -48,5 +49,16 @@ public class ScheduleController {
     ) {
         return ResponseEntity.ok(
                 scheduleService.deleteSchedule(memberAdapter, scheduleId));
+    }
+
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleDetailResponse> getScheduleDetail(
+            @AuthenticationPrincipal MemberAdapter memberAdapter,
+            @PathVariable Long scheduleId,
+            @RequestParam Long noticeId
+    ) {
+        return ResponseEntity.ok(
+                scheduleService.getScheduleDetail(
+                        memberAdapter, scheduleId, noticeId));
     }
 }

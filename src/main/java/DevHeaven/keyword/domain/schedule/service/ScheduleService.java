@@ -9,8 +9,9 @@ import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleCreateRequest;
-import DevHeaven.keyword.domain.schedule.dto.request.ScheduleFriendRequest;
+import DevHeaven.keyword.domain.schedule.dto.ScheduleFriend;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleCreateResponse;
+import DevHeaven.keyword.domain.schedule.dto.response.ScheduleDetailResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleListResponse;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
 import DevHeaven.keyword.domain.schedule.repository.ScheduleRepository;
@@ -20,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +44,7 @@ public class ScheduleService {
                 scheduleRepository.getScheduleListByMember(member.getMemberId());
 
         return new PageImpl<>(scheduleList.stream()
-                .map(Schedule::from)
+                .map(Schedule::toScheduleList)
                 .collect(Collectors.toList()), pageable, scheduleList.size());
     }
 
@@ -54,7 +54,7 @@ public class ScheduleService {
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
         request.getScheduleFriendList().add(
-                new ScheduleFriendRequest(member.getMemberId(), member.getName())
+                new ScheduleFriend(member.getMemberId(), member.getName())
         );
 
         Schedule schedule = Schedule.builder()
@@ -77,9 +77,9 @@ public class ScheduleService {
                 .build();
     }
 
-    private List<Member> toMemberList(List<ScheduleFriendRequest> scheduleFriendRequestList) {
-        return scheduleFriendRequestList.stream()
-                .map(x -> memberRepository.findById(x.getMemberId()).get())
+    private List<Member> toMemberList(List<ScheduleFriend> scheduleFriendList) {
+        return scheduleFriendList.stream()
+                .map(sf -> memberRepository.findById(sf.getMemberId()).get())
                 .collect(Collectors.toList());
     }
 
@@ -107,6 +107,17 @@ public class ScheduleService {
         if (!Objects.equals(savedSchedule.getScheduleId(), schedule.getScheduleId())) {
             throw new ScheduleException(MEMBER_NOT_ORGANIZER);
         }
+    }
+
+
+
+    public ScheduleDetailResponse getScheduleDetail(MemberAdapter memberAdapter, Long scheduleId, Long noticeId) {
+        Member member = getMemberByEmail(memberAdapter.getEmail());
+
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+
+        return schedule.toScheduleDetail();
     }
 
     private Member getMemberByEmail(final String email) {

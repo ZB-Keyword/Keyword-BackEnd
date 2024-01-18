@@ -2,6 +2,8 @@ package DevHeaven.keyword.domain.schedule.entity;
 
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
 import DevHeaven.keyword.domain.member.entity.Member;
+import DevHeaven.keyword.domain.schedule.dto.ScheduleFriend;
+import DevHeaven.keyword.domain.schedule.dto.response.ScheduleDetailResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleListResponse;
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
 
@@ -15,6 +17,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -66,7 +69,7 @@ public class Schedule extends BaseTimeEntity {
         this.status = status;
     }
 
-    public ScheduleListResponse from() {
+    public ScheduleListResponse toScheduleList() {
         return ScheduleListResponse
                 .builder()
                 .scheduleId(this.getScheduleId())
@@ -75,5 +78,25 @@ public class Schedule extends BaseTimeEntity {
                 .locationExplanation(this.getLocationExplanation())
                 .status(this.getStatus())
                 .build();
+    }
+
+    public ScheduleDetailResponse toScheduleDetail() {
+        return ScheduleDetailResponse.builder()
+                .organizerId(this.member.getMemberId())
+                .title(this.getTitle())
+                .contents(this.getContents())
+                .scheduleAt(this.getScheduleAt())
+                .locationExplanation(this.getLocationExplanation())
+                .latitude(this.getLatitude())
+                .longitude(this.getLongitude())
+                .status(this.getStatus())
+                .remindAt(this.getRemindAt())
+                .scheduleFriendList(this.toScheduleFriend(this.friendList))
+                .build();
+    }
+    private List<ScheduleFriend> toScheduleFriend(List<Member> memberList) {
+        return memberList.stream()
+                .map(m -> new ScheduleFriend(m.getMemberId(), m.getName()))
+                .collect(Collectors.toList());
     }
 }
