@@ -4,6 +4,7 @@ import DevHeaven.keyword.common.security.JwtAccessDeniedHandler;
 import DevHeaven.keyword.common.security.JwtAuthenticationEntryPoint;
 import DevHeaven.keyword.common.security.JwtAuthenticationFilter;
 import DevHeaven.keyword.common.security.JwtExceptionFilter;
+import DevHeaven.keyword.common.security.OAuth2SuccessHandler;
 import DevHeaven.keyword.domain.member.service.OAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,15 +28,16 @@ public class SecurityConfig {
     private final JwtExceptionFilter jwtExceptionFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
     private final OAuth2UserService oauth2UserService;
+
     private static final String[] PERMIT_URL_PATTERNS = {
             "/docs/**",
             "/v3/api-docs/swagger-config",
             "/members/signup",
-            "/members/signin",
-            "/members/signin/oauth",
-            "/members/reissue",
-            "/login/oauth2/code/naver"
+            "/members/signin/**",
+            "/members/reissue"
     };
 
     @Bean
@@ -67,11 +69,9 @@ public class SecurityConfig {
 
                 // Naver 소셜 로그인 설정
                 .oauth2Login()
+                .successHandler(oAuth2SuccessHandler)
                 .userInfoEndpoint()
                 .userService(oauth2UserService)
-                .and()
-                .defaultSuccessUrl("/members/signin/oauth", true)
-                //.failureUrl("")
 
             ;
 

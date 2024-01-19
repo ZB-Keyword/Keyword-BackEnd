@@ -1,20 +1,8 @@
 package DevHeaven.keyword.common.security;
 
-import static DevHeaven.keyword.common.exception.type.ErrorCode.EXPIRED_JWT_EXCEPTION;
-import static DevHeaven.keyword.common.exception.type.ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION;
-import static DevHeaven.keyword.common.exception.type.ErrorCode.MALFORMED_JWT_EXCEPTION;
-import static DevHeaven.keyword.common.exception.type.ErrorCode.SIGNATURE_EXCEPTION;
-import static DevHeaven.keyword.common.exception.type.ErrorCode.UNSUPPORTED_JWT_EXCEPTION;
-
 import DevHeaven.keyword.common.exception.JwtException;
-import DevHeaven.keyword.common.exception.dto.ErrorResponse;
-import DevHeaven.keyword.common.exception.type.ErrorCode;
-import DevHeaven.keyword.common.exception.util.ErrorResponseUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Objects;
+import DevHeaven.keyword.common.exception.util.ResponseUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -28,7 +16,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtExceptionFilter extends OncePerRequestFilter {
 
-  private final ErrorResponseUtils errorResponseUtils;
+  private final ResponseUtils responseUtils;
 
   @Override
   protected void doFilterInternal(
@@ -38,7 +26,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     try {
       filterChain.doFilter(request, response);
     } catch (JwtException e) {
-      errorResponseUtils.sendErrorResponse(response, e.getErrorCode());
+      responseUtils.sendErrorResponse(response, e.getErrorCode());
     }
   }
 }

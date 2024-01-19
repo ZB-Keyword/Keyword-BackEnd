@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MyInfoResponse {
+  private long memberId;
   private String name;
   private String email;
   private String phone;
@@ -19,6 +20,7 @@ public class MyInfoResponse {
 
   public static MyInfoResponse from(Member member, URL imageUrl) {
     return MyInfoResponse.builder()
+        .memberId(member.getMemberId())
         .name(member.getName())
         .email(member.getEmail())
         .phone(member.getPhone())

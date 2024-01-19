@@ -1,0 +1,43 @@
+package DevHeaven.keyword.common.security;
+
+import DevHeaven.keyword.domain.member.dto.OAuthMemberAdapter;
+import DevHeaven.keyword.domain.member.dto.response.TokenAndInfoResponse;
+import DevHeaven.keyword.domain.member.service.MemberService;
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+
+@RequiredArgsConstructor
+@Component
+public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
+
+  private final MemberService memberService;
+
+  // private static final String HOME_URL = "http://localhost:8080/"; - local 테스트 용도
+  private static final String HOME_URL = "https://keyword2.store/";
+  private static final String REDIRECT_URL = "members/signin/oauth/";
+
+  @Override
+  public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+      Authentication authentication) throws IOException, ServletException {
+
+    OAuthMemberAdapter oAuthMemberAdapter = (OAuthMemberAdapter) authentication.getPrincipal();
+
+    TokenAndInfoResponse tokenAndInfoResponse = memberService.signinOAuth(oAuthMemberAdapter);
+
+    // TODO : 현재는 Query String 형태로 프론트에 정보를 제공하지만, 추후 더 좋은 방법으로 교체 예정
+    response.sendRedirect(makeRedirectUrl(tokenAndInfoResponse));
+  }
+
+  private String makeRedirectUrl(TokenAndInfoResponse tokenAndInfoResponse) {
+    return HOME_URL + REDIRECT_URL +
+        tokenAndInfoResponse.getMyInfoResponse().getMemberId() + "?"
+        + "accessToken=" + tokenAndInfoResponse.getTokenResponse().getAccessToken() + "&"
+        + "refreshToken=" + tokenAndInfoResponse.getTokenResponse().getRefreshToken();
+  }
+}

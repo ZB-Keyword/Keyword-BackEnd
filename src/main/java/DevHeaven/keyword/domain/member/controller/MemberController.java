@@ -58,13 +58,6 @@ public class MemberController {
     return ResponseEntity.ok(memberService.signin(signinRequest));
   }
 
-  // TODO : principal 로 전달 안 됨. 영속성 컨텍스트가 끊겨서 그런 듯. 방법 찾기
-  @GetMapping("/signin/oauth")
-  public ResponseEntity<TokenAndInfoResponse> signinOAuth(
-      final @AuthenticationPrincipal OAuthMemberAdapter OAuthMemberAdapter) {
-    return ResponseEntity.ok(memberService.signinOAuth(OAuthMemberAdapter));
-  }
-
   @PostMapping("/reissue")
   public ResponseEntity<TokenAndInfoResponse> reissue(final @RequestBody ReissueRequest reissueRequest) {
     return ResponseEntity.ok(memberService.reissue(reissueRequest));

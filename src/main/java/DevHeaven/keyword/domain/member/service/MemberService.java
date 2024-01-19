@@ -38,6 +38,7 @@ import DevHeaven.keyword.domain.member.type.MemberProvider;
 import DevHeaven.keyword.domain.member.type.MemberStatus;
 import java.net.URL;
 import java.time.Duration;
+import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -60,7 +61,6 @@ public class MemberService {
   private final JwtUtils jwtUtils;
 
   private final PasswordEncoder passwordEncoder;
-
 
   public MyInfoResponse getMyInfo(final MemberAdapter memberAdapter) {
     Member member = getMemberByEmail(memberAdapter.getEmail());
@@ -119,13 +119,19 @@ public class MemberService {
         .build();
   }
 
-  public TokenAndInfoResponse signinOAuth(final OAuthMemberAdapter oAuthMemberAdapter) {
+  public TokenAndInfoResponse signinOAuth(OAuthMemberAdapter oAuthMemberAdapter) {
     Member member = getMemberByEmail(oAuthMemberAdapter.getEmail());
 
     validateMatchesOAuthMemberProvider(member.getProvider());
 
+    TokenResponse tokenResponse = jwtUtils.createTokens(member.getEmail());
+
+    String redisRefreshTokenKey = getRedisRefreshTokenKeyByMemberEmail(member.getEmail());
+
+    saveRefreshTokenInRedisByKey(redisRefreshTokenKey, tokenResponse.getRefreshToken());
+
     return TokenAndInfoResponse.builder()
-        .tokenResponse(jwtUtils.createTokens(oAuthMemberAdapter.getEmail()))
+        .tokenResponse(tokenResponse)
         .myInfoResponse(MyInfoResponse.from(member, getURLByFileName(member.getProfileImageFileName())))
         .build();
   }
@@ -195,14 +201,14 @@ public class MemberService {
     return true;
   }
 
-  // private method
+  // validate method
 
   private Member getMemberById(final long memberId) {
     return memberRepository.findById(memberId)
         .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
   }
 
-  private Member getMemberByEmail(final String email) {
+  public Member getMemberByEmail(final String email) {
     return memberRepository.findByEmail(email)
         .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
   }
@@ -211,7 +217,7 @@ public class MemberService {
     return REDIS_REFRESH_TOKEN_KEY_PREFIX + email;
   }
 
-  private URL getURLByFileName(String fileName) {
+  public URL getURLByFileName(String fileName) {
     if(fileName == null) {
       return null;
     }

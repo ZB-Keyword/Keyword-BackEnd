@@ -8,6 +8,7 @@ import DevHeaven.keyword.domain.member.dto.provider.NaverUserInfo;
 import DevHeaven.keyword.domain.member.dto.provider.OAuth2UserInfo;
 import DevHeaven.keyword.domain.member.type.MemberProvider;
 import java.util.HashMap;
+import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder;
+  private final HttpSession httpSession;
 
   @Value("${spring.security.oauth2.client.provider.naver.user-name-attribute}")
   private String NAVER_ATTRIBUTE_KEY;
@@ -41,7 +43,6 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
   // 네이버로 부터 받은 userRequest 데이터에 대한 후 처리 함수
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
     // 네이버 로그인 창 -> 로그인 완료 -> code 리턴(Oauth-client 라이브러리) -> AccessToken 요청
     // userRequest 정보 -> loadUser 함수 호출 -> Oauth2(네이버)로 부터 정보 받아옴.
     OAuth2User oAuth2User = super.loadUser(userRequest);

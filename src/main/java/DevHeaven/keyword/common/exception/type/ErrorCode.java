@@ -11,6 +11,7 @@ public enum ErrorCode {
     // common
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류가 발생하였습니다."),
     METHOD_ARGUMENT_NOT_VALID_EXCEPTION(HttpStatus.BAD_REQUEST, "전달된 정보 중 올바르지 않은 값이 전달되었습니다."),
+    OAUTH_FILTER_EXCEPTION(HttpStatus.BAD_REQUEST, "OAuth 로그인에 성공했으나, 서버에서 예상치 못한 에러가 발생했습니다."),
 
     // jwt
     EXPIRED_JWT_EXCEPTION(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
