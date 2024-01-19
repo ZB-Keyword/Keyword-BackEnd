@@ -238,7 +238,7 @@ public class FriendService {
     final Member acceptingMember = memberRepository.findByEmail(memberAdapter.getEmail())
             .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-    final Friend friendRequest = friendRepository.findByIdAndStatus(memberReqId, FRIEND_CHECKING)
+    final Friend friendRequest = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(memberReqId, acceptingMember.getMemberId(),FRIEND_CHECKING)
             .orElseThrow(() -> new FriendException(FRIEND_NOT_FOUND));
 
     if (friendRequest.getFriend().getMemberId() != acceptingMember.getMemberId()) {
@@ -264,9 +264,6 @@ public class FriendService {
       friendRepository.save(friendFirstRequest);
 
     }
-
-
-
 
     return true;
   }
