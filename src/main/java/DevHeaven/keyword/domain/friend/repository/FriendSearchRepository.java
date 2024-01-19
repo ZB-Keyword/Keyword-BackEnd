@@ -10,8 +10,6 @@ import java.util.List;
 @Repository
 public interface FriendSearchRepository extends ElasticsearchRepository<FriendSearchDocument, Long> {
 
+    List<FriendSearchDocument> findByNameOrEmail(String name, String email);
 
-
-    //status 필드를 이용하여 검색
-    List<FriendSearchDocument> findByStatus(String status);
 }

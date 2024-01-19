@@ -1,24 +1,25 @@
 package DevHeaven.keyword.config;
 
 import DevHeaven.keyword.domain.friend.repository.FriendSearchRepository;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
+import org.springframework.data.elasticsearch.client.RestClients;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
+import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
 @EnableElasticsearchRepositories(basePackageClasses = FriendSearchRepository.class)
-public class ElasticSearchConfig extends ElasticsearchConfiguration {
+public class ElasticSearchConfig extends AbstractElasticsearchConfiguration {
 
-    //Elasticsearch 서버의 URL(YML)
-    @Value("${spring.elastic.url}")
-    private String elasticUrl;
 
     @Override
-    public ClientConfiguration clientConfiguration() {
-        return ClientConfiguration.builder()
-                .connectedTo(elasticUrl) // Elasticsearch 서버에 연결할 URL
+    public RestHighLevelClient elasticsearchClient() {
+        ClientConfiguration clientConfiguration = ClientConfiguration.builder()
+                .connectedTo("localhost:9200")
                 .build();
+        return RestClients.create(clientConfiguration).rest();
     }
 }
