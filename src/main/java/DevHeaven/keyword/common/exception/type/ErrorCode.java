@@ -45,11 +45,22 @@ public enum ErrorCode {
 
     // friend
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 친구를 찾을 수 없습니다."),
+    FRIEND_REQUEST_ALREADY(HttpStatus.BAD_REQUEST, "이미 요청한 친구쪽에서 친구 요청을 보냈습니다"),
+    FRIEND_NOT_VALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 친구 요청입니다" ),
+    FRIEND_REQUEST_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 친구 요청입니다."),//뭐가 좋을까요?
+    FRIEND_ALREADY(HttpStatus.BAD_REQUEST, "이미 친구 요청을 하였습니다"),
+
+    //참고용 enum 추가 필요 없을 시 추후 삭제 예정
+    FRIEND_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 친구 요청을 찾을 수 없습니다."),
+    FRIEND_REQUEST_ALREADY_ACCEPTED(HttpStatus.BAD_REQUEST, "이미 수락된 친구 요청입니다."),
+    FRIEND_REQUEST_ALREADY_REFUSED(HttpStatus.BAD_REQUEST, "이미 거부된 친구 요청입니다."),
+    FRIEND_REQUEST_SELF(HttpStatus.BAD_REQUEST, "자기 자신에게 친구 요청할 수 없습니다."),
+    FRIEND_REQUEST_BLOCKED(HttpStatus.BAD_REQUEST, "친구 요청이 차단되었습니다."),
+    FRIEND_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "친구 삭제에 실패하였습니다."),
+
+    //img
     FILE_NOT_EXIST(HttpStatus.BAD_REQUEST, "업로드 될 파일이 존재하지 않습니다."),
     FILE_INCORRECT_FORMAT(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일입니다"),
-    FRIEND_REQUEST_ALREADY(HttpStatus.BAD_REQUEST, "이미 요청한 친구쪽에서 친구 요청을 보냈습니다"),
-    FRIEND_NOT_VALID_REQUEST(HttpStatus.BAD_REQUEST, "친구 잘못된 요청입니다" ),
-    FRIEND_ALREADY(HttpStatus.BAD_REQUEST, "이미 친구 요청을 하였습니다"),
 
     // chat
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다."),
@@ -57,7 +68,10 @@ public enum ErrorCode {
     // schedule
     SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND,"해당 일정을 찾을 수 없습니다."),
     SCHEDULE_MEMBER_UNMATCHED(HttpStatus.BAD_REQUEST, "해당 일정에 포함된 회원이 아닙니다."),
-    MEMBER_NOT_ORGANIZER(HttpStatus.BAD_REQUEST, "해당 일정의 주최자가 아닙니다.");
+    MEMBER_NOT_ORGANIZER(HttpStatus.BAD_REQUEST, "해당 일정의 주최자가 아닙니다."),
+
+    //notice
+    NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND ,"해당 알림을 찾을 수 없습니다");
 
     private final HttpStatus httpStatus;
     private final String errorMessage;
