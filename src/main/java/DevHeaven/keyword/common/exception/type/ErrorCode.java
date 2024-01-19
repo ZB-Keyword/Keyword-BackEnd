@@ -11,6 +11,7 @@ public enum ErrorCode {
     // common
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류가 발생하였습니다."),
     METHOD_ARGUMENT_NOT_VALID_EXCEPTION(HttpStatus.BAD_REQUEST, "전달된 정보 중 올바르지 않은 값이 전달되었습니다."),
+    OAUTH_FILTER_EXCEPTION(HttpStatus.BAD_REQUEST, "OAuth 로그인에 성공했으나, 서버에서 예상치 못한 에러가 발생했습니다."),
 
     // jwt
     EXPIRED_JWT_EXCEPTION(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
@@ -37,7 +38,11 @@ public enum ErrorCode {
     WITHDRAWN_MEMBER(HttpStatus.BAD_REQUEST, "탈퇴한 회원입니다."),
 
     MISMATCH_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
-  
+    MISMATCH_SIGN_IN_PROVIDER(HttpStatus.BAD_REQUEST, "일반 회원은 일반 로그인을 통해 접근해야 합니다."),
+    MISMATCH_OAUTH_PROVIDER(HttpStatus.BAD_REQUEST, "소셜 회원은 소셜 로그인을 통해 접근해야 합니다."),
+
+    OAUTH_PROVIDER_NOT_VALID_EXCEPTION(HttpStatus.BAD_REQUEST, "제공되는 유효한 소셜 로그인 요청이 아닙니다."),
+
     // friend
     FRIEND_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 친구를 찾을 수 없습니다."),
     FRIEND_REQUEST_ALREADY(HttpStatus.BAD_REQUEST, "이미 요청한 친구쪽에서 친구 요청을 보냈습니다"),
