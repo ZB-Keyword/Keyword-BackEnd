@@ -8,6 +8,7 @@ import DevHeaven.keyword.common.exception.type.ErrorCode;
 import DevHeaven.keyword.common.service.image.AmazonS3FileService;
 import DevHeaven.keyword.domain.friend.dto.request.FriendApproveRequest;
 import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
+import DevHeaven.keyword.domain.friend.dto.request.FriendSearchListRequest;
 import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
 import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.repository.FriendRepository;
@@ -41,15 +42,80 @@ public class FriendService {
   private final NoticeRepository noticeRepository;
   private final AmazonS3FileService fileService;
 
-  public Page<Member> searchFriend(final MemberAdapter memberAdapter,
+  public List<FriendSearchListRequest> searchFriend(final MemberAdapter memberAdapter,
       final String keyword,
       final Pageable pageable) {
 
     // 현재는 임시로 멤버 정보만 가져옴
     // TODO : ES 적용 후 pageable 처리 하여 멤버 가져오기
     // TODO : 각 엔티티가 memberAdapter 로 넘어온 멤버와 어떤 관계 (friendStatus) 인지 DTO 로 생성
-    
-    return memberRepository.findAllByNameContainingOrEmailContaining(keyword, keyword, pageable);
+    final Member member = memberRepository.findByEmail(memberAdapter.getEmail())
+        .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+    final Page <Member> findByKeywordMembers = memberRepository.findAllByNameContainingOrEmailContaining(
+        keyword , keyword , pageable);
+    List<FriendSearchListRequest> friendListResponses = findByKeywordMembers.stream().map(
+        friendMember -> {
+          //내가나를 요청하면 안되니까
+          if (member.getMemberId() != friendMember.getMemberId()) {
+            if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+                friendMember.getMemberId() , member.getMemberId() , FRIEND_CHECKING
+            ).isPresent()) {
+              return FriendSearchListRequest.builder()
+                  .memberId(friendMember.getMemberId())
+                  .name(friendMember.getName())
+                  .email(friendMember.getEmail())
+                  .imageUrl(
+                      fileService.createUrl(friendMember.getProfileImageFileName()))
+
+                  .status("FRIEND_REQUESTED")
+                  .build();
+            } else if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+                member.getMemberId() , friendMember.getMemberId() , FRIEND_ACCEPTED
+            ).isPresent()) {
+              return FriendSearchListRequest.builder()
+                  .memberId(friendMember.getMemberId())
+                  .name(friendMember.getName())
+                  .email(friendMember.getEmail())
+                  .imageUrl(
+                      fileService.createUrl(friendMember.getProfileImageFileName()))
+                  .status("FRIEND")
+                  .build();
+
+            } else if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+                member.getMemberId() , friendMember.getMemberId() , FRIEND_CHECKING
+            ).isPresent()) {
+              return FriendSearchListRequest.builder()
+                  .memberId(friendMember.getMemberId())
+                  .name(friendMember.getName())
+                  .email(friendMember.getEmail())
+                  .imageUrl(
+                      fileService.createUrl(friendMember.getProfileImageFileName()))
+                  .status("FRIEND_REQUEST")
+                  .build();
+            } else {
+              return FriendSearchListRequest.builder()
+                  .memberId(friendMember.getMemberId())
+                  .name(friendMember.getName())
+                  .email(friendMember.getEmail())
+                  .imageUrl(
+                      fileService.createUrl(friendMember.getProfileImageFileName()))
+                  .status("NOT_FRIEND")
+                  .build();
+            }
+          }else{
+            return FriendSearchListRequest.builder()
+                .memberId(friendMember.getMemberId())
+                .name(friendMember.getName())
+                .email(friendMember.getEmail())
+                .imageUrl(
+                    fileService.createUrl(friendMember.getProfileImageFileName()))
+                .status("ME")
+                .build();
+          }
+        }
+    ).collect(Collectors.toList());
+    return friendListResponses;
   }
   
   public List <FriendListResponse> getFriendList(final MemberAdapter memberAdapter ,final FriendListStatusRequest friendState,
@@ -88,7 +154,7 @@ public class FriendService {
     return friendInfos.stream().map(
         friendInfo -> {
           FriendListResponse friendListResponse = FriendListResponse.from(friendInfo);
-          friendListResponse.modifyImageUrl(fileService.createUrl(friendInfo.getProfileImageFileName()).toString());
+          friendListResponse.modifyImageUrl(fileService.createUrl(friendInfo.getProfileImageFileName()));
           return friendListResponse;
         })
         .collect(Collectors.toList());
@@ -173,7 +239,7 @@ public class FriendService {
     final Member acceptingMember = memberRepository.findByEmail(memberAdapter.getEmail())
             .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
-    final Friend friendRequest = friendRepository.findByIdAndStatus(memberReqId, FRIEND_CHECKING)
+    final Friend friendRequest = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(memberReqId, acceptingMember.getMemberId(),FRIEND_CHECKING)
             .orElseThrow(() -> new FriendException(FRIEND_NOT_FOUND));
 
     if (friendRequest.getFriend().getMemberId() != acceptingMember.getMemberId()) {
@@ -199,9 +265,6 @@ public class FriendService {
       friendRepository.save(friendFirstRequest);
 
     }
-
-
-
 
     return true;
   }

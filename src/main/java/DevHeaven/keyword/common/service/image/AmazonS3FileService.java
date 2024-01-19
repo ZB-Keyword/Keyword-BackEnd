@@ -83,9 +83,12 @@ public class AmazonS3FileService {
     publisher.publishEvent(new S3ImageEvent(fileName));
   }
 
-  public URL createUrl(final String fileName){
+  public String createUrl(final String fileName){
+    if(fileName == null || fileName.isEmpty()){
+      return null;
+    }
     try {
-      return new URL(domainUrl+"/"+fileName);
+      return new URL(domainUrl+"/"+fileName).toString();
     } catch (MalformedURLException e) {
       throw new RuntimeException(e);
     }
