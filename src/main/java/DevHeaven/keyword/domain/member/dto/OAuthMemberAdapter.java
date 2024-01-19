@@ -40,7 +40,7 @@ public class OAuthMemberAdapter implements OAuth2User, UserDetails {
     }
 
     @Override
-    public <A> A getAttribute(String name) {
+    public <A> A getAttribute(final String name) {
         return OAuth2User.super.getAttribute(name);
     }
 

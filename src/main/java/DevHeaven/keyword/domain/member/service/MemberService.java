@@ -119,7 +119,7 @@ public class MemberService {
         .build();
   }
 
-  public TokenAndInfoResponse signinOAuth(OAuthMemberAdapter oAuthMemberAdapter) {
+  public TokenAndInfoResponse signinOAuth(final OAuthMemberAdapter oAuthMemberAdapter) {
     Member member = getMemberByEmail(oAuthMemberAdapter.getEmail());
 
     validateMatchesOAuthMemberProvider(member.getProvider());
@@ -217,7 +217,7 @@ public class MemberService {
     return REDIS_REFRESH_TOKEN_KEY_PREFIX + email;
   }
 
-  public URL getURLByFileName(String fileName) {
+  public URL getURLByFileName(final String fileName) {
     if(fileName == null) {
       return null;
     }

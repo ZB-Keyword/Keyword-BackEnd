@@ -23,8 +23,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
   private static final String REDIRECT_URL = "members/signin/oauth/";
 
   @Override
-  public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-      Authentication authentication) throws IOException, ServletException {
+  public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
+      final Authentication authentication) throws IOException, ServletException {
 
     OAuthMemberAdapter oAuthMemberAdapter = (OAuthMemberAdapter) authentication.getPrincipal();
 
@@ -34,7 +34,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     response.sendRedirect(makeRedirectUrl(tokenAndInfoResponse));
   }
 
-  private String makeRedirectUrl(TokenAndInfoResponse tokenAndInfoResponse) {
+  private String makeRedirectUrl(final TokenAndInfoResponse tokenAndInfoResponse) {
     return HOME_URL + REDIRECT_URL +
         tokenAndInfoResponse.getMyInfoResponse().getMemberId() + "?"
         + "accessToken=" + tokenAndInfoResponse.getTokenResponse().getAccessToken() + "&"
