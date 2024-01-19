@@ -217,7 +217,7 @@ public class MemberService {
     return REDIS_REFRESH_TOKEN_KEY_PREFIX + email;
   }
 
-  private String getURLByFileName(String fileName) {
+  private String getURLByFileName(final String fileName) {
     if(fileName == null) {
       return null;
     }

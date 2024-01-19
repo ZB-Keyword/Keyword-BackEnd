@@ -18,7 +18,7 @@ public class MyInfoResponse {
   private String phone;
   private String imageUrl;
 
-  public static MyInfoResponse from(Member member, String imageUrl) {
+  public static MyInfoResponse from(final Member member, final String imageUrl) {
     return MyInfoResponse.builder()
         .memberId(member.getMemberId())
         .name(member.getName())
