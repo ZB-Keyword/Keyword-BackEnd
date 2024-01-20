@@ -1,4 +1,4 @@
 [submodule "src/main/resources/properties"]
 	path = src/main/resources/properties
-	url =  git@github.com:ZB-Keyword/config.git
+	url = https://github.com/ZB-Keyword/config.git
 	branch = main
