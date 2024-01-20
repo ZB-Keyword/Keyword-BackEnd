@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,6 +34,7 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @Entity
 @Table(name = "chatroom")
+@DynamicUpdate
 public class ChatRoom extends BaseTimeEntity {
 
     @Id
@@ -49,6 +51,10 @@ public class ChatRoom extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private ChatRoomStatus status;
+
+    public void setStatus(ChatRoomStatus status){
+        this.status = status;
+    }
 
     public static ChatRoom createRoom(Schedule schedule) {
         return ChatRoom.builder()
