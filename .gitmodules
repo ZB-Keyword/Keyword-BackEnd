@@ -1,0 +1,4 @@
+[submodule "src/main/resources/config"]
+	path = src/main/resources/config
+	url = https://github.com/ZB-Keyword/config.git
+	branch = main

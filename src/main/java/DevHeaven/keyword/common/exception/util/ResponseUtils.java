@@ -2,6 +2,8 @@ package DevHeaven.keyword.common.exception.util;
 
 import DevHeaven.keyword.common.exception.dto.ErrorResponse;
 import DevHeaven.keyword.common.exception.type.ErrorCode;
+import DevHeaven.keyword.domain.member.dto.OAuthMemberAdapter;
+import DevHeaven.keyword.domain.member.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ErrorResponseUtils {
+public class ResponseUtils {
 
   private final ObjectMapper objectMapper;
 
