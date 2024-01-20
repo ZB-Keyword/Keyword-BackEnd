@@ -17,7 +17,7 @@ import java.util.List;
 public class ScheduleScheduler {
     private final ScheduleRepository scheduleRepository;
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 1 * * ?")
     @Transactional
     public void alterScheduleStatus() {
         log.info("일정 종료 하루뒤에 일정 상태 변경");

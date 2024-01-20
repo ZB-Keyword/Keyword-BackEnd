@@ -21,7 +21,7 @@ public class ChatRoomScheduler {
     private final ScheduleRepository scheduleRepository;
     private final ChatRoomRepository chatRoomRepository;
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 1 * * ?")
     @Transactional
     public void alterChatroomStatus() {
         log.info("일정 종료 3일 뒤의 채팅방 상태 변경 스켸줄러 실행");
