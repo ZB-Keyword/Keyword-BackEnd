@@ -10,5 +10,7 @@ import lombok.Getter;
 public class ScheduleFriend {
     private Long memberId;
     private String name;
+    private String imageUrl;
+    private String email;
 
 }

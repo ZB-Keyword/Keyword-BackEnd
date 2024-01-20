@@ -55,7 +55,8 @@ public class ScheduleService {
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
         request.getScheduleFriendList().add(
-                new ScheduleFriend(member.getMemberId(), member.getName())
+                new ScheduleFriend(
+                        member.getMemberId(), member.getName(), member.getProfileImageFileName(), member.getEmail())
         );
 
         Schedule schedule = Schedule.builder()
