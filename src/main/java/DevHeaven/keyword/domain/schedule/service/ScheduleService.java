@@ -98,10 +98,14 @@ public class ScheduleService {
   }
 
 
-  public ScheduleModifyResponse modifySchedule(MemberAdapter memberAdapter, Long scheduleId,
+  public ScheduleModifyResponse modifySchedule(MemberAdapter memberAdapter, final Long scheduleId,
       ScheduleModifyRequest request) {
 
     Member member = getMemberByEmail(memberAdapter.getEmail());
+
+    request.getScheduleFriendList().add(
+        new ScheduleFriendRequest(member.getMemberId(), member.getName())
+    );
 
     Schedule schedule = scheduleRepository.findById(scheduleId)
         .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
@@ -117,7 +121,7 @@ public class ScheduleService {
 
       schedule.updateSchedule(request.getTitle(), schedule.getContents(), schedule.getScheduleAt(),
           schedule.getLocationExplanation(), schedule.getLatitude(), schedule.getLongitude(),
-          schedule.getRemindAt());
+          schedule.getRemindAt(), schedule.getFriendList());
     }
 
     if (request.getContents() != null) {
@@ -126,7 +130,7 @@ public class ScheduleService {
       }
       schedule.updateSchedule(schedule.getTitle(), request.getContents(), schedule.getScheduleAt(),
           schedule.getLocationExplanation(), schedule.getLatitude(), schedule.getLongitude(),
-          schedule.getRemindAt());
+          schedule.getRemindAt(), schedule.getFriendList());
     }
 
     if (request.getScheduleAt() != null) {
@@ -136,9 +140,8 @@ public class ScheduleService {
           .isAfter(LocalDateTime.now())) {
 
         schedule.updateSchedule(schedule.getTitle(), schedule.getContents(),
-            request.getScheduleAt(),
-            schedule.getLocationExplanation(), schedule.getLatitude(), schedule.getLongitude(),
-            schedule.getRemindAt());
+            request.getScheduleAt(), schedule.getLocationExplanation(), schedule.getLatitude(),
+            schedule.getLongitude(), schedule.getRemindAt(), schedule.getFriendList());
       }
     }
 
@@ -148,7 +151,7 @@ public class ScheduleService {
       }
       schedule.updateSchedule(schedule.getTitle(), schedule.getContents(), schedule.getScheduleAt(),
           request.getLocationExplanation(), schedule.getLatitude(), schedule.getLongitude(),
-          schedule.getRemindAt());
+          schedule.getRemindAt(), schedule.getFriendList());
 
     }
 
@@ -158,7 +161,7 @@ public class ScheduleService {
       }
       schedule.updateSchedule(schedule.getTitle(), schedule.getContents(), schedule.getScheduleAt(),
           schedule.getLocationExplanation(), request.getLatitude(), schedule.getLongitude(),
-          schedule.getRemindAt());
+          schedule.getRemindAt(), schedule.getFriendList());
     }
 
     if (request.getLongitude() != null) {
@@ -167,7 +170,7 @@ public class ScheduleService {
       }
       schedule.updateSchedule(schedule.getTitle(), schedule.getContents(), schedule.getScheduleAt(),
           schedule.getLocationExplanation(), schedule.getLatitude(), request.getLongitude(),
-          schedule.getRemindAt());
+          schedule.getRemindAt(), schedule.getFriendList());
     }
 
     if (request.getRemindAt() != null) {
@@ -178,11 +181,18 @@ public class ScheduleService {
           throw new ScheduleException(ErrorCode.FAIL_MODIFY_REMINDAT_AFTER_SCHEDULEAT);
         }
         schedule.updateSchedule(schedule.getTitle(), schedule.getContents(),
-            schedule.getScheduleAt(),
-            schedule.getLocationExplanation(), schedule.getLatitude(), schedule.getLongitude(),
-            request.getRemindAt());
+            schedule.getScheduleAt(), schedule.getLocationExplanation(), schedule.getLatitude(),
+            schedule.getLongitude(), request.getRemindAt(), schedule.getFriendList());
       }
+    }
 
+    if (request.getScheduleFriendList() != null) {
+      if (schedule.getFriendList().equals(request.getScheduleFriendList())) {
+        throw new ScheduleException(ErrorCode.FAIL_MODIFY_FRIENDLIST);
+      }
+      schedule.updateSchedule(schedule.getTitle(), schedule.getContents(),
+          schedule.getScheduleAt(), schedule.getLocationExplanation(), schedule.getLatitude(),
+          schedule.getLongitude(), schedule.getRemindAt(), request.getScheduleFriendList());
     }
 
     scheduleRepository.save(schedule);
