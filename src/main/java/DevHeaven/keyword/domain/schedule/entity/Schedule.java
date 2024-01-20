@@ -96,7 +96,7 @@ public class Schedule extends BaseTimeEntity {
     }
     private List<ScheduleFriend> toScheduleFriend(List<Member> memberList) {
         return memberList.stream()
-                .map(m -> new ScheduleFriend(m.getMemberId(), m.getName()))
+                .map(m -> new ScheduleFriend(m.getMemberId(), m.getName(), m.getProfileImageFileName(), m.getEmail()))
                 .collect(Collectors.toList());
     }
 }
