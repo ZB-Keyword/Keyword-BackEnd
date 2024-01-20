@@ -57,7 +57,6 @@ public class ChatRoomService {
 
     public Page<ChatRoomListResponse> getChatRoomList(final MemberAdapter memberAdapter, Pageable pageable) {
 
-        //로그인 한 사용자
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
         List<Schedule> scheduleList =
@@ -68,10 +67,12 @@ public class ChatRoomService {
         for (Schedule schedule : scheduleList) {
             chatRoomList.add(
                     chatRoomRepository.findBySchedule(schedule));
+            System.out.println(schedule.getScheduleId());
         }
-
-        return new PageImpl<>(chatRoomList)
-                .map(ChatRoom::from);
+        System.out.println(chatRoomList);
+        return new PageImpl<>(chatRoomList.stream()
+                .map(ChatRoom::from)
+                .collect(Collectors.toList()), pageable, chatRoomList.size());
     }
 
     private Member getMemberByEmail(final String email) {
