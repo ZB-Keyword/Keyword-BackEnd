@@ -1,11 +1,6 @@
-springdoc:
-  default-consumes-media-type: application/json;charset=UTF-8
-  default-produces-media-type: application/json;charset=UTF-8
-  swagger-ui:
-    url: /docs/open-api-3.0.1.json
-    path: /docs/swagger
-
 spring:
+  profiles:
+    default: local
   jwt:
     secret: ${JWT_SECRET}
   datasource:
@@ -62,8 +57,25 @@ aws:
     domain: ${S3_DOMAIN}
 
 logging:
+  slack:
+    webhook-uri: ${SLACK_URL}
+  config: classpath:logback-spring.xml
   level:
     com:
       amazonaws:
         util:
           EC2MetadataUtils: error
+springdoc:
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    url: /docs/open-api-3.0.1.json
+    path: /docs/swagger
+    
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+    import:
+      - config/application-prod.yml

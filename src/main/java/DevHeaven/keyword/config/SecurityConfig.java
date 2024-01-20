@@ -4,9 +4,9 @@ import DevHeaven.keyword.common.security.JwtAccessDeniedHandler;
 import DevHeaven.keyword.common.security.JwtAuthenticationEntryPoint;
 import DevHeaven.keyword.common.security.JwtAuthenticationFilter;
 import DevHeaven.keyword.common.security.JwtExceptionFilter;
-import DevHeaven.keyword.domain.member.service.oauth.Oauth2UserService;
+import DevHeaven.keyword.common.security.OAuth2SuccessHandler;
+import DevHeaven.keyword.domain.member.service.OAuth2UserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,14 +28,16 @@ public class SecurityConfig {
     private final JwtExceptionFilter jwtExceptionFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final Oauth2UserService oauth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
+    private final OAuth2UserService oauth2UserService;
+
     private static final String[] PERMIT_URL_PATTERNS = {
             "/docs/**",
             "/v3/api-docs/swagger-config",
             "/members/signup",
-            "/members/signin",
-            "/members/reissue",
-            "/login/oauth2/code/naver",
+            "/members/signin/**",
+            "/members/reissue"
     };
 
     @Bean
@@ -65,13 +67,13 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
 
-                //Naver 소셜 로그인 설정
+                // Naver 소셜 로그인 설정
                 .oauth2Login()
+                .successHandler(oAuth2SuccessHandler)
                 .userInfoEndpoint()
                 .userService(oauth2UserService)
-                .and()
-                .defaultSuccessUrl("/login/success")
-                .failureUrl("/login/failure");
+
+            ;
 
         return httpSecurity.build();
     }

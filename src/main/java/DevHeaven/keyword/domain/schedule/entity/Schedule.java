@@ -2,12 +2,12 @@ package DevHeaven.keyword.domain.schedule.entity;
 
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
 import DevHeaven.keyword.domain.member.entity.Member;
+import DevHeaven.keyword.domain.schedule.dto.ScheduleFriend;
+import DevHeaven.keyword.domain.schedule.dto.response.ScheduleDetailResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleListResponse;
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -17,8 +17,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
-
-import static DevHeaven.keyword.domain.schedule.type.ScheduleStatus.DELETE;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -37,7 +36,7 @@ public class Schedule extends BaseTimeEntity {
 
     private String contents;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime scheduleAt;
 
     private String locationExplanation;
@@ -49,6 +48,7 @@ public class Schedule extends BaseTimeEntity {
     private Double longitude;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ScheduleStatus status;
 
     @Column(nullable = false)
@@ -65,7 +65,11 @@ public class Schedule extends BaseTimeEntity {
     @OneToMany
     private List<Member> friendList;
 
-    public ScheduleListResponse from() {
+    public void setStatus(ScheduleStatus status) {
+        this.status = status;
+    }
+
+    public ScheduleListResponse toScheduleList() {
         return ScheduleListResponse
                 .builder()
                 .scheduleId(this.getScheduleId())
@@ -75,18 +79,24 @@ public class Schedule extends BaseTimeEntity {
                 .status(this.getStatus())
                 .build();
     }
-    public void updateSchedule(String title, String contents, LocalDateTime scheduleAt,
-        String locationExplanation, Double latitude, Double longitude, Long remindAt) {
-        this.title = title;
-        this.contents = contents;
-        this.scheduleAt = scheduleAt;
-        this.locationExplanation = locationExplanation;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.remindAt = remindAt;
 
+    public ScheduleDetailResponse toScheduleDetail() {
+        return ScheduleDetailResponse.builder()
+                .organizerId(this.member.getMemberId())
+                .title(this.getTitle())
+                .contents(this.getContents())
+                .scheduleAt(this.getScheduleAt())
+                .locationExplanation(this.getLocationExplanation())
+                .latitude(this.getLatitude())
+                .longitude(this.getLongitude())
+                .status(this.getStatus())
+                .remindAt(this.getRemindAt())
+                .scheduleFriendList(this.toScheduleFriend(this.friendList))
+                .build();
     }
-    public void setScheduleStatus() {
-        this.status = DELETE;
+    private List<ScheduleFriend> toScheduleFriend(List<Member> memberList) {
+        return memberList.stream()
+                .map(m -> new ScheduleFriend(m.getMemberId(), m.getName()))
+                .collect(Collectors.toList());
     }
 }
