@@ -75,4 +75,4 @@ spring:
     activate:
       on-profile: prod
     import:
-      - properties/application-prod.yml
+      - config/application-prod.yml
