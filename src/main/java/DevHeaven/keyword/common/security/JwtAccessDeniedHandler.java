@@ -2,7 +2,7 @@ package DevHeaven.keyword.common.security;
 
 import static DevHeaven.keyword.common.exception.type.ErrorCode.ACCESS_DENIED_JWT_EXCEPTION;
 
-import DevHeaven.keyword.common.exception.util.ErrorResponseUtils;
+import DevHeaven.keyword.common.exception.util.ResponseUtils;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,11 +16,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
-  private final ErrorResponseUtils errorResponseUtils;
+  private final ResponseUtils responseUtils;
 
   @Override
   public void handle(final HttpServletRequest request, final HttpServletResponse response,
-      AccessDeniedException accessDeniedException) throws IOException, ServletException {
-    errorResponseUtils.sendErrorResponse(response, ACCESS_DENIED_JWT_EXCEPTION);
+      final AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    responseUtils.sendErrorResponse(response, ACCESS_DENIED_JWT_EXCEPTION);
   }
 }
