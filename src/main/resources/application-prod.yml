@@ -2,4 +2,5 @@ spring:
   config:
     activate:
       on-profile: prod
-    import: "classpath:properties/application-prod.yml"
+    import: 
+      - properties/application-prod.yml
