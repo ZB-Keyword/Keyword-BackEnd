@@ -36,8 +36,8 @@ public class ScheduleService {
     private final ChatRoomRepository chatRoomRepository;
 
     public Page<ScheduleListResponse> getScheduleList(
-            MemberAdapter memberAdapter,
-            Pageable pageable
+            final MemberAdapter memberAdapter,
+            final Pageable pageable
     ) {
         Member member = getMemberByEmail(memberAdapter.getEmail());
         List<Schedule> scheduleList =
@@ -48,8 +48,9 @@ public class ScheduleService {
                 .collect(Collectors.toList()), pageable, scheduleList.size());
     }
 
-    public ScheduleCreateResponse createSchedule(ScheduleCreateRequest request,
-                                                 MemberAdapter memberAdapter) {
+    public ScheduleCreateResponse createSchedule(
+            final ScheduleCreateRequest request,
+            final MemberAdapter memberAdapter) {
 
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
@@ -77,13 +78,18 @@ public class ScheduleService {
                 .build();
     }
 
-    private List<Member> toMemberList(List<ScheduleFriend> scheduleFriendList) {
+    private List<Member> toMemberList(
+            final List<ScheduleFriend> scheduleFriendList) {
+
         return scheduleFriendList.stream()
                 .map(sf -> memberRepository.findById(sf.getMemberId()).get())
                 .collect(Collectors.toList());
     }
 
-    public boolean deleteSchedule(MemberAdapter memberAdapter, final Long scheduleId) {
+    public boolean deleteSchedule(
+            final MemberAdapter memberAdapter,
+            final Long scheduleId) {
+
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
         Schedule schedule = scheduleRepository.findById(scheduleId)
@@ -99,7 +105,9 @@ public class ScheduleService {
         return true;
     }
 
-    private void validateOrganizerSchedule(Member member, Schedule schedule) {
+    private void validateOrganizerSchedule(
+            final Member member,
+            final Schedule schedule) {
         Schedule savedSchedule =
                 scheduleRepository.findByMember(member)
                         .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
@@ -111,7 +119,11 @@ public class ScheduleService {
 
 
 
-    public ScheduleDetailResponse getScheduleDetail(MemberAdapter memberAdapter, Long scheduleId, Long noticeId) {
+    public ScheduleDetailResponse getScheduleDetail(
+            final MemberAdapter memberAdapter,
+            final Long scheduleId,
+            final Long noticeId) {
+
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
         Schedule schedule = scheduleRepository.findById(scheduleId)
@@ -121,6 +133,7 @@ public class ScheduleService {
     }
 
     private Member getMemberByEmail(final String email) {
+
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
     }

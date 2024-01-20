@@ -36,7 +36,10 @@ public class ChatRoomService {
     private final ScheduleRepository scheduleRepository;
     private final MemberRepository memberRepository;
 
-    public boolean createChatRoom(final MemberAdapter memberAdapter, final Long scheduleId) {
+    public boolean createChatRoom(
+            final MemberAdapter memberAdapter,
+            final Long scheduleId) {
+
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
         Schedule schedule = scheduleRepository.findById(scheduleId)
@@ -49,13 +52,18 @@ public class ChatRoomService {
         return true;
     }
 
-    private void validateMemberSchedule(Member member, Schedule schedule) {
+    private void validateMemberSchedule(
+            final Member member,
+            final Schedule schedule) {
+
         if (!schedule.getFriendList().contains(member)) {
             throw new ScheduleException(SCHEDULE_MEMBER_UNMATCHED);
         }
     }
 
-    public Page<ChatRoomListResponse> getChatRoomList(final MemberAdapter memberAdapter, Pageable pageable) {
+    public Page<ChatRoomListResponse> getChatRoomList(
+            final MemberAdapter memberAdapter,
+            final Pageable pageable) {
 
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
@@ -67,15 +75,16 @@ public class ChatRoomService {
         for (Schedule schedule : scheduleList) {
             chatRoomList.add(
                     chatRoomRepository.findBySchedule(schedule));
-            System.out.println(schedule.getScheduleId());
         }
-        System.out.println(chatRoomList);
+
         return new PageImpl<>(chatRoomList.stream()
                 .map(ChatRoom::from)
                 .collect(Collectors.toList()), pageable, chatRoomList.size());
     }
 
-    private Member getMemberByEmail(final String email) {
+    private Member getMemberByEmail(
+            final String email) {
+
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
     }
@@ -84,7 +93,8 @@ public class ChatRoomService {
      * 채팅방 조회
      */
     public List<ChatResponse> enterChatRoom(
-            final MemberAdapter memberAdapter, final Long chatRoomId) {
+            final MemberAdapter memberAdapter,
+            final Long chatRoomId) {
 
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new ChatException(CHATROOM_NOT_FOUND));

@@ -27,8 +27,8 @@ public class ScheduleController {
   
     @PostMapping
     public ResponseEntity<ScheduleCreateResponse> createSchedule(
-        @RequestBody ScheduleCreateRequest request,
-        @AuthenticationPrincipal MemberAdapter memberAdapter) {
+        @RequestBody final ScheduleCreateRequest request,
+        @AuthenticationPrincipal final MemberAdapter memberAdapter) {
 
         return ResponseEntity.ok(
                 scheduleService.createSchedule(request, memberAdapter));
@@ -36,15 +36,15 @@ public class ScheduleController {
 
     @GetMapping
     public ResponseEntity<Page<ScheduleListResponse>> getScheduleList(
-            @AuthenticationPrincipal MemberAdapter memberAdapter,
-            Pageable pageable) {
+            @AuthenticationPrincipal final MemberAdapter memberAdapter,
+            final Pageable pageable) {
         return ResponseEntity.ok(
                 scheduleService.getScheduleList(memberAdapter, pageable));
     }
 
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<Boolean> deleteSchedule(
-            @AuthenticationPrincipal MemberAdapter memberAdapter,
+            @AuthenticationPrincipal final MemberAdapter memberAdapter,
             @PathVariable final Long scheduleId
     ) {
         return ResponseEntity.ok(
@@ -53,9 +53,9 @@ public class ScheduleController {
 
     @GetMapping("/{scheduleId}")
     public ResponseEntity<ScheduleDetailResponse> getScheduleDetail(
-            @AuthenticationPrincipal MemberAdapter memberAdapter,
-            @PathVariable Long scheduleId,
-            @RequestParam Long noticeId
+            @AuthenticationPrincipal final MemberAdapter memberAdapter,
+            @PathVariable final Long scheduleId,
+            @RequestParam final Long noticeId
     ) {
         return ResponseEntity.ok(
                 scheduleService.getScheduleDetail(

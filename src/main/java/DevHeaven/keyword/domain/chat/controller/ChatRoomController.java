@@ -25,7 +25,7 @@ public class ChatRoomController {
 
     @PostMapping("/room/{scheduleId}")
     public ResponseEntity<Boolean> createChatRoom(
-            @AuthenticationPrincipal MemberAdapter memberAdapter,
+            @AuthenticationPrincipal final MemberAdapter memberAdapter,
             @PathVariable final Long scheduleId) {
 
         return ResponseEntity.ok(
@@ -34,8 +34,8 @@ public class ChatRoomController {
 
     @GetMapping("/room")
     public ResponseEntity<Page<ChatRoomListResponse>> getChatRoomList(
-            @AuthenticationPrincipal MemberAdapter memberAdapter,
-            Pageable pageable) {
+            @AuthenticationPrincipal final MemberAdapter memberAdapter,
+            final Pageable pageable) {
 
         return ResponseEntity.ok(
                 chatRoomService.getChatRoomList(memberAdapter, pageable));
@@ -44,7 +44,7 @@ public class ChatRoomController {
     @GetMapping("/room/{chatRoomId}")
     public ResponseEntity<List<ChatResponse>> enterChatRoom(
             @PathVariable final Long chatRoomId,
-            @AuthenticationPrincipal MemberAdapter memberAdapter) {
+            @AuthenticationPrincipal final MemberAdapter memberAdapter) {
 
         return ResponseEntity.ok(
                 chatRoomService.enterChatRoom(memberAdapter, chatRoomId));
