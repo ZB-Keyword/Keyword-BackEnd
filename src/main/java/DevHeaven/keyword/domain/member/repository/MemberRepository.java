@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
@@ -25,4 +26,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Page<Member> findAllByNameOrEmailContainingKeyword(String keyword, Pageable pageable);
 
     Page<Member> findAllByNameContainingOrEmailContaining(String keyword, String keyword2, Pageable pageable);
+
+
+/*    @Query(nativeQuery = true,
+        value = "DELETE FROM Schedule s " +
+            "WHERE s.member_id IN (SELECT m.member_id FROM Member m WHERE m.member_id = :memberId)")
+    void deleteByMemberId(@Param("memberId") Long memberId);*/
 }

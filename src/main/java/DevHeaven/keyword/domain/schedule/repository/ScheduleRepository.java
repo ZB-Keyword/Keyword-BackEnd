@@ -27,4 +27,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             " WHERE ABS(timestampdiff(DAY, updated_at, NOW())) <= 1 and" +
             " STATUS = 'END' and abs(DATEDIFF(schedule_at, NOW())) >= 3", nativeQuery = true)
     List<Schedule> findScheduleEndThreeDay();
+
+
 }

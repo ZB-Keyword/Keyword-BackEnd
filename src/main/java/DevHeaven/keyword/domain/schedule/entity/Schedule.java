@@ -99,4 +99,17 @@ public class Schedule extends BaseTimeEntity {
                 .map(m -> new ScheduleFriend(m.getMemberId(), m.getName()))
                 .collect(Collectors.toList());
     }
+
+    public void updateSchedule(String title, String contents, LocalDateTime scheduleAt,
+        String locationExplanation, Double latitude, Double longitude, Long remindAt) {
+        this.title = title;
+        this.contents = contents;
+        this.scheduleAt = scheduleAt;
+        this.locationExplanation = locationExplanation;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.remindAt = remindAt;
+    }
+
+
 }

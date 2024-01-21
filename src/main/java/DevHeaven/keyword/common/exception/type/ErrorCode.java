@@ -77,6 +77,7 @@ public enum ErrorCode {
     FAIL_MODIFY_LONGITUDE(HttpStatus.BAD_REQUEST, "경도 수정에 실패했습니다."),
     FAIL_MODIFY_REMINDAT(HttpStatus.BAD_REQUEST, "알림 시간 수정에 실패했습니다."),
     FAIL_MODIFY_REMINDAT_AFTER_SCHEDULEAT(HttpStatus.BAD_REQUEST, "알림 시간은 일정 시간 이전으로만 설정할 수 있습니다."),
+    FAIL_MODIFY_FRIENDLIST(HttpStatus.BAD_REQUEST, "친구 리스트 수정에 실패했습니다."),
 
     //notice
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND ,"해당 알림을 찾을 수 없습니다");
