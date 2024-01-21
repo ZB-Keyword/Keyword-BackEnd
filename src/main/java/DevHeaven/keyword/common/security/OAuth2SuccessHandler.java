@@ -18,8 +18,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
   private final MemberService memberService;
 
-  // private static final String HOME_URL = "http://localhost:8080/"; - local 테스트 용도
-  private static final String HOME_URL = "https://keyword2.store/";
+  // private static final String HOME_URL = "http://localhost:8080/"; // - local 테스트 용도
+  private static final String HOME_URL = "http://localhost:5173/";    // - front local 테스트 용도
+  //private static final String HOME_URL = "https://keyword2.store/";
   private static final String REDIRECT_URL = "members/signin/oauth/";
 
   @Override
