@@ -12,7 +12,6 @@ import DevHeaven.keyword.domain.friend.dto.request.FriendSearchListRequest;
 import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
 import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.repository.FriendRepository;
-import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
@@ -21,13 +20,14 @@ import DevHeaven.keyword.domain.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import static DevHeaven.keyword.common.exception.type.ErrorCode.*;
 import static DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest.REQUEST;
 import static DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest.REQUESTED;
@@ -268,4 +268,6 @@ public class FriendService {
 
     return true;
   }
+
+
 }
