@@ -1,8 +1,10 @@
 package DevHeaven.keyword.domain.schedule.entity;
 
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
+import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.schedule.dto.ScheduleFriend;
+import DevHeaven.keyword.domain.schedule.dto.request.ScheduleModifyRequest;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleDetailResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleListResponse;
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
@@ -14,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.elasticsearch.monitor.os.OsStats.Mem;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
@@ -101,14 +104,14 @@ public class Schedule extends BaseTimeEntity {
     }
 
 
-    public void updateSchedule(String title, String contents, LocalDateTime scheduleAt,
-        String locationExplanation, Double latitude, Double longitude, Long remindAt) {
-        this.title = title;
-        this.contents = contents;
-        this.scheduleAt = scheduleAt;
-        this.locationExplanation = locationExplanation;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.remindAt = remindAt;
+    public void updateSchedule(final ScheduleModifyRequest modifyRequest, final List<Member> friendList) {
+        this.title = modifyRequest.getTitle();
+        this.contents = modifyRequest.getContents();
+        this.scheduleAt = modifyRequest.getScheduleAt();
+        this.locationExplanation = modifyRequest.getLocationExplanation();
+        this.latitude = modifyRequest.getLatitude();
+        this.longitude = modifyRequest.getLongitude();
+        this.remindAt = modifyRequest.getRemindAt();
+        this.friendList=friendList;
     }
 }

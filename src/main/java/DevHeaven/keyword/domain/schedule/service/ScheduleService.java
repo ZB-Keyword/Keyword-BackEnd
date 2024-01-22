@@ -11,6 +11,7 @@ import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleCreateRequest;
 import DevHeaven.keyword.domain.schedule.dto.ScheduleFriend;
+import DevHeaven.keyword.domain.schedule.dto.request.ScheduleFriendRequest;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleModifyRequest;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleCreateResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleDetailResponse;
@@ -146,23 +147,25 @@ public class ScheduleService {
                 .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
     }
 
+    @Transactional
     public ScheduleModifyResponse modifySchedule(
-            MemberAdapter memberAdapter,
+            final MemberAdapter memberAdapter,
             final Long scheduleId,
             final ScheduleModifyRequest request) {
 
-        Member member = getMemberByEmail(memberAdapter.getEmail());
+        final Member member = getMemberByEmail(memberAdapter.getEmail());
 
-        Schedule schedule = scheduleRepository.findById(scheduleId)
+        final Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
         if (schedule.getMember().getMemberId() != member.getMemberId()) {
             throw new ScheduleException(ErrorCode.MEMBER_NOT_ORGANIZER);
         }
 
-        modifyInfomation(request, schedule);
 
-        scheduleRepository.save(schedule);
+        schedule.updateSchedule(request, editToMemberList(request.getScheduleFriendList()));
+
+        //scheduleRepository.save(schedule);
 
         return ScheduleModifyResponse.builder()
                 .scheduleId(scheduleId)
@@ -171,77 +174,13 @@ public class ScheduleService {
 
     }
 
-    private static void modifyInfomation(ScheduleModifyRequest request, Schedule schedule) {
-        if (request.getTitle() != null) {
-            if (schedule.getTitle().equals(request.getTitle())) {
-                throw new ScheduleException(ErrorCode.FAIL_MODIFY_TITLE);
-            }
+    private List<Member> editToMemberList(
+        final List<ScheduleFriendRequest> scheduleFriendList) {
 
-            schedule.updateSchedule(request.getTitle(), schedule.getContents(), schedule.getScheduleAt(),
-                    schedule.getLocationExplanation(), schedule.getLatitude(), schedule.getLongitude(),
-                    schedule.getRemindAt());
-        }
-
-        if (request.getContents() != null) {
-            if (schedule.getContents().equals(request.getContents())) {
-                throw new ScheduleException(ErrorCode.FAIL_MODIFY_CONTENT);
-            }
-            schedule.updateSchedule(schedule.getTitle(), request.getContents(), schedule.getScheduleAt(),
-                    schedule.getLocationExplanation(), schedule.getLatitude(), schedule.getLongitude(),
-                    schedule.getRemindAt());
-        }
-
-        if (request.getScheduleAt() != null) {
-            if (schedule.getScheduleAt().equals(request.getScheduleAt())) {
-                throw new ScheduleException(ErrorCode.FAIL_MODIFY_SCHEDULEAT);
-            } else if (!request.getScheduleAt().equals("") && request.getScheduleAt()
-                    .isAfter(LocalDateTime.now())) {
-
-                schedule.updateSchedule(schedule.getTitle(), schedule.getContents(),
-                        request.getScheduleAt(), schedule.getLocationExplanation(), schedule.getLatitude(),
-                        schedule.getLongitude(), schedule.getRemindAt());
-            }
-        }
-
-        if (request.getLocationExplanation() != null) {
-            if (schedule.getLocationExplanation().equals(request.getLocationExplanation())) {
-                throw new ScheduleException(ErrorCode.FAIL_MODIFY_LOCATIONEXPLANATION);
-            }
-            schedule.updateSchedule(schedule.getTitle(), schedule.getContents(), schedule.getScheduleAt(),
-                    request.getLocationExplanation(), schedule.getLatitude(), schedule.getLongitude(),
-                    schedule.getRemindAt());
-
-        }
-
-        if (request.getLatitude() != null) {
-            if (schedule.getLatitude().equals(request.getLatitude())) {
-                throw new ScheduleException(ErrorCode.FAIL_MODIFY_LATITUDE);
-            }
-            schedule.updateSchedule(schedule.getTitle(), schedule.getContents(), schedule.getScheduleAt(),
-                    schedule.getLocationExplanation(), request.getLatitude(), schedule.getLongitude(),
-                    schedule.getRemindAt());
-        }
-
-        if (request.getLongitude() != null) {
-            if (schedule.getLongitude().equals(request.getLongitude())) {
-                throw new ScheduleException(ErrorCode.FAIL_MODIFY_LONGITUDE);
-            }
-            schedule.updateSchedule(schedule.getTitle(), schedule.getContents(), schedule.getScheduleAt(),
-                    schedule.getLocationExplanation(), schedule.getLatitude(), request.getLongitude(),
-                    schedule.getRemindAt());
-        }
-
-        if (request.getRemindAt() != null) {
-            if (schedule.getRemindAt().equals(request.getRemindAt())) {
-                throw new ScheduleException(ErrorCode.FAIL_MODIFY_REMINDAT);
-            } else if (!request.getRemindAt().equals("")) {
-                if (LocalDateTime.now().plusHours(request.getRemindAt()).isAfter(request.getScheduleAt())) {
-                    throw new ScheduleException(ErrorCode.FAIL_MODIFY_REMINDAT_AFTER_SCHEDULEAT);
-                }
-                schedule.updateSchedule(schedule.getTitle(), schedule.getContents(),
-                        schedule.getScheduleAt(), schedule.getLocationExplanation(), schedule.getLatitude(),
-                        schedule.getLongitude(), request.getRemindAt());
-            }
-        }
+        return scheduleFriendList.stream()
+            .map(sf -> memberRepository.findById(sf.getMemberId()).get())
+            .collect(Collectors.toList());
     }
+
+
 }
