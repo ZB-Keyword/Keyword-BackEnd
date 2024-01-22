@@ -34,7 +34,7 @@ public class SecurityConfig {
 
     private static final String[] PERMIT_URL_PATTERNS = {
             "/docs/**",
-            "/v3/api-docs/swagger-config",
+            "/v3/api-docs/**",
             "/members/signup",
             "/members/signin/**",
             "/members/reissue",
