@@ -94,14 +94,14 @@ public class ScheduleService {
             final Long scheduleId) {
 
         Member member = getMemberByEmail(memberAdapter.getEmail());
-        System.out.println("1");
+
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
-        System.out.println("2");
+
         validateOrganizerSchedule(member, schedule);
-        System.out.println("3");
+
         schedule.setStatus(ScheduleStatus.DELETE);
-        System.out.println("4");
+
         ChatRoom chatRoom = chatRoomRepository.findBySchedule(schedule);
         chatRoom.setStatus(ChatRoomStatus.INVALID);
 
@@ -111,6 +111,7 @@ public class ScheduleService {
     private void validateOrganizerSchedule(
             final Member member,
             final Schedule schedule) {
+
         Schedule savedSchedule =
                 scheduleRepository.findByMemberAndScheduleId(member, schedule.getScheduleId())
                         .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
