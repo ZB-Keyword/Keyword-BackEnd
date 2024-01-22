@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -87,19 +88,20 @@ public class ScheduleService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public boolean deleteSchedule(
             final MemberAdapter memberAdapter,
             final Long scheduleId) {
 
         Member member = getMemberByEmail(memberAdapter.getEmail());
-
+        System.out.println("1");
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
-
+        System.out.println("2");
         validateOrganizerSchedule(member, schedule);
-
+        System.out.println("3");
         schedule.setStatus(ScheduleStatus.DELETE);
-
+        System.out.println("4");
         ChatRoom chatRoom = chatRoomRepository.findBySchedule(schedule);
         chatRoom.setStatus(ChatRoomStatus.INVALID);
 
@@ -110,7 +112,7 @@ public class ScheduleService {
             final Member member,
             final Schedule schedule) {
         Schedule savedSchedule =
-                scheduleRepository.findByMember(member)
+                scheduleRepository.findByMemberAndScheduleId(member, schedule.getScheduleId())
                         .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
         if (!Objects.equals(savedSchedule.getScheduleId(), schedule.getScheduleId())) {
