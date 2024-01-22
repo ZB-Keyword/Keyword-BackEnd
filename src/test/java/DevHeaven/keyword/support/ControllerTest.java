@@ -45,7 +45,7 @@ import org.springframework.test.web.servlet.MockMvc;
   }
 )
 @AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles("local")
+@ActiveProfiles("prod")
 public abstract class ControllerTest {
 
   @Autowired
