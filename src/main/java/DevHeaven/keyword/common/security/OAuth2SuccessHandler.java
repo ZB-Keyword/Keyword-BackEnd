@@ -20,9 +20,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
   private final MemberService memberService;
 
   // private static final String HOME_URL = "http://localhost:8080/"; // - local 테스트 용도
-  // private static final String HOME_URL = "http://localhost:5173/";    // - front local 테스트 용도
-  private static final String HOME_URL = "https://keyword2.store/";
-  private static final String REDIRECT_URL = "members/signin/oauth/";
+  private static final String HOME_URL = "http://localhost:5173/";    // - front local 테스트 용도
+  // private static final String HOME_URL = "https://keyword2.store/";
+
+  // private static final String REDIRECT_URL = "members/signin/oauth/";
+  private static final String REDIRECT_URL = "/auth/redirect/";        // - front 요청 redirect url
+
 
   @Override
   public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
@@ -40,8 +43,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
   }
 
   private String makeRedirectUrl(final TokenAndInfoResponse tokenAndInfoResponse) {
-    return HOME_URL + REDIRECT_URL +
-        tokenAndInfoResponse.getMyInfoResponse().getMemberId() + "?"
+    return
+        HOME_URL
+        + REDIRECT_URL
+        + tokenAndInfoResponse.getMyInfoResponse().getMemberId() + "?"
         + "accessToken=" + tokenAndInfoResponse.getTokenResponse().getAccessToken() + "&"
         + "refreshToken=" + tokenAndInfoResponse.getTokenResponse().getRefreshToken();
   }
