@@ -1,0 +1,374 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > FriendService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">DevHeaven.keyword.domain.friend.service</a>
+</div>
+
+<h1>Coverage Summary for Class: FriendService (DevHeaven.keyword.domain.friend.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FriendService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (2/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    10%
+  </span>
+  <span class="absValue">
+    (14/140)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package DevHeaven.keyword.domain.friend.service;
+&nbsp;
+&nbsp;import DevHeaven.keyword.common.aop.DistributedLock;
+&nbsp;import DevHeaven.keyword.common.exception.FriendException;
+&nbsp;import DevHeaven.keyword.common.exception.MemberException;
+&nbsp;import DevHeaven.keyword.common.exception.NoticeException;
+&nbsp;import DevHeaven.keyword.common.exception.type.ErrorCode;
+&nbsp;import DevHeaven.keyword.common.service.image.AmazonS3FileService;
+&nbsp;import DevHeaven.keyword.domain.friend.dto.request.FriendApproveRequest;
+&nbsp;import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
+&nbsp;import DevHeaven.keyword.domain.friend.dto.request.FriendSearchListRequest;
+&nbsp;import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
+&nbsp;import DevHeaven.keyword.domain.friend.entity.Friend;
+&nbsp;import DevHeaven.keyword.domain.friend.repository.FriendRepository;
+&nbsp;import DevHeaven.keyword.domain.friend.type.FriendStatus;
+&nbsp;import DevHeaven.keyword.domain.member.dto.MemberAdapter;
+&nbsp;import DevHeaven.keyword.domain.member.entity.Member;
+&nbsp;import DevHeaven.keyword.domain.member.repository.MemberRepository;
+&nbsp;import DevHeaven.keyword.domain.notice.entity.Notice;
+&nbsp;import DevHeaven.keyword.domain.notice.repository.NoticeRepository;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;import static DevHeaven.keyword.common.exception.type.ErrorCode.*;
+&nbsp;import static DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest.REQUEST;
+&nbsp;import static DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest.REQUESTED;
+&nbsp;import static DevHeaven.keyword.domain.friend.type.FriendStatus.*;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class FriendService {
+&nbsp;
+&nbsp;  private final FriendRepository friendRepository;
+&nbsp;  private final MemberRepository memberRepository;
+&nbsp;  private final NoticeRepository noticeRepository;
+&nbsp;  private final AmazonS3FileService fileService;
+&nbsp;
+&nbsp;  public List&lt;FriendSearchListRequest&gt; searchFriend(final MemberAdapter memberAdapter,
+&nbsp;      final String keyword,
+&nbsp;      final Pageable pageable) {
+&nbsp;
+&nbsp;    // 현재는 임시로 멤버 정보만 가져옴
+&nbsp;    // TODO : ES 적용 후 pageable 처리 하여 멤버 가져오기
+&nbsp;    // TODO : 각 엔티티가 memberAdapter 로 넘어온 멤버와 어떤 관계 (friendStatus) 인지 DTO 로 생성
+<b class="nc">&nbsp;    final Member member = memberRepository.findByEmail(memberAdapter.getEmail())</b>
+<b class="nc">&nbsp;        .orElseThrow(() -&gt; new MemberException(MEMBER_NOT_FOUND));</b>
+&nbsp;
+<b class="nc">&nbsp;    final Page &lt;Member&gt; findByKeywordMembers = memberRepository.findAllByNameContainingOrEmailContaining(</b>
+&nbsp;        keyword , keyword , pageable);
+<b class="nc">&nbsp;    List&lt;FriendSearchListRequest&gt; friendListResponses = findByKeywordMembers.stream().map(</b>
+&nbsp;        friendMember -&gt; {
+&nbsp;          //내가나를 요청하면 안되니까
+<b class="nc">&nbsp;          if (member.getMemberId() != friendMember.getMemberId()) {</b>
+<b class="nc">&nbsp;            if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(</b>
+<b class="nc">&nbsp;                friendMember.getMemberId() , member.getMemberId() , FRIEND_CHECKING</b>
+<b class="nc">&nbsp;            ).isPresent()) {</b>
+<b class="nc">&nbsp;              return FriendSearchListRequest.builder()</b>
+<b class="nc">&nbsp;                  .memberId(friendMember.getMemberId())</b>
+<b class="nc">&nbsp;                  .name(friendMember.getName())</b>
+<b class="nc">&nbsp;                  .email(friendMember.getEmail())</b>
+<b class="nc">&nbsp;                  .imageUrl(</b>
+<b class="nc">&nbsp;                      fileService.createUrl(friendMember.getProfileImageFileName()))</b>
+&nbsp;
+<b class="nc">&nbsp;                  .status(&quot;FRIEND_REQUESTED&quot;)</b>
+<b class="nc">&nbsp;                  .build();</b>
+<b class="nc">&nbsp;            } else if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(</b>
+<b class="nc">&nbsp;                member.getMemberId() , friendMember.getMemberId() , FRIEND_ACCEPTED</b>
+<b class="nc">&nbsp;            ).isPresent()) {</b>
+<b class="nc">&nbsp;              return FriendSearchListRequest.builder()</b>
+<b class="nc">&nbsp;                  .memberId(friendMember.getMemberId())</b>
+<b class="nc">&nbsp;                  .name(friendMember.getName())</b>
+<b class="nc">&nbsp;                  .email(friendMember.getEmail())</b>
+<b class="nc">&nbsp;                  .imageUrl(</b>
+<b class="nc">&nbsp;                      fileService.createUrl(friendMember.getProfileImageFileName()))</b>
+<b class="nc">&nbsp;                  .status(&quot;FRIEND&quot;)</b>
+<b class="nc">&nbsp;                  .build();</b>
+&nbsp;
+<b class="nc">&nbsp;            } else if (friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(</b>
+<b class="nc">&nbsp;                member.getMemberId() , friendMember.getMemberId() , FRIEND_CHECKING</b>
+<b class="nc">&nbsp;            ).isPresent()) {</b>
+<b class="nc">&nbsp;              return FriendSearchListRequest.builder()</b>
+<b class="nc">&nbsp;                  .memberId(friendMember.getMemberId())</b>
+<b class="nc">&nbsp;                  .name(friendMember.getName())</b>
+<b class="nc">&nbsp;                  .email(friendMember.getEmail())</b>
+<b class="nc">&nbsp;                  .imageUrl(</b>
+<b class="nc">&nbsp;                      fileService.createUrl(friendMember.getProfileImageFileName()))</b>
+<b class="nc">&nbsp;                  .status(&quot;FRIEND_REQUEST&quot;)</b>
+<b class="nc">&nbsp;                  .build();</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;              return FriendSearchListRequest.builder()</b>
+<b class="nc">&nbsp;                  .memberId(friendMember.getMemberId())</b>
+<b class="nc">&nbsp;                  .name(friendMember.getName())</b>
+<b class="nc">&nbsp;                  .email(friendMember.getEmail())</b>
+<b class="nc">&nbsp;                  .imageUrl(</b>
+<b class="nc">&nbsp;                      fileService.createUrl(friendMember.getProfileImageFileName()))</b>
+<b class="nc">&nbsp;                  .status(&quot;NOT_FRIEND&quot;)</b>
+<b class="nc">&nbsp;                  .build();</b>
+&nbsp;            }
+&nbsp;          }else{
+<b class="nc">&nbsp;            return FriendSearchListRequest.builder()</b>
+<b class="nc">&nbsp;                .memberId(friendMember.getMemberId())</b>
+<b class="nc">&nbsp;                .name(friendMember.getName())</b>
+<b class="nc">&nbsp;                .email(friendMember.getEmail())</b>
+<b class="nc">&nbsp;                .imageUrl(</b>
+<b class="nc">&nbsp;                    fileService.createUrl(friendMember.getProfileImageFileName()))</b>
+<b class="nc">&nbsp;                .status(&quot;ME&quot;)</b>
+<b class="nc">&nbsp;                .build();</b>
+&nbsp;          }
+&nbsp;        }
+<b class="nc">&nbsp;    ).collect(Collectors.toList());</b>
+<b class="nc">&nbsp;    return friendListResponses;</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  public List &lt;FriendListResponse&gt; getFriendList(final MemberAdapter memberAdapter ,final FriendListStatusRequest friendState,
+&nbsp;      final Long noticeId, final Pageable pageable){
+<b class="nc">&nbsp;    final Member requestMember = memberRepository.findByEmail(memberAdapter.getEmail())</b>
+<b class="nc">&nbsp;        .orElseThrow(() -&gt; new MemberException(MEMBER_NOT_FOUND));</b>
+&nbsp;
+<b class="nc">&nbsp;    if(noticeId != null) {</b>
+<b class="nc">&nbsp;      final Notice notice = noticeRepository.findById(noticeId)</b>
+<b class="nc">&nbsp;          .orElseThrow(() -&gt; new NoticeException(ErrorCode.NOTICE_NOT_FOUND));</b>
+<b class="nc">&nbsp;      notice.modifyNoticeIsRead();</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    List &lt;Long&gt; friendIds = null;</b>
+<b class="nc">&nbsp;    if(friendState == REQUEST) {</b>
+&nbsp;      //내가 친구 요청한 목록 Checking
+<b class="nc">&nbsp;      friendIds = friendRepository.findFriendListByMemberId(</b>
+<b class="nc">&nbsp;          requestMember.getMemberId() , FRIEND_CHECKING , pageable).getContent();</b>
+&nbsp;
+<b class="nc">&nbsp;    }else if(friendState == REQUESTED) {</b>
+&nbsp;      //내가 친구 요청을 받은 목록
+<b class="nc">&nbsp;      friendIds = friendRepository.findFriendListByFriendId(</b>
+<b class="nc">&nbsp;          requestMember.getMemberId() , FRIEND_CHECKING , pageable).getContent();</b>
+&nbsp;
+&nbsp;    }else {
+<b class="nc">&nbsp;      friendIds  = friendRepository.findFriendListByMemberId(</b>
+<b class="nc">&nbsp;          requestMember.getMemberId() , FRIEND_ACCEPTED , pageable).getContent();</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    final List &lt;Member&gt; friendInfos = memberRepository.findByMemberIdIn(friendIds);</b>
+<b class="nc">&nbsp;    return from(friendInfos);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private List&lt;FriendListResponse&gt; from(List &lt;Member&gt; friendInfos){
+<b class="nc">&nbsp;    return friendInfos.stream().map(</b>
+&nbsp;        friendInfo -&gt; {
+<b class="nc">&nbsp;          FriendListResponse friendListResponse = FriendListResponse.from(friendInfo);</b>
+<b class="nc">&nbsp;          friendListResponse.modifyImageUrl(fileService.createUrl(friendInfo.getProfileImageFileName()));</b>
+<b class="nc">&nbsp;          return friendListResponse;</b>
+&nbsp;        })
+<b class="nc">&nbsp;        .collect(Collectors.toList());</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  @DistributedLock(key = &quot;RequestFriend&quot;)
+&nbsp;  public boolean requestFriend(final MemberAdapter memberAdapter, final Long friendId) {
+<b class="nc">&nbsp;    final Member requestMember = memberRepository.findByEmail(memberAdapter.getEmail())</b>
+<b class="nc">&nbsp;        .orElseThrow(() -&gt; new MemberException(MEMBER_NOT_FOUND));</b>
+<b class="nc">&nbsp;    final Member friend = memberRepository.findById(friendId)</b>
+<b class="nc">&nbsp;        .orElseThrow(() -&gt; new MemberException(MEMBER_NOT_FOUND));</b>
+&nbsp;
+&nbsp;    //이미 친구인지, 친구 요청을 받는 쪽에서 이미 요청을 했는지 확인(친구 요청 유효성 검사)
+<b class="nc">&nbsp;    validateFriendRequest(requestMember, friend);</b>
+&nbsp;
+&nbsp;    //처음 친구 요청이면 insert하고 친구 삭제,거절후 또 요청한거면 update 실행
+<b class="nc">&nbsp;    final Optional&lt;Friend&gt; friendRequest = friendRepository.findFriendRequest(</b>
+<b class="nc">&nbsp;        requestMember.getMemberId(),</b>
+<b class="nc">&nbsp;        friend.getMemberId(), Arrays.asList(FRIEND_REFUSED, FRIEND_DELETE));</b>
+&nbsp;
+<b class="nc">&nbsp;    if (friendRequest.isPresent()) {</b>
+<b class="nc">&nbsp;      final Friend friendPreRequest = friendRequest.get();</b>
+<b class="nc">&nbsp;      friendPreRequest.modifyFriendStatus(FRIEND_CHECKING);</b>
+<b class="nc">&nbsp;    } else {</b>
+<b class="nc">&nbsp;      final Friend friendFirstRequest = Friend.builder()</b>
+<b class="nc">&nbsp;          .memberRequest(requestMember)</b>
+<b class="nc">&nbsp;          .friend(friend)</b>
+<b class="nc">&nbsp;          .status(FRIEND_CHECKING)</b>
+<b class="nc">&nbsp;          .build();</b>
+<b class="nc">&nbsp;      friendRepository.save(friendFirstRequest);</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  private void validateFriendRequest(final Member requestMember, final Member friend) {
+&nbsp;    //요청 A, 요청받은 B
+&nbsp;    //A -&gt; B 가 이미 친구 인지
+<b class="nc">&nbsp;    final boolean friendExist = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(</b>
+<b class="nc">&nbsp;        requestMember.getMemberId(), friend.getMemberId(), FRIEND_ACCEPTED).isPresent();</b>
+<b class="nc">&nbsp;    if (friendExist) {</b>
+<b class="nc">&nbsp;      throw new FriendException(ErrorCode.FRIEND_ALREADY);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //B -&gt; A 가 이미 요청한 기록이 있는지
+<b class="nc">&nbsp;    final boolean friendRequestExist = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(</b>
+<b class="nc">&nbsp;        friend.getMemberId(),</b>
+<b class="nc">&nbsp;        requestMember.getMemberId(), FRIEND_CHECKING).isPresent();</b>
+<b class="nc">&nbsp;    if (friendRequestExist) {</b>
+<b class="nc">&nbsp;      throw new FriendException(ErrorCode.FRIEND_REQUEST_ALREADY);</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;
+&nbsp;  @Transactional
+&nbsp;  public boolean deleteFriend(final MemberAdapter memberAdapter, final Long memberRequestId) {
+&nbsp;    // TODO : 시큐리티 적용후 멤버관련 유효성 검사 추가 (임시 방편으로 해둠)
+<b class="fc">&nbsp;    final Member requestMember = memberRepository.findByEmail(memberAdapter.getEmail())</b>
+<b class="fc">&nbsp;        .orElseThrow(() -&gt; new MemberException(</b>
+&nbsp;            MEMBER_NOT_FOUND));
+&nbsp;
+<b class="fc">&nbsp;    final Member friend = memberRepository.findById(memberRequestId)</b>
+<b class="fc">&nbsp;        .orElseThrow(() -&gt; new MemberException(</b>
+&nbsp;            MEMBER_NOT_FOUND));
+&nbsp;
+<b class="fc">&nbsp;    final Friend memberToFriend = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(</b>
+<b class="fc">&nbsp;            requestMember.getMemberId(), friend.getMemberId(), FRIEND_ACCEPTED)</b>
+<b class="fc">&nbsp;        .orElseThrow(() -&gt; new FriendException(FRIEND_NOT_FOUND));</b>
+&nbsp;
+<b class="fc">&nbsp;    final Friend friendToMember = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(</b>
+<b class="fc">&nbsp;            friend.getMemberId(), requestMember.getMemberId(), FRIEND_ACCEPTED)</b>
+<b class="fc">&nbsp;        .orElseThrow(() -&gt; new FriendException(FRIEND_NOT_FOUND));</b>
+&nbsp;
+<b class="fc">&nbsp;    memberToFriend.modifyFriendStatus(FRIEND_DELETE);</b>
+<b class="fc">&nbsp;    friendToMember.modifyFriendStatus(FRIEND_DELETE);</b>
+&nbsp;
+<b class="fc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Transactional
+&nbsp;  public boolean handleFriendRequest(final MemberAdapter memberAdapter, final Long memberReqId, final FriendApproveRequest friendApproveRequest) {
+&nbsp;
+<b class="nc">&nbsp;    final Member acceptingMember = memberRepository.findByEmail(memberAdapter.getEmail())</b>
+<b class="nc">&nbsp;            .orElseThrow(() -&gt; new MemberException(MEMBER_NOT_FOUND));</b>
+&nbsp;
+<b class="nc">&nbsp;    final Friend friendRequest = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(memberReqId, acceptingMember.getMemberId(),FRIEND_CHECKING)</b>
+<b class="nc">&nbsp;            .orElseThrow(() -&gt; new FriendException(FRIEND_NOT_FOUND));</b>
+&nbsp;
+<b class="nc">&nbsp;    if (friendRequest.getFriend().getMemberId() != acceptingMember.getMemberId()) {</b>
+<b class="nc">&nbsp;      throw new FriendException(FRIEND_REQUEST_INVALID);</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    friendRequest.modifyFriendStatus(friendApproveRequest.getFriendStatus());</b>
+&nbsp;
+&nbsp;    //처음 친구 맺는 경우가 아니라면
+<b class="nc">&nbsp;    final Optional &lt;Friend&gt; friendToMember = friendRepository.findFriendRequest(</b>
+<b class="nc">&nbsp;        acceptingMember.getMemberId() , friendRequest.getMemberRequest().getMemberId() ,</b>
+<b class="nc">&nbsp;        Arrays.asList(FRIEND_REFUSED , FRIEND_DELETE));</b>
+&nbsp;
+<b class="nc">&nbsp;    if(friendToMember.isPresent()){</b>
+<b class="nc">&nbsp;      friendToMember.get().modifyFriendStatus(friendApproveRequest.getFriendStatus());</b>
+<b class="nc">&nbsp;    }else if(friendApproveRequest.getFriendStatus() == FRIEND_ACCEPTED){</b>
+&nbsp;
+<b class="nc">&nbsp;      final Friend friendFirstRequest = Friend.builder()</b>
+<b class="nc">&nbsp;          .memberRequest(acceptingMember)</b>
+<b class="nc">&nbsp;          .friend(friendRequest.getMemberRequest())</b>
+<b class="nc">&nbsp;          .status(friendApproveRequest.getFriendStatus())</b>
+<b class="nc">&nbsp;          .build();</b>
+<b class="nc">&nbsp;      friendRepository.save(friendFirstRequest);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    return true;</b>
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-22 12:12</div>
+</div>
+</body>
+</html>

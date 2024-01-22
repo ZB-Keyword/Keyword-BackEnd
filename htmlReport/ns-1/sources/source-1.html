@@ -1,0 +1,168 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > FriendController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">DevHeaven.keyword.domain.friend.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: FriendController (DevHeaven.keyword.domain.friend.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FriendController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (2/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (2/6)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package DevHeaven.keyword.domain.friend.controller;
+&nbsp;
+&nbsp;import DevHeaven.keyword.domain.friend.dto.request.FriendApproveRequest;
+&nbsp;import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
+&nbsp;import DevHeaven.keyword.domain.friend.dto.request.FriendSearchListRequest;
+&nbsp;import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
+&nbsp;import DevHeaven.keyword.domain.friend.service.FriendService;
+&nbsp;import DevHeaven.keyword.domain.member.dto.MemberAdapter;
+&nbsp;import DevHeaven.keyword.domain.member.entity.Member;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.web.PageableDefault;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.security.core.annotation.AuthenticationPrincipal;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/friends&quot;)
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class FriendController {
+&nbsp;
+&nbsp;  private final FriendService friendService;
+&nbsp;
+&nbsp;  // TODO : 임시 메서드 명칭 (메서드 명이랑 DTO 바꿔주세요)
+&nbsp;  @GetMapping(params = {&quot;keyword&quot;})
+&nbsp;  public ResponseEntity&lt;List&lt;FriendSearchListRequest&gt;&gt; searchFriend(
+&nbsp;      @AuthenticationPrincipal final MemberAdapter memberAdapter,
+&nbsp;      @RequestParam final String keyword,
+&nbsp;      final Pageable pageable) {
+<b class="nc">&nbsp;    return ResponseEntity.ok(friendService.searchFriend(memberAdapter, keyword, pageable));</b>
+&nbsp;  }
+&nbsp;  
+&nbsp;  @GetMapping
+&nbsp;  public ResponseEntity&lt;List &lt;FriendListResponse&gt;&gt; getFriendList(@AuthenticationPrincipal final MemberAdapter memberAdapter,
+&nbsp;      @RequestParam(name = &quot;friend-state&quot;) final FriendListStatusRequest friendState, @RequestParam(required = false) final Long noticeId,
+&nbsp;      @PageableDefault(size = 5) final Pageable pageable
+&nbsp;      ) {
+&nbsp;
+<b class="nc">&nbsp;    return ResponseEntity.ok(friendService.getFriendList(memberAdapter, friendState, noticeId, pageable));</b>
+&nbsp;  }
+&nbsp;  @PostMapping(&quot;/{memberId}&quot;)
+&nbsp;  public ResponseEntity&lt;Boolean&gt; requestFriend(@AuthenticationPrincipal final MemberAdapter memberAdapter
+&nbsp;      ,@PathVariable final Long memberId){
+<b class="nc">&nbsp;    return ResponseEntity.ok(friendService.requestFriend(memberAdapter,memberId));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @DeleteMapping(&quot;/{memberReqId}&quot;)
+&nbsp;  public ResponseEntity &lt;Boolean&gt; deleteFriend(@AuthenticationPrincipal final MemberAdapter memberAdapter
+&nbsp;      ,@PathVariable(name = &quot;memberReqId&quot;) final Long memberRequestId){
+<b class="fc">&nbsp;    return ResponseEntity.ok(friendService.deleteFriend(memberAdapter ,memberRequestId));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @PatchMapping(&quot;/handle/{memberReqId}&quot;)
+&nbsp;  public ResponseEntity&lt;Boolean&gt; handleFriendRequest(
+&nbsp;          @AuthenticationPrincipal final MemberAdapter memberAdapter,
+&nbsp;          @PathVariable(name = &quot;memberReqId&quot;) final Long memberReqId,
+&nbsp;          @RequestBody final FriendApproveRequest friendApproveRequest) {
+<b class="nc">&nbsp;    return ResponseEntity.ok(friendService.handleFriendRequest(memberAdapter, memberReqId, friendApproveRequest));</b>
+&nbsp;  }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-01-22 12:12</div>
+</div>
+</body>
+</html>
