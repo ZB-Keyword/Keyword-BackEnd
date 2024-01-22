@@ -59,7 +59,7 @@ aws:
 logging:
   slack:
     webhook-uri: ${SLACK_URL}
-  config: classpath:logback-spring.xml
+  config: classpath:logback-spring-prod.xml
   level:
     com:
       amazonaws:
