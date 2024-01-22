@@ -24,7 +24,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
   // private static final String HOME_URL = "https://keyword2.store/";
 
   // private static final String REDIRECT_URL = "members/signin/oauth/";
-  private static final String REDIRECT_URL = "/auth/redirect/";        // - front 요청 redirect url
+  private static final String REDIRECT_URL = "/auth/redirect/";        // redirect url 수정
 
 
   @Override
