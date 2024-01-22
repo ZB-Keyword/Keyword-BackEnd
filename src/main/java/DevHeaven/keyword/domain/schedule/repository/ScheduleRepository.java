@@ -17,7 +17,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             + " WHERE sf.member_id = :id)", nativeQuery = true)
     List<Schedule> getScheduleListByMember(Long id);
 
-    Optional<Schedule> findByMember(Member member);
+    Optional<Schedule> findByMemberAndScheduleId(Member member, Long scheduleId);
 
     @Query(value = "SELECT * FROM schedule" +
             " WHERE STATUS = 'ONGOING' and abs(DATEDIFF(schedule_at, NOW())) >= 1", nativeQuery = true)
