@@ -32,7 +32,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 class FriendControllerTest extends ControllerTest {
 
-  private   ResourceSnippetParameters friendDeleteErrorResponse() {
+  private ResourceSnippetParameters friendDeleteErrorResponse() {
     return ResourceSnippetParameters.builder()
         .tag("Friend API")
         .summary("친구 삭제 API")

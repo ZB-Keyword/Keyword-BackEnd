@@ -95,14 +95,6 @@
       "friends-memberId486549215" : {
         "type" : "object"
       }
-    },
-    "securitySchemes": {
-      "AccessToken": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "Authorization",
-        "description": "Bearer Token for Authorization"
-      }
     }
   }
 }
