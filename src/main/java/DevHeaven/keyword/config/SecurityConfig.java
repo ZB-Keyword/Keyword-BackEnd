@@ -37,7 +37,9 @@ public class SecurityConfig {
             "/v3/api-docs/swagger-config",
             "/members/signup",
             "/members/signin/**",
-            "/members/reissue"
+            "/members/reissue",
+            "/login/oauth2/**",
+            "/oauth2/authorization/**"
     };
 
     @Bean
