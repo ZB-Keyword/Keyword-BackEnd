@@ -20,9 +20,7 @@ import DevHeaven.keyword.domain.schedule.entity.Schedule;
 import DevHeaven.keyword.domain.schedule.repository.ScheduleRepository;
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +40,11 @@ public class ScheduleService {
 
     public Page<ScheduleListResponse> getScheduleList(
             final MemberAdapter memberAdapter,
-            final Pageable pageable
+            Pageable pageable
     ) {
         Member member = getMemberByEmail(memberAdapter.getEmail());
+
+
         List<Schedule> scheduleList =
                 scheduleRepository.getScheduleListByMember(member.getMemberId());
 
