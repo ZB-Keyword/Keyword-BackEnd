@@ -14,7 +14,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query(value = "SELECT * FROM schedule s WHERE s.schedule_id in"
             + " (SELECT sf.schedule_id"
             + " FROM schedulefriend sf"
-            + " WHERE sf.member_id = :id)", nativeQuery = true)
+            + " WHERE sf.member_id = :id)"
+            + " ORDER BY s.status = 'ONGOING' DESC, s.schedule_at DESC;", nativeQuery = true)
     List<Schedule> getScheduleListByMember(Long id);
 
     Optional<Schedule> findByMemberAndScheduleId(Member member, Long scheduleId);
