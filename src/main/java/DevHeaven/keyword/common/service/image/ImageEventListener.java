@@ -17,9 +17,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class ImageEventListener {
 
-  //기본 이미지가 있다는 가정하에
-  private static final String DEFAULT_IMAGE_NAME = "default-image.png";
-
   private final AmazonS3 amazonS3;
 
   @Value("${aws.s3.folder}")
@@ -29,13 +26,9 @@ public class ImageEventListener {
   private String bucketName;
 
   @Async
-  @Transactional(propagation = REQUIRES_NEW)
   @TransactionalEventListener(fallbackExecution = true)
   public void deleteImageFileInS3(final S3ImageEvent event) {
     final String imageName = event.getImageName();
-    if (imageName.equals(DEFAULT_IMAGE_NAME)) {
-      return;
-    }
     final String key = folderName+imageName;
     amazonS3.deleteObject(new DeleteObjectRequest(bucketName,  key.trim()));
   }
