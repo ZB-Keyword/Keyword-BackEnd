@@ -44,7 +44,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         .queryParam("refreshtoken",tokenAndInfoResponse.getTokenResponse().getRefreshToken())
         .build()
         .toUriString();
-
+    log.error("redirct url made = {}",redirectUri);
     response.sendRedirect(redirectUri);
 
   }
