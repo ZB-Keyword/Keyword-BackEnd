@@ -39,7 +39,7 @@ public class ScheduleController {
     @GetMapping
     public ResponseEntity<Page<ScheduleListResponse>> getScheduleList(
             @AuthenticationPrincipal final MemberAdapter memberAdapter,
-            final Pageable pageable) {
+            Pageable pageable) {
         return ResponseEntity.ok(
                 scheduleService.getScheduleList(memberAdapter, pageable));
     }

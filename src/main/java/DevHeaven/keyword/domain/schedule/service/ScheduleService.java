@@ -47,7 +47,7 @@ public class ScheduleService {
 
 
         List<Schedule> scheduleList =
-                scheduleRepository.getScheduleListByMember(member.getMemberId());
+                scheduleRepository.getScheduleListByMember(member.getMemberId(), pageable);
 
         return new PageImpl<>(scheduleList.stream()
                 .map(Schedule::toScheduleList)
