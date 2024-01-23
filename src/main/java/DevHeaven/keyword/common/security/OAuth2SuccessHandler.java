@@ -34,7 +34,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
       final HttpServletResponse response,
       final Authentication authentication) throws IOException, ServletException {
 
-    log.error("success to social login");
+    log.info("success to social login");
 
     OAuthMemberAdapter oAuthMemberAdapter = (OAuthMemberAdapter) authentication.getPrincipal();
 
@@ -42,10 +42,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     // TODO : 현재는 Query String 형태로 프론트에 정보를 제공하지만, 추후 더 좋은 방법으로 교체 예정
     String redirectUri = getRedirectUrlByTokenAndInfoResponse(tokenAndInfoResponse);
-    log.error("redirect to = {}", redirectUri);
-
     response.sendRedirect(redirectUri);
-
   }
 
   private String getRedirectUrlByTokenAndInfoResponse(
