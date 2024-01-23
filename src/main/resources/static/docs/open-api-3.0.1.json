@@ -1,0 +1,117 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "THT API 문서",
+    "description": "Spring REST Docs with SwaggerUI.",
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8087"
+    }
+  ],
+  "tags": [],
+  "paths": {
+    "/friends/{memberId}": {
+      "delete": {
+        "tags": ["Friend API"],
+        "summary": "친구 삭제 API",
+        "description": "친구 삭제 API",
+        "operationId": "friends/delete/",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "description": "친구 삭제할 Member Id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer AccessToken",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "Bearer AccessToken"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/friends-memberId486549215"
+                },
+                "examples": {
+                  "friends/delete/success": {
+                    "value": "true"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Friend Delete Response"
+                },
+                "examples": {
+                  "friends/delete/fail/notMember": {
+                    "value": "{\n  \"errorCode\" : \"MEMBER_NOT_FOUND\",\n  \"errorMessage\" : \"해당 회원을 찾을 수 없습니다.\",\n  \"httpStatus\" : \"NOT_FOUND\"\n}"
+                  },
+                  "friends/delete/fail/notFriend": {
+                    "value": "{\n  \"errorCode\" : \"FRIEND_NOT_FOUND\",\n  \"errorMessage\" : \"해당 친구를 찾을 수 없습니다.\",\n  \"httpStatus\" : \"NOT_FOUND\"\n}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Friend Delete Response": {
+        "title": "Friend Delete Response",
+        "type": "object",
+        "properties": {
+          "httpStatus": {
+            "type": "string",
+            "description": "친구 삭제 실패 http status"
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "친구 삭제 실패 에러 메세지"
+          },
+          "errorCode": {
+            "type": "string",
+            "description": "친구 삭제 실패 code"
+          }
+        }
+      },
+      "friends-memberId486549215": {
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "APIKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      }
+    },
+    "security": [
+      {
+        "APIKey": []
+      }
+    ]
+  }
+}
