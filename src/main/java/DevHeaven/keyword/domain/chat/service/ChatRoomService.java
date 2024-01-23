@@ -68,7 +68,7 @@ public class ChatRoomService {
         Member member = getMemberByEmail(memberAdapter.getEmail());
 
         List<Schedule> scheduleList =
-                scheduleRepository.getScheduleListByMember(member.getMemberId());
+                scheduleRepository.getScheduleListByMember(member.getMemberId(), pageable);
 
         List<ChatRoom> chatRoomList = new ArrayList<>();
 
