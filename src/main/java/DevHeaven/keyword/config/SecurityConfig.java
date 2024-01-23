@@ -4,6 +4,7 @@ import DevHeaven.keyword.common.security.JwtAccessDeniedHandler;
 import DevHeaven.keyword.common.security.JwtAuthenticationEntryPoint;
 import DevHeaven.keyword.common.security.JwtAuthenticationFilter;
 import DevHeaven.keyword.common.security.JwtExceptionFilter;
+import DevHeaven.keyword.common.security.OAuth2LoginFailureHandler;
 import DevHeaven.keyword.common.security.OAuth2SuccessHandler;
 import DevHeaven.keyword.domain.member.service.OAuth2UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
     private final OAuth2UserService oauth2UserService;
 
@@ -72,6 +74,7 @@ public class SecurityConfig {
                 // Naver 소셜 로그인 설정
                 .oauth2Login()
                 .successHandler(oAuth2SuccessHandler)
+                .failureHandler(oAuth2LoginFailureHandler)
                 .userInfoEndpoint()
                 .userService(oauth2UserService)
 
