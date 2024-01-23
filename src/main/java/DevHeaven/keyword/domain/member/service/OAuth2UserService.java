@@ -35,7 +35,6 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder;
-  private final HttpSession httpSession;
 
   @Value("${spring.security.oauth2.client.provider.naver.user-name-attribute}")
   private String NAVER_ATTRIBUTE_KEY;

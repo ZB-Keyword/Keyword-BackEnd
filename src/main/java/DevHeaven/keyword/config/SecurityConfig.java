@@ -38,10 +38,11 @@ public class SecurityConfig {
             "/docs/**",
             "/v3/api-docs/**",
             "/members/signup",
-            "/members/signin/**",
+            "/members/signin",
             "/members/reissue",
             "/login/oauth2/**",
-            "/oauth2/authorization/**"
+            "/oauth2/authorization/**",
+            "/auth/redirect/**"
     };
 
     @Bean
