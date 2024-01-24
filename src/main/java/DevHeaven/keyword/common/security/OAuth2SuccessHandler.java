@@ -22,9 +22,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
   private final MemberService memberService;
 
-  private static final String OAUTH_REDIRECT_SCHEME = "http"; // "https";
-  private static final String OAUTH_REDIRECT_HOST = "localhost"; // "keyword2.store";
-  private static final String OAUTH_REDIRECT_PORT = "5173"; // "8080";
+  private static final String OAUTH_REDIRECT_SCHEME = "https";
+  private static final String OAUTH_REDIRECT_HOST = "keyword-front-end.vercel.app";
   private static final String OAUTH_REDIRECT_PATH = "/auth/redirect";
   private static final String OAUTH_REDIRECT_ACCESS_TOKEN_QUERY_PARAM = "access-token";
   private static final String OAUTH_REDIRECT_REFRESH_TOKEN_QUERY_PARAM = "refresh-token";
@@ -52,7 +51,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     return UriComponentsBuilder.newInstance()
         .scheme(OAUTH_REDIRECT_SCHEME)
         .host(OAUTH_REDIRECT_HOST)
-        .port(OAUTH_REDIRECT_PORT)  // 배포 시에는 제외
         .path(OAUTH_REDIRECT_PATH)
         .path("/" + tokenAndInfoResponse.getMyInfoResponse().getMemberId())
         .queryParam(OAUTH_REDIRECT_ACCESS_TOKEN_QUERY_PARAM,
