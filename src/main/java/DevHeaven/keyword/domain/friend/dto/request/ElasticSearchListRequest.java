@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberSearchListRequest {
+public class ElasticSearchListRequest {
 
     private Long memberId;
     private String profileImageFileName;

@@ -1,7 +1,7 @@
 package DevHeaven.keyword.domain.friend.controller;
 
-import DevHeaven.keyword.domain.friend.dto.request.MemberSearchListRequest;
-import DevHeaven.keyword.domain.friend.service.MemberSearchService;
+import DevHeaven.keyword.domain.friend.dto.request.ElasticSearchListRequest;
+import DevHeaven.keyword.domain.friend.service.ElasticSearchService;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -17,18 +17,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/friends")
 @RequiredArgsConstructor
-public class MemberSearchController {
+public class ElasticSearchController {
 
-    private final MemberSearchService memberSearchService;
+    private final ElasticSearchService elasticSearchService;
 
     @GetMapping("/search")
-    public ResponseEntity<List<MemberSearchListRequest>> searchFriends(
+    public ResponseEntity<List<ElasticSearchListRequest>> searchFriends(
             @RequestParam String keyword,
             @AuthenticationPrincipal MemberAdapter memberAdapter,
             Pageable pageable) {
 
-        List<MemberSearchListRequest> memberlist = memberSearchService.searchMember(keyword, memberAdapter, pageable);
+        List<ElasticSearchListRequest> memberlist = elasticSearchService.searchMember(keyword, memberAdapter, pageable);
 
         return ResponseEntity.ok(memberlist);
     }
+
 }

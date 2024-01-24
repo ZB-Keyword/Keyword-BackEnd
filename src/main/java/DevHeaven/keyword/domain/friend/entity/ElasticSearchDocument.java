@@ -1,11 +1,14 @@
 package DevHeaven.keyword.domain.friend.entity;
 
 import DevHeaven.keyword.domain.member.entity.Member;
+import DevHeaven.keyword.domain.member.type.MemberStatus;
 import lombok.*;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
 
@@ -13,8 +16,8 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-@Document(indexName = "friend")
-public class MemberSearchDocument {
+@Document(indexName = "friends")
+public class ElasticSearchDocument {
 
     //FieldType.Text : 단어형태로 검색 -> 전문검색
     //FieldType.Keyword : exact value 즉, 완전 동일한 데이터에 대해 검색
@@ -22,7 +25,7 @@ public class MemberSearchDocument {
     @Field(type = FieldType.Long)
     private Long id;
 
-    @Field(type = FieldType.Text, name = "profileImageFileName")
+    @Field(type = FieldType.Text)
     private String profileImageFileName;
 
     @Field(type = FieldType.Text, name = "name")
@@ -31,13 +34,16 @@ public class MemberSearchDocument {
     @Field(type = FieldType.Text, name = "email")
     private String email;
 
-    public static MemberSearchDocument from(Member member) {
-        return MemberSearchDocument.builder()
+    @Enumerated(EnumType.STRING)
+    private MemberStatus status;
+
+    public static ElasticSearchDocument from(final Member member, final MemberStatus status) {
+        return ElasticSearchDocument.builder()
                 .id(member.getMemberId())
                 .profileImageFileName(member.getProfileImageFileName())
                 .name(member.getName())
                 .email(member.getEmail())
+                .status(status)
                 .build();
     }
-
 }

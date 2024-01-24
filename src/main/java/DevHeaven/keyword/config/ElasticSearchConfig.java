@@ -1,6 +1,6 @@
 package DevHeaven.keyword.config;
 
-import DevHeaven.keyword.domain.friend.repository.MemberSearchRepository;
+import DevHeaven.keyword.domain.friend.repository.ElasticSearchRepository;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
@@ -9,8 +9,9 @@ import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfig
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
-@EnableElasticsearchRepositories(basePackageClasses = MemberSearchRepository.class)
+@EnableElasticsearchRepositories(basePackageClasses = ElasticSearchRepository.class)
 public class ElasticSearchConfig extends AbstractElasticsearchConfiguration {
+
     @Override
     public RestHighLevelClient elasticsearchClient() {
         ClientConfiguration clientConfiguration = ClientConfiguration.builder()
