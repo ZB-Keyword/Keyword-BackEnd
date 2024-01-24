@@ -22,6 +22,7 @@ import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.common.security.JwtUtils;
 import DevHeaven.keyword.common.security.dto.TokenResponse;
 import DevHeaven.keyword.common.service.image.AmazonS3FileService;
+import DevHeaven.keyword.domain.friend.service.ElasticSearchService;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.dto.OAuthMemberAdapter;
 import DevHeaven.keyword.domain.member.dto.request.ModifyPasswordRequest;
@@ -36,9 +37,9 @@ import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.member.type.MemberProvider;
 import DevHeaven.keyword.domain.member.type.MemberStatus;
-import java.net.URL;
+
 import java.time.Duration;
-import javax.servlet.http.HttpSession;
+
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -54,6 +55,8 @@ public class MemberService {
   private static final String REDIS_REFRESH_TOKEN_KEY_PREFIX = "reissueMemberEmail::";
 
   private final MemberRepository memberRepository;
+  private final ElasticSearchService elasticSearchService;
+
   private final RedisTemplate<String, Object> redisTemplate;
 
   private final AmazonS3FileService amazonS3FileService;
@@ -197,6 +200,8 @@ public class MemberService {
     validateMemberByStatus(member.getStatus());
 
     memberRepository.save(member.modifyStatus(WITHDRAWN));
+
+    elasticSearchService.saveWithdrawnMemberAsDocument(WITHDRAWN, member);
 
     return true;
   }
