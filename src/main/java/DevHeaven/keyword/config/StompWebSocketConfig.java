@@ -21,7 +21,6 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     .setAllowedOriginPatterns("*")
                     .setHandshakeHandler(new CustomPrincipalHandshakeHandler());
 //                .withSockJS();
-            System.out.println("ㅅ;ㄹ헤ㅐㅇ");
         }
 
         @Override
