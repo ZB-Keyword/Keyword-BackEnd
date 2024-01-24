@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,7 @@ import static DevHeaven.keyword.common.exception.type.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
@@ -88,16 +90,14 @@ public class ChatRoomService {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
     }
-
-    /**
-     * 채팅방 조회
-     */
+    
     public List<ChatResponse> enterChatRoom(
             final MemberAdapter memberAdapter,
             final Long chatRoomId) {
 
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new ChatException(CHATROOM_NOT_FOUND));
+        log.info(chatRoom.getChatRoomId().toString());
 
         return chatRepository.findByChatRoom(chatRoom)
                 .stream().map(Chat::from).collect(Collectors.toList());

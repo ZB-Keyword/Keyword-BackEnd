@@ -25,7 +25,7 @@ public class StompChatController {
         //db에 메세지 저장
         chatService.createChat(message);
         //구독하고 있는 클라이언트에 메세지 전송
-        template.convertAndSend("/sub/chats/room" + message.getRoomId(), message);
+        template.convertAndSend("/sub/chats/room/" + message.getRoomId(), message);
 
     }
 }
