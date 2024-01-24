@@ -42,7 +42,11 @@ public class SecurityConfig {
             "/members/reissue",
             "/login/oauth2/**",
             "/oauth2/authorization/**",
-            "/auth/redirect/**"
+            "/auth/redirect/**",
+            "/ws/**",
+            "/wss/**",
+            "/sub/**",
+            "/pub/**"
     };
 
     @Bean
