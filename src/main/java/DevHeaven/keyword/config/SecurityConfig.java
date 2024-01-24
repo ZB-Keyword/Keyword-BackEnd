@@ -45,8 +45,7 @@ public class SecurityConfig {
             "/auth/redirect/**",
             "/ws/**",
             "/wss/**",
-            "/sub/**",
-            "/pub/**"
+            "/stomp/chat"
     };
 
     @Bean
