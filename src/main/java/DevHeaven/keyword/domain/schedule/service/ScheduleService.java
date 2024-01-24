@@ -162,19 +162,18 @@ public class ScheduleService {
             throw new ScheduleException(ErrorCode.MEMBER_NOT_ORGANIZER);
         }
 
+        final List <Member> scheduleFriendList = friendRequestToMemberList(request.getScheduleFriendList());
+        scheduleFriendList.add(member);
 
-        schedule.updateSchedule(request, editToMemberList(request.getScheduleFriendList()));
-
-        //scheduleRepository.save(schedule);
+        schedule.updateSchedule(request, scheduleFriendList);
 
         return ScheduleModifyResponse.builder()
                 .scheduleId(scheduleId)
                 .remindAt(schedule.getRemindAt())
                 .build();
-
     }
 
-    private List<Member> editToMemberList(
+    private List<Member> friendRequestToMemberList(
         final List<ScheduleFriendRequest> scheduleFriendList) {
 
         return scheduleFriendList.stream()

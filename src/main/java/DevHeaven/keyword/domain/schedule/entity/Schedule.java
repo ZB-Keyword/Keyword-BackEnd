@@ -112,6 +112,6 @@ public class Schedule extends BaseTimeEntity {
         this.latitude = modifyRequest.getLatitude();
         this.longitude = modifyRequest.getLongitude();
         this.remindAt = modifyRequest.getRemindAt();
-        this.friendList=friendList;
+        this.friendList = friendList;
     }
 }
