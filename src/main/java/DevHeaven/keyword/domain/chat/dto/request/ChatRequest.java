@@ -13,6 +13,7 @@ public class ChatRequest {
 
     private Long roomId;
     private Long senderId;
+    private String sender;
     private String imageUrl;
     private String content;
     private LocalDateTime sendAt;
