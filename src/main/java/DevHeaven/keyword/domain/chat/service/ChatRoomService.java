@@ -90,7 +90,7 @@ public class ChatRoomService {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
     }
-    
+
     public List<ChatResponse> enterChatRoom(
             final MemberAdapter memberAdapter,
             final Long chatRoomId) {

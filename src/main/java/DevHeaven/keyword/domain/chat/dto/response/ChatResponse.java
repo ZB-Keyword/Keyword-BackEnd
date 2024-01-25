@@ -10,6 +10,6 @@ import lombok.Setter;
 @Builder
 public class ChatResponse {
     private String sender;
-    private String profileImageUrl;
+    private String imageUrl;
     private String message;
 }
