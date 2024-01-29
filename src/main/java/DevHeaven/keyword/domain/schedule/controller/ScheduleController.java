@@ -1,9 +1,12 @@
 package DevHeaven.keyword.domain.schedule.controller;
 
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
+import DevHeaven.keyword.domain.schedule.dto.request.ScheduleModifyRequest;
+import DevHeaven.keyword.domain.schedule.dto.response.ScheduleDetailResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleListResponse;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleCreateRequest;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleCreateResponse;
+import DevHeaven.keyword.domain.schedule.dto.response.ScheduleModifyResponse;
 import DevHeaven.keyword.domain.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
@@ -26,15 +29,16 @@ public class ScheduleController {
   
     @PostMapping
     public ResponseEntity<ScheduleCreateResponse> createSchedule(
-        @RequestBody ScheduleCreateRequest request,
-        @AuthenticationPrincipal MemberAdapter memberAdapter) {
+        @RequestBody final ScheduleCreateRequest request,
+        @AuthenticationPrincipal final MemberAdapter memberAdapter) {
 
-        return ResponseEntity.ok(scheduleService.createSchedule(request, memberAdapter));
+        return ResponseEntity.ok(
+                scheduleService.createSchedule(request, memberAdapter));
     }
 
     @GetMapping
     public ResponseEntity<Page<ScheduleListResponse>> getScheduleList(
-            @AuthenticationPrincipal MemberAdapter memberAdapter,
+            @AuthenticationPrincipal final MemberAdapter memberAdapter,
             Pageable pageable) {
         return ResponseEntity.ok(
                 scheduleService.getScheduleList(memberAdapter, pageable));
@@ -42,10 +46,30 @@ public class ScheduleController {
 
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<Boolean> deleteSchedule(
-            @AuthenticationPrincipal MemberAdapter memberAdapter,
+            @AuthenticationPrincipal final MemberAdapter memberAdapter,
             @PathVariable final Long scheduleId
     ) {
         return ResponseEntity.ok(
                 scheduleService.deleteSchedule(memberAdapter, scheduleId));
+    }
+
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleDetailResponse> getScheduleDetail(
+            @AuthenticationPrincipal final MemberAdapter memberAdapter,
+            @PathVariable final Long scheduleId,
+            @RequestParam final Long noticeId
+    ) {
+        return ResponseEntity.ok(
+                scheduleService.getScheduleDetail(
+                        memberAdapter, scheduleId, noticeId));
+    }
+
+    @PatchMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleModifyResponse> modifySchedule(
+        @AuthenticationPrincipal MemberAdapter memberAdapter,
+        @PathVariable final Long scheduleId,
+        @RequestBody final ScheduleModifyRequest request) {
+
+        return ResponseEntity.ok(scheduleService.modifySchedule(memberAdapter, scheduleId, request));
     }
 }

@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode
 public class MemberAdapter implements UserDetails {
 
   private String email;

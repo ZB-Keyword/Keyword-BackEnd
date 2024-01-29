@@ -57,6 +57,9 @@ aws:
     domain: ${S3_DOMAIN}
 
 logging:
+  slack:
+    webhook-uri: ${SLACK_URL}
+  config: classpath:logback-spring-prod.xml
   level:
     com:
       amazonaws:

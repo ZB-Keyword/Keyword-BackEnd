@@ -1,17 +1,16 @@
 package DevHeaven.keyword.domain.schedule.dto.request;
 
-import DevHeaven.keyword.domain.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class ScheduleFriendRequest {
-    private Long memberId;
-    private String name;
+  private Long memberId;
+  private String name;
 
 }

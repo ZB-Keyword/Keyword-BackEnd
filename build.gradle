@@ -1,11 +1,17 @@
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.17'
 	id 'io.spring.dependency-management' version '1.1.4'
 	id "com.epages.restdocs-api-spec" version "0.16.4"
 	id 'org.hidetake.swagger.generator' version '2.18.2'
+	id 'jacoco'
 }
 
+jacoco {
+	toolVersion = "0.8.7"
+	reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+}
 group = 'DevHeaven'
 version = '0.0.1-SNAPSHOT'
 
@@ -57,14 +63,71 @@ dependencies {
 	testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.16.4'
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'com.github.maricn:logback-slack-appender:1.6.1'
 }
 
 tasks.named('bootBuildImage') {
 	builder = 'paketobuildpacks/builder-jammy-base:latest'
 }
+ext {
+	set('snippetsDir', file("build/generated-snippets"))
+}
 
+jacocoTestReport {
+	reports {
+		xml.required = false
+		csv.required = false
+		html.required = true
+
+		xml.destination file("${buildDir}/jacoco/index.xml")
+		csv.destination file("${buildDir}/jacoco/index.csv")
+		html.destination file("${buildDir}/jacoco/index.html")
+	}
+}
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	// dependsOn : 이 작업에 지정된 종속성을 추가
+	dependsOn test // jacocoTestReport 에 test라는 종속성을 추가
+	afterEvaluate {
+		classDirectories.setFrom(
+				files(classDirectories.files.collect {
+					fileTree(dir: it, excludes: [
+							'**/*Application*',
+							'**/*Exception*',
+							'**/dto/**',
+							'**/common/**',
+					])
+				})
+		)
+	}
+	finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			enabled = true;
+			element = 'CLASS'
+
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				//minimum = 0.75
+			}
+
+			excludes = [
+					'**/*Application*',
+					'**/*Exception*',
+					'**/dto/**',
+					'**/common/**',
+			]
+		}
+
+	}
 }
 
 openapi3 {
@@ -82,18 +145,29 @@ tasks.withType(GenerateSwaggerUI) {
 
 	delete file('src/main/resources/static/docs')
 
-	doFirst {
-		def swaggerUIFile = file("${openapi3.outputDirectory}/openapi3.json")
+	doLast {
+		def swaggerUIFile = file("${openapi3.outputDirectory}/open-api-3.0.1.json")
 
-		def securitySchemesContent = "  securitySchemes:\n" +
-				"    APIKey:\n" +
-				"      type: apiKey\n" +
-				"      in: header\n" +
-				"      name: Authorization\n" +
-				"security:\n" +
-				"  - APIKey: []  # Apply the security scheme here"
+		def securitySchemesContent = """
+            "securitySchemes": {
+              "APIKey": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "Authorization"
+              }
+            },
+            "security": [
+              {
+                "APIKey": []
+              }
+            ]
+        """
 
-		swaggerUIFile.text = securitySchemesContent
+		// 읽어온 swagger 파일에 새로운 내용 추가
+		swaggerUIFile.append(securitySchemesContent)
+
+		// 수정된 내용을 다시 파일에 씀
+		swaggerUIFile.text = currentSwaggerContent
 	}
 
 	copy {

@@ -15,7 +15,7 @@ public class FriendListResponse {
   private Long memberId;
   private String name;
   private String email;
-  private String profileImageUrl;
+  private String imageUrl;
 
   public static FriendListResponse from(Member friend){
     return FriendListResponse.builder()
@@ -26,6 +26,6 @@ public class FriendListResponse {
   }
 
   public void modifyImageUrl(String imageUrl){
-    this.profileImageUrl = imageUrl;
+    this.imageUrl = imageUrl;
   }
 }
