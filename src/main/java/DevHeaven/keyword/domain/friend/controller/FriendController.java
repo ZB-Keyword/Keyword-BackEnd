@@ -24,15 +24,6 @@ public class FriendController {
 
   private final FriendService friendService;
 
-  // TODO : 임시 메서드 명칭 (메서드 명이랑 DTO 바꿔주세요)
-  @GetMapping(params = {"keyword"})
-  public ResponseEntity<List<FriendSearchListRequest>> searchFriend(
-      @AuthenticationPrincipal final MemberAdapter memberAdapter,
-      @RequestParam final String keyword,
-      final Pageable pageable) {
-    return ResponseEntity.ok(friendService.searchFriend(memberAdapter, keyword, pageable));
-  }
-  
   @GetMapping
   public ResponseEntity<List <FriendListResponse>> getFriendList(@AuthenticationPrincipal final MemberAdapter memberAdapter,
       @RequestParam(name = "friend-state") final FriendListStatusRequest friendState, @RequestParam(required = false) final Long noticeId,

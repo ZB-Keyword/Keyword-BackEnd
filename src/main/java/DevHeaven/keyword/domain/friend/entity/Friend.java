@@ -35,11 +35,11 @@ public class Friend extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private FriendStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "member_req_id") // 변경된 부분
     private Member memberRequest;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "member_id") // 변경된 부분
     private Member friend;
 
@@ -47,4 +47,5 @@ public class Friend extends BaseTimeEntity {
         this.status=friendStatus;
     }
 
+//    (fetch = FetchType.LAZY)
 }
