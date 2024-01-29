@@ -1,9 +1,11 @@
 package DevHeaven.keyword.domain.friend.controller;
 
+import DevHeaven.keyword.domain.friend.dto.request.ElasticSearchListRequest;
 import DevHeaven.keyword.domain.friend.dto.request.FriendApproveRequest;
 import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
 import DevHeaven.keyword.domain.friend.dto.request.FriendSearchListRequest;
 import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
+import DevHeaven.keyword.domain.friend.service.ElasticSearchService;
 import DevHeaven.keyword.domain.friend.service.FriendService;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
@@ -23,6 +25,12 @@ import java.util.List;
 public class FriendController {
 
   private final FriendService friendService;
+  private final ElasticSearchService elasticSearchService;
+  @GetMapping(params = {"keyword"})
+  public ResponseEntity<List<ElasticSearchListRequest>> searchFriend(@AuthenticationPrincipal final MemberAdapter memberAdapter,
+      @RequestParam final String keyword, final Pageable pageable) {
+    return ResponseEntity.ok(elasticSearchService.searchMember(keyword, memberAdapter, pageable));
+  }
 
   @GetMapping
   public ResponseEntity<List <FriendListResponse>> getFriendList(@AuthenticationPrincipal final MemberAdapter memberAdapter,
