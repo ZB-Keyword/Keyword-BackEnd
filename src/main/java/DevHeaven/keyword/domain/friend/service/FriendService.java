@@ -41,6 +41,7 @@ public class FriendService {
   private final MemberRepository memberRepository;
   private final NoticeRepository noticeRepository;
   private final AmazonS3FileService fileService;
+  private final ElasticSearchService elasticSearchService;
 
   public List <FriendListResponse> getFriendList(final MemberAdapter memberAdapter ,final FriendListStatusRequest friendState,
       final Long noticeId, final Pageable pageable){
@@ -171,6 +172,9 @@ public class FriendService {
     }
 
     friendRequest.modifyFriendStatus(friendApproveRequest.getFriendStatus());
+
+    // 엘라스틱서치 업데이트
+    elasticSearchService.updateFriendStatusInElasticSearch(friendRequest.getFriend().getMemberId(), friendApproveRequest.getFriendStatus());
 
     //처음 친구 맺는 경우가 아니라면
     final Optional <Friend> friendToMember = friendRepository.findFriendRequest(
