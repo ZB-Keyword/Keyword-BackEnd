@@ -3,7 +3,10 @@ package DevHeaven.keyword.domain.friend.service;
 import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.domain.friend.dto.request.ElasticSearchListRequest;
 import DevHeaven.keyword.domain.friend.entity.ElasticSearchDocument;
+import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.repository.ElasticSearchRepository;
+import DevHeaven.keyword.domain.friend.repository.FriendRepository;
+import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
@@ -12,16 +15,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static DevHeaven.keyword.common.exception.type.ErrorCode.MEMBER_NOT_FOUND;
+import static DevHeaven.keyword.domain.friend.type.FriendStatus.FRIEND_UNKNOWN;
 import static DevHeaven.keyword.domain.member.type.MemberStatus.ACTIVE;
-import static DevHeaven.keyword.domain.member.type.MemberStatus.WITHDRAWN;
 
 @Slf4j
 @Service
@@ -29,6 +33,7 @@ import static DevHeaven.keyword.domain.member.type.MemberStatus.WITHDRAWN;
 public class ElasticSearchService {
 
     private final MemberRepository memberRepository;
+    private final FriendRepository friendRepository;
     private final ElasticSearchRepository elasticSearchRepository;
 
     //ES에 모든 멤버를 저장
@@ -37,14 +42,32 @@ public class ElasticSearchService {
         List<Member> memberList = memberRepository.findAllByStatus(ACTIVE);
         if (!memberList.isEmpty()) {
             List<ElasticSearchDocument> elasticSearchDocumentList = memberList.stream()
-                    .map(member -> ElasticSearchDocument.from(member, ACTIVE))
+                    .map(member -> ElasticSearchDocument.from(member, ACTIVE, FRIEND_UNKNOWN))
                     .collect(Collectors.toList());
 
             elasticSearchRepository.saveAll(elasticSearchDocumentList);
         }
     }
 
-    public List<ElasticSearchListRequest> searchMember(final String keyword, final MemberAdapter memberAdapter, final Pageable pageable) {
+    //친구 상태가 변경될 때,
+    @Transactional
+    public ElasticSearchListRequest updateFriendStatusInElasticSearch(final Long memberId, final FriendStatus friendStatus) {
+        Optional<ElasticSearchDocument> elasticSearchDocumentOptional = elasticSearchRepository.findById(memberId);
+
+        elasticSearchDocumentOptional.ifPresent(elasticSearchDocument -> {
+            if (friendStatus != null) {
+                elasticSearchDocument.ElasticModifyFriendStatus(friendStatus);
+                elasticSearchRepository.save(elasticSearchDocument);
+            }
+        });
+
+        return mapToFriendSearchListResponse(Objects.requireNonNull(elasticSearchDocumentOptional.orElse(null)), friendStatus);
+    }
+
+    //검색 결과 반환
+    public List<ElasticSearchListRequest> searchMember(final String keyword,
+                                                       final MemberAdapter memberAdapter,
+                                                       final Pageable pageable) {
 
         // 현재 로그인한 멤버 정보 가져오기
         final Member member = memberRepository.findByEmail(memberAdapter.getEmail())
@@ -62,17 +85,60 @@ public class ElasticSearchService {
 //        // WITHDRAWN 상태인 멤버 스케줄러로 특정 시간에 삭제
 //        cleanUpWithdrawnMembers();
 
-        return searchResults.stream()
-                .map(this::mapToFriendSearchListResponse)
+        List<ElasticSearchListRequest> friendListResponses = searchResults.stream()
+                .map(elasticSearchDocument -> {
+                    Friend friend = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+                            member.getMemberId(),
+                            elasticSearchDocument.getId(),
+                            FRIEND_UNKNOWN
+                    ).orElse(null);
+
+                    FriendStatus friendStatus;
+                    if (friend == null) {
+                        friendStatus = FriendStatus.NOT_FRIEND;
+                    } else {
+                        switch (friend.getStatus()) {
+                            case FRIEND_ACCEPTED:
+                                friendStatus = FriendStatus.FRIEND;
+                                break;
+                            case FRIEND_REFUSED:
+                                friendStatus = FriendStatus.FRIEND_REFUSED;
+                                break;
+                            case FRIEND_CHECKING:
+                                friendStatus = getFriendStatusBasedOnState(friend, member.getMemberId());
+                                break;
+                            default:
+                                friendStatus = FriendStatus.NOT_FRIEND;
+                        }
+                    }
+                    return mapToFriendSearchListResponse(elasticSearchDocument, friendStatus);
+                })
                 .collect(Collectors.toList());
+
+        return friendListResponses;
     }
 
-    private ElasticSearchListRequest mapToFriendSearchListResponse(final ElasticSearchDocument elasticSearchDocument) {
+    private FriendStatus getFriendStatusBasedOnState(Friend friend, Long memberId) {
+        if (friend.getMemberRequest().getMemberId().equals(memberId)) {
+            // 내가 친구에게 요청한 경우
+            return FriendStatus.FRIEND_REQUEST;
+        } else if (friend.getFriend().getMemberId().equals(memberId)) {
+            // 친구가 나에게 요청한 경우
+            return FriendStatus.FRIEND_REQUESTED;
+        } else {
+            return FriendStatus.NOT_FRIEND; // 또는 다른 적절한 값을 리턴하거나 예외를 던질 수 있습니다.
+        }
+    }
+
+    //ElasticSearchDocument 객체를 ElasticSearchListRequest 객체로 매핑하여 반환
+    private ElasticSearchListRequest mapToFriendSearchListResponse(final ElasticSearchDocument elasticSearchDocument, FriendStatus friendStatus) {
         return ElasticSearchListRequest.builder()
                 .memberId(elasticSearchDocument.getId())
                 .name(elasticSearchDocument.getName())
                 .email(elasticSearchDocument.getEmail())
                 .profileImageFileName(elasticSearchDocument.getProfileImageFileName())
+                .status(String.valueOf(elasticSearchDocument.getStatus()))
+                .friendStatus(String.valueOf(elasticSearchDocument.getFriendStatus()))
                 .build();
     }
 
@@ -80,7 +146,7 @@ public class ElasticSearchService {
     @Transactional
     public void saveWithdrawnMemberAsDocument(final MemberStatus status, final Member member) {
 
-        ElasticSearchDocument withdrawnMemberDocument = ElasticSearchDocument.from(member, status);
+        ElasticSearchDocument withdrawnMemberDocument = ElasticSearchDocument.from(member, status, null);
         elasticSearchRepository.save(withdrawnMemberDocument);
     }
 
@@ -93,3 +159,4 @@ public class ElasticSearchService {
 //    }
 
 }
+

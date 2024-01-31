@@ -15,5 +15,6 @@ public class ElasticSearchListRequest {
     private String profileImageFileName;
     private String name;
     private String email;
-
+    private String status;
+    private String friendStatus;
 }
