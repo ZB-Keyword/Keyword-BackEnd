@@ -41,19 +41,12 @@ public class ElasticSearchDocument {
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
-    @Enumerated(EnumType.STRING)
-    private FriendStatus friendStatus = FriendStatus.FRIEND_UNKNOWN;;
-
-    public void ElasticModifyFriendStatus(FriendStatus friendStatus) {
-        this.friendStatus = friendStatus;
-    }
-
     public static ElasticSearchDocument from(final Member member,
-                                             final MemberStatus status,
-                                             final FriendStatus friendStatus) {
+                                             final MemberStatus status) {
 
         // S3 이미지 URL 생성
-        String s3ImageUrl = "https://d19jzgrojjrozm.cloudfront.net/" + member.getProfileImageFileName();
+        String s3ImageUrl = "https://d19jzgrojjrozm.cloudfront.net/"
+                + member.getProfileImageFileName();
 
         return ElasticSearchDocument.builder()
                 .id(member.getMemberId())
@@ -61,9 +54,6 @@ public class ElasticSearchDocument {
                 .name(member.getName())
                 .email(member.getEmail())
                 .status(status)
-                .friendStatus(friendStatus)
                 .build();
     }
-
-
 }

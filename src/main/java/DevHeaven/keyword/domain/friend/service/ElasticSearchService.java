@@ -19,12 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static DevHeaven.keyword.common.exception.type.ErrorCode.MEMBER_NOT_FOUND;
-import static DevHeaven.keyword.domain.friend.type.FriendStatus.FRIEND_UNKNOWN;
 import static DevHeaven.keyword.domain.member.type.MemberStatus.ACTIVE;
 
 @Slf4j
@@ -42,26 +39,11 @@ public class ElasticSearchService {
         List<Member> memberList = memberRepository.findAllByStatus(ACTIVE);
         if (!memberList.isEmpty()) {
             List<ElasticSearchDocument> elasticSearchDocumentList = memberList.stream()
-                    .map(member -> ElasticSearchDocument.from(member, ACTIVE, FRIEND_UNKNOWN))
+                    .map(member -> ElasticSearchDocument.from(member, ACTIVE))
                     .collect(Collectors.toList());
 
             elasticSearchRepository.saveAll(elasticSearchDocumentList);
         }
-    }
-
-    //친구 상태가 변경될 때,
-    @Transactional
-    public ElasticSearchListRequest updateFriendStatusInElasticSearch(final Long memberId, final FriendStatus friendStatus) {
-        Optional<ElasticSearchDocument> elasticSearchDocumentOptional = elasticSearchRepository.findById(memberId);
-
-        elasticSearchDocumentOptional.ifPresent(elasticSearchDocument -> {
-            if (friendStatus != null) {
-                elasticSearchDocument.ElasticModifyFriendStatus(friendStatus);
-                elasticSearchRepository.save(elasticSearchDocument);
-            }
-        });
-
-        return mapToFriendSearchListResponse(Objects.requireNonNull(elasticSearchDocumentOptional.orElse(null)), friendStatus);
     }
 
     //검색 결과 반환
@@ -87,10 +69,9 @@ public class ElasticSearchService {
 
         List<ElasticSearchListRequest> friendListResponses = searchResults.stream()
                 .map(elasticSearchDocument -> {
-                    Friend friend = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+                    Friend friend = (Friend) friendRepository.findByMemberRequestMemberIdAndFriendMemberId(
                             member.getMemberId(),
-                            elasticSearchDocument.getId(),
-                            FRIEND_UNKNOWN
+                            elasticSearchDocument.getId()
                     ).orElse(null);
 
                     FriendStatus friendStatus;
@@ -138,7 +119,6 @@ public class ElasticSearchService {
                 .email(elasticSearchDocument.getEmail())
                 .profileImageFileName(elasticSearchDocument.getProfileImageFileName())
                 .status(String.valueOf(elasticSearchDocument.getStatus()))
-                .friendStatus(String.valueOf(elasticSearchDocument.getFriendStatus()))
                 .build();
     }
 
@@ -146,7 +126,7 @@ public class ElasticSearchService {
     @Transactional
     public void saveWithdrawnMemberAsDocument(final MemberStatus status, final Member member) {
 
-        ElasticSearchDocument withdrawnMemberDocument = ElasticSearchDocument.from(member, status, null);
+        ElasticSearchDocument withdrawnMemberDocument = ElasticSearchDocument.from(member, status);
         elasticSearchRepository.save(withdrawnMemberDocument);
     }
 
