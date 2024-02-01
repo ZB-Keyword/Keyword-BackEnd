@@ -61,6 +61,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.16.4'
+	testImplementation 'it.ozimov:embedded-redis:0.7.2'
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'com.github.maricn:logback-slack-appender:1.6.1'
@@ -145,9 +146,8 @@ tasks.withType(GenerateSwaggerUI) {
 
 	delete file('src/main/resources/static/docs')
 
-	doLast {
+	doFirst {
 		def swaggerUIFile = file("${openapi3.outputDirectory}/open-api-3.0.1.json")
-
 		def securitySchemesContent = """
             "securitySchemes": {
               "APIKey": {
