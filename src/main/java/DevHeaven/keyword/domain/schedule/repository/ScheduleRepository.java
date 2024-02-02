@@ -23,7 +23,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     Optional<Schedule> findByMemberAndScheduleId(Member member, Long scheduleId);
 
     @Query(value = "SELECT * FROM schedule" +
-            " WHERE STATUS = 'ONGOING' and DATEDIFF(schedule_at, NOW()) = -1", nativeQuery = true)
+            " WHERE STATUS = 'ONGOING' and DATEDIFF(schedule_at, NOW()) <= -1", nativeQuery = true)
     List<Schedule> findScheduleEnd();
 
     @Query(value = "SELECT * FROM schedule" +
