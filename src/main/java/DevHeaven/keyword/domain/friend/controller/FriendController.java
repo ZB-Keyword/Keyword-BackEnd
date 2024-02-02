@@ -35,7 +35,7 @@ public class FriendController {
   @GetMapping
   public ResponseEntity<List <FriendListResponse>> getFriendList(@AuthenticationPrincipal final MemberAdapter memberAdapter,
       @RequestParam(name = "friend-state") final FriendListStatusRequest friendState, @RequestParam(required = false) final Long noticeId,
-      @PageableDefault(size = 5) final Pageable pageable
+      @PageableDefault final Pageable pageable
       ) {
 
     return ResponseEntity.ok(friendService.getFriendList(memberAdapter, friendState, noticeId, pageable));
