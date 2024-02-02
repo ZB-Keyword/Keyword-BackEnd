@@ -6,7 +6,9 @@ import static DevHeaven.keyword.domain.member.type.MemberStatus.ACTIVE;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.type.MemberRole;
 import DevHeaven.keyword.domain.member.type.MemberStatus;
+import lombok.Getter;
 
+@Getter
 public enum MemberFixture {
 
   DOG(1L, "imgUrl", "강아지", "010-1234-1234", "dog@gmail.com", "123456d", ACTIVE, MEMBER),

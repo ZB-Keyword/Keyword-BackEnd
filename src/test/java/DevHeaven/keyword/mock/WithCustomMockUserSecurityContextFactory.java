@@ -9,16 +9,23 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
+import static DevHeaven.keyword.domain.member.type.MemberRole.MEMBER;
+import static DevHeaven.keyword.support.fixture.MemberFixture.DOG;
+
 public class WithCustomMockUserSecurityContextFactory implements
-    WithSecurityContextFactory <WithCustomMockUser> {
+    WithSecurityContextFactory<WithCustomMockUser> {
 
   @Override
   public SecurityContext createSecurityContext(WithCustomMockUser annotation) {
 
-    MemberAdapter memberAdapter = MemberAdapter.from(MemberFixture.DOG.createMember());
+    MemberFixture securityTestMemberFixture = DOG;
+
     SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-    securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(memberAdapter,
-        "password", Arrays.asList(new SimpleGrantedAuthority("MEMBER"))));
+    securityContext.setAuthentication(
+        new UsernamePasswordAuthenticationToken(
+            MemberAdapter.from(securityTestMemberFixture.createMember()),
+            securityTestMemberFixture.getPassword(),
+            Arrays.asList(new SimpleGrantedAuthority(securityTestMemberFixture.getRole().name()))));
     SecurityContextHolder.setContext(securityContext);
 
     return securityContext;
