@@ -1,6 +1,7 @@
 package DevHeaven.keyword.domain.friend.service;
 
 import DevHeaven.keyword.common.exception.MemberException;
+import DevHeaven.keyword.common.service.image.AmazonS3FileService;
 import DevHeaven.keyword.domain.friend.dto.request.ElasticSearchListRequest;
 import DevHeaven.keyword.domain.friend.entity.ElasticSearchDocument;
 import DevHeaven.keyword.domain.friend.entity.Friend;
@@ -33,6 +34,7 @@ public class ElasticSearchService {
     private final MemberRepository memberRepository;
     private final FriendRepository friendRepository;
     private final ElasticSearchRepository elasticSearchRepository;
+    private final AmazonS3FileService fileService;
 
     //ES에 모든 멤버를 저장
     @Transactional
