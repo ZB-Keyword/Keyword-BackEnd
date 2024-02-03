@@ -153,9 +153,8 @@ public class ElasticSearchService {
                 .memberId(elasticSearchDocument.getId())
                 .name(elasticSearchDocument.getName())
                 .email(elasticSearchDocument.getEmail())
-                .profileImageFileName(elasticSearchDocument.getProfileImageFileName())
-                .status(String.valueOf(elasticSearchDocument.getStatus()))
-                .friendStatus(String.valueOf(friendStatus)) //friendstatus 정보는 백에서 처리, ES X
+                .imageUrl(elasticSearchDocument.getProfileImageFileName())
+                .status(String.valueOf(friendStatus)) //friendstatus 정보는 백에서 처리, ES X
                 .build();
     }
 
