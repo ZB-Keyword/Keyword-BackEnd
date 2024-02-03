@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class ElasticSearchListRequest {
 
     private Long memberId;
-    private String profileImageFileName;
+    private String imageUrl;
     private String name;
     private String email;
     private String status;
