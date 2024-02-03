@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static DevHeaven.keyword.common.exception.type.ErrorCode.MEMBER_NOT_FOUND;
+import static DevHeaven.keyword.domain.friend.type.FriendStatus.*;
 import static DevHeaven.keyword.domain.member.type.MemberStatus.ACTIVE;
 
 @Slf4j
@@ -69,18 +70,54 @@ public class ElasticSearchService {
 
         List<ElasticSearchListRequest> friendListResponses = searchResults.stream()
                 .map(elasticSearchDocument -> {
-                    Friend friend = (Friend) friendRepository.findByMemberRequestMemberIdAndFriendMemberId(
+                    // 나에게 친구 요청한 경우
+                    Friend friendRequestToMe = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+                            elasticSearchDocument.getId(),
                             member.getMemberId(),
-                            elasticSearchDocument.getId()
+                            FRIEND_CHECKING
+                    ).orElse(null);
+
+                    // 내가 친구에게 요청한 경우
+                    Friend friendRequestFromMe = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+                            member.getMemberId(),
+                            elasticSearchDocument.getId(),
+                            FRIEND_CHECKING
                     ).orElse(null);
 
                     FriendStatus friendStatus;
-                    if (friend == null) {
-                        friendStatus = FriendStatus.NOT_FRIEND;
+                    if (friendRequestToMe != null) {
+
+                        friendStatus = getFriendStatusBasedOnState(friendRequestToMe, member.getMemberId());
+                    } else if (friendRequestFromMe != null) {
+
+                        friendStatus = getFriendStatusBasedOnState(friendRequestFromMe, member.getMemberId());
+
                     } else {
-                        friendStatus = getFriendStatusBasedOnState(friend, member.getMemberId());
+                        // FRIEND_ACCEPTED
+                        Friend friendAccepted = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+                                elasticSearchDocument.getId(),
+                                member.getMemberId(),
+                                FRIEND_ACCEPTED
+                        ).orElse(null);
+
+                        // FRIEND_REFUSED
+                        Friend friendRefused = friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+                                member.getMemberId(),
+                                elasticSearchDocument.getId(),
+                                FRIEND_REFUSED
+                        ).orElse(null);
+
+                        if (friendAccepted != null) {
+                            friendStatus = FriendStatus.FRIEND;
+                        } else if (friendRefused != null) {
+                            friendStatus = FRIEND_REFUSED;
+                        } else {
+                            friendStatus = FriendStatus.NOT_FRIEND;
+                        }
                     }
+
                     return mapToFriendSearchListResponse(elasticSearchDocument, friendStatus);
+
                 })
                 .collect(Collectors.toList());
 
@@ -90,9 +127,11 @@ public class ElasticSearchService {
     private FriendStatus getFriendStatusBasedOnState(Friend friend, Long memberId) {
         switch (friend.getStatus()) {
             case FRIEND_ACCEPTED:
+                // 이미 서로 친구인 경우
                 return FriendStatus.FRIEND;
             case FRIEND_REFUSED:
-                return FriendStatus.FRIEND_REFUSED;
+                // 친구 요청을 거절한 경우
+                return FRIEND_REFUSED;
             case FRIEND_CHECKING:
                 if (friend.getMemberRequest().getMemberId().equals(memberId)) {
                     // 내가 친구에게 요청한 경우
@@ -102,6 +141,7 @@ public class ElasticSearchService {
                     return FriendStatus.FRIEND_REQUESTED;
                 }
             default:
+                // 친구 관계가 아닌 경우
                 return FriendStatus.NOT_FRIEND;
         }
     }
