@@ -1,12 +1,10 @@
 package DevHeaven.keyword.domain.friend.entity;
 
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
-import DevHeaven.keyword.domain.friend.type.FriendState;
 import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.entity.Member;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,16 +1,13 @@
 package DevHeaven.keyword.domain.friend.controller;
 
-import DevHeaven.keyword.domain.friend.dto.request.ElasticSearchListRequest;
 import DevHeaven.keyword.domain.friend.dto.request.FriendApproveRequest;
 import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
-import DevHeaven.keyword.domain.friend.dto.request.FriendSearchListRequest;
 import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
+import DevHeaven.keyword.domain.friend.dto.response.FriendSearchListResponse;
 import DevHeaven.keyword.domain.friend.service.ElasticSearchService;
 import DevHeaven.keyword.domain.friend.service.FriendService;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
-import DevHeaven.keyword.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +24,7 @@ public class FriendController {
   private final FriendService friendService;
   private final ElasticSearchService elasticSearchService;
   @GetMapping(params = {"keyword"})
-  public ResponseEntity<List<ElasticSearchListRequest>> searchFriend(@AuthenticationPrincipal final MemberAdapter memberAdapter,
+  public ResponseEntity<List<FriendSearchListResponse>> searchFriend(@AuthenticationPrincipal final MemberAdapter memberAdapter,
       @RequestParam final String keyword, final Pageable pageable) {
     return ResponseEntity.ok(elasticSearchService.searchMember(keyword, memberAdapter, pageable));
   }
@@ -60,4 +57,11 @@ public class FriendController {
     return ResponseEntity.ok(friendService.handleFriendRequest(memberAdapter, memberReqId, friendApproveRequest));
   }
 
+
+  //이미 db에 있는 데이터 elastic에 넣기 위한임시 메서드
+  @PostMapping("/elastic")
+  public ResponseEntity<Boolean> saveElastic(@AuthenticationPrincipal final MemberAdapter memberAdapter){
+    elasticSearchService.saveAllMembersAsDocuments();
+    return ResponseEntity.ok().build();
+  }
 }

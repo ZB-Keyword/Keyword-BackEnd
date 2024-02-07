@@ -1,6 +1,5 @@
 package DevHeaven.keyword.domain.friend.entity;
 
-import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.type.MemberStatus;
 import lombok.AllArgsConstructor;
@@ -21,7 +20,7 @@ import javax.persistence.Id;
 @Builder
 @AllArgsConstructor
 @Document(indexName = "friends")
-public class ElasticSearchDocument {
+public class MemberDocument {
 
     //FieldType.Text : 단어형태로 검색 -> 전문검색
     //FieldType.Keyword : exact value 즉, 완전 동일한 데이터에 대해 검색
@@ -41,19 +40,13 @@ public class ElasticSearchDocument {
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
-    public static ElasticSearchDocument from(final Member member,
-                                             final MemberStatus status) {
-
-        // S3 이미지 URL 생성
-        String s3ImageUrl = "https://d19jzgrojjrozm.cloudfront.net/"
-                + member.getProfileImageFileName();
-
-        return ElasticSearchDocument.builder()
+    public static MemberDocument from(final Member member) {
+        return MemberDocument.builder()
                 .id(member.getMemberId())
-                .profileImageFileName(s3ImageUrl)
+                .profileImageFileName(member.getProfileImageFileName())
                 .name(member.getName())
                 .email(member.getEmail())
-                .status(status)
+                .status(member.getStatus())
                 .build();
     }
 }
