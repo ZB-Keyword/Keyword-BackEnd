@@ -37,7 +37,7 @@ public class ElasticSearchClient {
         .withDocument(document)
         .withDocAsUpsert(true)
         .build();
-    elasticsearchOperations.update(updateQuery, IndexCoordinates.of(document.getIndex()));
+    elasticsearchOperations.update(updateQuery, IndexCoordinates.of("friends"));
   }
 
   public void delete(final Long id){
