@@ -146,7 +146,29 @@ tasks.withType(GenerateSwaggerUI) {
 
 	delete file('src/main/resources/static/docs')
 
+	doFirst {
+		def swaggerUIFile = file("${openapi3.outputDirectory}/open-api-3.0.1.json")
+		def securitySchemesContent = """
+            "securitySchemes": {
+              "APIKey": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "Authorization"
+              }
+            },
+            "security": [
+              {
+                "APIKey": []
+              }
+            ]
+        """
 
+		// 읽어온 swagger 파일에 새로운 내용 추가
+		swaggerUIFile.append(securitySchemesContent)
+
+		// 수정된 내용을 다시 파일에 씀
+		swaggerUIFile.text = currentSwaggerContent
+	}
 
 	copy {
 		from "build/resources/main/static/docs"

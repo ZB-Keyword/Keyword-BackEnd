@@ -1,5 +1,6 @@
-package DevHeaven.keyword.domain.friend.dto.request;
+package DevHeaven.keyword.domain.friend.dto.response;
 
+import DevHeaven.keyword.domain.friend.type.FriendResponseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,11 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ElasticSearchListRequest {
+public class FriendSearchListResponse{
 
     private Long memberId;
-    private String profileImageFileName;
+    private String imageUrl;
     private String name;
     private String email;
+    private FriendResponseStatus status;
 
 }
