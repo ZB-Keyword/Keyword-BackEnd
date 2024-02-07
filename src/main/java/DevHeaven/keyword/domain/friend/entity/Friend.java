@@ -5,7 +5,6 @@ import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.entity.Member;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,6 +45,8 @@ public class Friend extends BaseTimeEntity {
     public void modifyFriendStatus(final FriendStatus friendStatus){
         this.status=friendStatus;
     }
+
+
 
 //    (fetch = FetchType.LAZY)
 }

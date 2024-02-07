@@ -1,18 +1,19 @@
 package DevHeaven.keyword.domain.friend.service;
 
 import DevHeaven.keyword.common.exception.MemberException;
-import DevHeaven.keyword.domain.friend.dto.request.ElasticSearchListRequest;
-import DevHeaven.keyword.domain.friend.entity.ElasticSearchDocument;
+import DevHeaven.keyword.common.service.image.AmazonS3FileService;
+import DevHeaven.keyword.domain.friend.dto.response.FriendSearchListResponse;
+import DevHeaven.keyword.domain.friend.entity.MemberDocument;
 import DevHeaven.keyword.domain.friend.repository.ElasticSearchRepository;
+import DevHeaven.keyword.domain.friend.repository.FriendRepository;
+import DevHeaven.keyword.domain.friend.type.FriendResponseStatus;
+import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
-import DevHeaven.keyword.domain.member.type.MemberStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +21,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static DevHeaven.keyword.common.exception.type.ErrorCode.MEMBER_NOT_FOUND;
+import static DevHeaven.keyword.domain.friend.type.FriendResponseStatus.*;
+import static DevHeaven.keyword.domain.friend.type.FriendResponseStatus.FRIEND;
+import static DevHeaven.keyword.domain.friend.type.FriendResponseStatus.FRIEND_REQUEST;
+import static DevHeaven.keyword.domain.friend.type.FriendResponseStatus.FRIEND_REQUESTED;
+import static DevHeaven.keyword.domain.friend.type.FriendResponseStatus.NOT_FRIEND;
+import static DevHeaven.keyword.domain.friend.type.FriendStatus.*;
 import static DevHeaven.keyword.domain.member.type.MemberStatus.ACTIVE;
-import static DevHeaven.keyword.domain.member.type.MemberStatus.WITHDRAWN;
 
 @Slf4j
 @Service
@@ -29,67 +35,83 @@ import static DevHeaven.keyword.domain.member.type.MemberStatus.WITHDRAWN;
 public class ElasticSearchService {
 
     private final MemberRepository memberRepository;
-    private final ElasticSearchRepository elasticSearchRepository;
+    private final FriendRepository friendRepository;
+    private final AmazonS3FileService fileService;
+    private final ElasticSearchClient elasticSearchClient;
 
-    //ES에 모든 멤버를 저장
+    public void save(final Member member){
+        elasticSearchClient.save(MemberDocument.from(member));
+    }
+
+    //검색 결과 반환
+    public List<FriendSearchListResponse> searchMember(final String keyword,
+                                                       final MemberAdapter memberAdapter,
+                                                       final Pageable pageable) {
+
+        final Member member = memberRepository.findByEmail(memberAdapter.getEmail())
+                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+        final List<MemberDocument> searchResult = elasticSearchClient
+                .findAllByNameContainingOrEmailContaining(keyword, pageable);
+
+        return searchResult.stream()
+                .map(memberDocument -> createFriendSearchListResponse(memberDocument,member))
+                .collect(Collectors.toList());
+    }
+
+    private FriendSearchListResponse createFriendSearchListResponse(final MemberDocument memberDocument, final Member member) {
+        //내가 나를 검색하면 안되니까
+        if (member.getMemberId() != memberDocument.getId()) {
+            if (checkFriend(memberDocument.getId(), member.getMemberId(), FRIEND_CHECKING)) {
+                return buildFriendSearchListResponse(memberDocument, FRIEND_REQUESTED);
+            } else if (checkFriend(member.getMemberId(), memberDocument.getId(), FRIEND_CHECKING)) {
+                return buildFriendSearchListResponse(memberDocument, FRIEND_REQUEST);
+            } else if (checkFriend(member.getMemberId(), memberDocument.getId(), FRIEND_ACCEPTED)) {
+                return buildFriendSearchListResponse(memberDocument, FRIEND);
+            } else {
+                return buildFriendSearchListResponse(memberDocument, NOT_FRIEND);
+            }
+        } else {
+            return buildFriendSearchListResponse(memberDocument, ME);
+        }
+    }
+
+    private boolean checkFriend(final Long friendRequestId ,final Long friendRequestedId,final FriendStatus status) {
+        return friendRepository.findByMemberRequestMemberIdAndFriendMemberIdAndStatus(
+            friendRequestId , friendRequestedId , status
+        ).isPresent();
+    }
+
+    private FriendSearchListResponse buildFriendSearchListResponse(final MemberDocument memberDocument,final FriendResponseStatus status) {
+        return FriendSearchListResponse.builder()
+            .memberId(memberDocument.getId())
+            .name(memberDocument.getName())
+            .email(memberDocument.getEmail())
+            .imageUrl(fileService.createUrl(memberDocument.getProfileImageFileName()))
+            .status(status)
+            .build();
+    }
+
+    public void update(final Member member){
+        elasticSearchClient.update(member);
+    }
+
+    public void delete(final Long id){
+        elasticSearchClient.delete(id);
+    }
+
+
+    //이미 db에 있는 회원들 elastic에 저장하기 위한 임시 메서드
     @Transactional
     public void saveAllMembersAsDocuments() {
         List<Member> memberList = memberRepository.findAllByStatus(ACTIVE);
         if (!memberList.isEmpty()) {
-            List<ElasticSearchDocument> elasticSearchDocumentList = memberList.stream()
-                    .map(member -> ElasticSearchDocument.from(member, ACTIVE))
-                    .collect(Collectors.toList());
-
-            elasticSearchRepository.saveAll(elasticSearchDocumentList);
+            List<MemberDocument> memberDocumentList = memberList.stream()
+                .map(member -> MemberDocument.from(member))
+                .collect(Collectors.toList());
+            elasticSearchClient.saveAllMembersAsDocuments(memberDocumentList);
         }
     }
 
-    public List<ElasticSearchListRequest> searchMember(final String keyword, final MemberAdapter memberAdapter, final Pageable pageable) {
-
-        // 현재 로그인한 멤버 정보 가져오기
-        final Member member = memberRepository.findByEmail(memberAdapter.getEmail())
-                .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
-        // ES에 모든 멤버를 저장
-        saveAllMembersAsDocuments();
-
-        // ES 검색 결과 반환
-        Page<ElasticSearchDocument> searchResult = elasticSearchRepository
-                .findAllByNameContainingOrEmailContaining(keyword, keyword, pageable);
-
-        List<ElasticSearchDocument> searchResults = searchResult.getContent();
-
-//        // WITHDRAWN 상태인 멤버 스케줄러로 특정 시간에 삭제
-//        cleanUpWithdrawnMembers();
-
-        return searchResults.stream()
-                .map(this::mapToFriendSearchListResponse)
-                .collect(Collectors.toList());
-    }
-
-    private ElasticSearchListRequest mapToFriendSearchListResponse(final ElasticSearchDocument elasticSearchDocument) {
-        return ElasticSearchListRequest.builder()
-                .memberId(elasticSearchDocument.getId())
-                .name(elasticSearchDocument.getName())
-                .email(elasticSearchDocument.getEmail())
-                .profileImageFileName(elasticSearchDocument.getProfileImageFileName())
-                .build();
-    }
-
-    //회원 탈퇴 -> ES에 해당 회원 정보를 저장
-    @Transactional
-    public void saveWithdrawnMemberAsDocument(final MemberStatus status, final Member member) {
-
-        ElasticSearchDocument withdrawnMemberDocument = ElasticSearchDocument.from(member, status);
-        elasticSearchRepository.save(withdrawnMemberDocument);
-    }
-
-//    //  회원 탈퇴 -> 스케줄러로 특정 시간에 삭제
-//    @Scheduled(cron = "0 0 0 * * *")
-//    // (fixedRate = 10000) 테스트용 10초
-//    @Transactional
-//    public void cleanUpWithdrawnMembers() {
-//        elasticSearchRepository.deleteByStatus(WITHDRAWN);
-//    }
-
 }
+

@@ -10,6 +10,7 @@ import DevHeaven.keyword.domain.friend.dto.request.FriendApproveRequest;
 import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
 import DevHeaven.keyword.domain.friend.dto.request.FriendSearchListRequest;
 import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
+import DevHeaven.keyword.domain.friend.dto.response.FriendSearchListResponse;
 import DevHeaven.keyword.domain.friend.entity.Friend;
 import DevHeaven.keyword.domain.friend.repository.FriendRepository;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
@@ -41,6 +42,7 @@ public class FriendService {
   private final MemberRepository memberRepository;
   private final NoticeRepository noticeRepository;
   private final AmazonS3FileService fileService;
+
 
   public List <FriendListResponse> getFriendList(final MemberAdapter memberAdapter ,final FriendListStatusRequest friendState,
       final Long noticeId, final Pageable pageable){
@@ -192,6 +194,5 @@ public class FriendService {
 
     return true;
   }
-
 
 }

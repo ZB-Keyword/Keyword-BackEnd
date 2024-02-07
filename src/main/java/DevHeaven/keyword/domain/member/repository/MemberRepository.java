@@ -1,5 +1,7 @@
 package DevHeaven.keyword.domain.member.repository;
 
+import DevHeaven.keyword.domain.friend.entity.Friend;
+import DevHeaven.keyword.domain.friend.type.FriendStatus;
 import DevHeaven.keyword.domain.member.entity.Member;
 import java.util.List;
 
