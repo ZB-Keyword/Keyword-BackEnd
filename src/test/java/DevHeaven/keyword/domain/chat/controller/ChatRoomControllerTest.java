@@ -1,14 +1,12 @@
 package DevHeaven.keyword.domain.chat.controller;
 
-import DevHeaven.keyword.common.exception.ChatException;
-import DevHeaven.keyword.common.exception.type.ErrorCode;
 import DevHeaven.keyword.common.exception.util.ResponseUtils;
 import DevHeaven.keyword.common.security.JwtUtils;
+import DevHeaven.keyword.domain.chat.dto.response.ChatResponse;
 import DevHeaven.keyword.domain.chat.dto.response.ChatRoomListResponse;
 import DevHeaven.keyword.domain.chat.service.ChatRoomService;
 import DevHeaven.keyword.domain.chat.service.ChatService;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
-import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.mock.WithCustomMockUser;
 import DevHeaven.keyword.support.fixture.MemberFixture;
@@ -31,16 +29,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static DevHeaven.keyword.domain.member.type.MemberRole.MEMBER;
-import static DevHeaven.keyword.domain.member.type.MemberStatus.ACTIVE;
 import static com.epages.restdocs.apispec.ResourceDocumentation.headerWithName;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -74,14 +66,15 @@ class ChatRoomControllerTest {
     @MockBean
     private MemberRepository memberRepository;
 
+    MemberAdapter memberAdapter =
+            MemberAdapter.from(MemberFixture.DOG.createMember());
+
+
     @Test
     @DisplayName("채팅방 생성 - 성공")
     @WithCustomMockUser
     void createChatRoom() throws Exception {
         //given
-        MemberAdapter memberAdapter =
-                MemberAdapter.from(
-                        MemberFixture.DOG.createMember());
 
         Long scheduleId = 1L;
 
@@ -151,8 +144,6 @@ class ChatRoomControllerTest {
     @WithCustomMockUser
     void getChatRoomList() throws Exception {
         //given
-        MemberAdapter memberAdapter =
-                MemberAdapter.from(MemberFixture.DOG.createMember());
 
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -232,6 +223,57 @@ class ChatRoomControllerTest {
     }
 
     @Test
-    void enterChatRoom() {
+    @DisplayName("채팅방 입장 테스트")
+    @WithCustomMockUser
+    void enterChatRoom() throws Exception {
+        //given
+        ChatResponse chatResponse1 =
+                ChatResponse.builder()
+                        .sender("버니")
+                        .imageUrl("image.png")
+                        .message("안녕하세요.")
+                        .build();
+
+        ChatResponse chatResponse2 =
+                ChatResponse.builder()
+                        .sender("벅스")
+                        .imageUrl("image.png")
+                        .message("네 ~ 반갑습니다.")
+                        .build();
+
+        List<ChatResponse> chatResponseList =
+                Arrays.asList(chatResponse1, chatResponse2);
+
+        Long chatRoomId = 1L;
+
+        given(chatRoomService.enterChatRoom(memberAdapter, chatRoomId))
+                .willReturn(chatResponseList);
+
+        //when
+        //then
+        mockMvc.perform(
+                        get("/chats/room/{chatRoomId}", chatRoomId)
+                                .header("Authorization", "Bearer AccessToken")
+                )
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(MockMvcRestDocumentationWrapper.document("chats/room/enter/success",
+                        ResourceSnippetParameters.builder()
+                                .tag("Chat API")
+                                .summary("채팅방 입장 API")
+                                .description("채팅방 입장 후 이전 메세지 확인 가능")
+                                .requestHeaders(
+                                        headerWithName("Authorization").description("Bearer AccessToken")
+                                )
+                                .pathParameters(parameterWithName("chatRoomId").description("입장할 채팅방 Id"))
+                                .responseSchema(Schema.schema("ChatResponse"))
+                        , preprocessRequest(prettyPrint())
+                        , preprocessResponse(prettyPrint())
+                        , responseFields(
+                                fieldWithPath("[].sender").description("송신자"),
+                                fieldWithPath("[].imageUrl").description("프로필 이미지 url"),
+                                fieldWithPath("[].message").description("전송 메세지")
+                        )
+                ));
     }
 }
