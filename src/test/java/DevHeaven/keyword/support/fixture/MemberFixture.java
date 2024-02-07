@@ -9,8 +9,12 @@ import DevHeaven.keyword.domain.member.type.MemberStatus;
 
 public enum MemberFixture {
 
-  DOG(1L, "imgUrl", "강아지", "010-1234-1234", "dog@gmail.com", "123456d", ACTIVE, MEMBER),
-  CAT(2L, "imgUrl", "고양이", "010-1234-1234", "cat@gmail.com", "123456d", ACTIVE, MEMBER);
+  DOG(1L, "imgUrl", "강아지", "010-1524-1234", "dog@gmail.com", "123456d", ACTIVE, MEMBER),
+  CAT(2L, "imgUrl", "고양이", "010-1414-1234", "cat@gmail.com", "123456d", ACTIVE, MEMBER),
+  PANDA(3L, "imgUrl", "판다", "010-1154-1234", "panda@gmail.com", "123456d", ACTIVE, MEMBER),
+  LION(4L, "imgUrl", "라이언양이", "010-1514-1234", "lion@gmail.com", "123456d", ACTIVE, MEMBER),
+  RABBIT(5L, "imgUrl", "토끼", "010-1454-1234", "rabbit@gmail.com", "123456d", ACTIVE, MEMBER);;
+
   private Long memberId;
   private String imageUrl;
   private String name;

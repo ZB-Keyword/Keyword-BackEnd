@@ -2,6 +2,8 @@ package DevHeaven.keyword.domain.member.repository;
 
 import DevHeaven.keyword.domain.member.entity.Member;
 import java.util.List;
+
+import DevHeaven.keyword.domain.member.type.MemberStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +16,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmail(String email);
     boolean existsByEmail(String email);
     boolean existsByPhone(String phone);
-  
+
+    List<Member> findAllByStatus(MemberStatus memberStatus);
     List <Member> findByMemberIdIn(List<Long> memberId);
 
     // 임시 메서드

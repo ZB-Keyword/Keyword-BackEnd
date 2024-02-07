@@ -33,6 +33,9 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-batch'
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.4'
+	implementation 'org.elasticsearch.client:elasticsearch-rest-client:7.17.4'
+	implementation("jakarta.json:jakarta.json-api:2.0.1")
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -58,6 +61,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 	testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.16.4'
+	testImplementation 'it.ozimov:embedded-redis:0.7.2'
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'com.github.maricn:logback-slack-appender:1.6.1'
@@ -142,30 +146,7 @@ tasks.withType(GenerateSwaggerUI) {
 
 	delete file('src/main/resources/static/docs')
 
-	doLast {
-		def swaggerUIFile = file("${openapi3.outputDirectory}/open-api-3.0.1.json")
 
-		def securitySchemesContent = """
-            "securitySchemes": {
-              "APIKey": {
-                "type": "apiKey",
-                "in": "header",
-                "name": "Authorization"
-              }
-            },
-            "security": [
-              {
-                "APIKey": []
-              }
-            ]
-        """
-
-		// 읽어온 swagger 파일에 새로운 내용 추가
-		swaggerUIFile.append(securitySchemesContent)
-
-		// 수정된 내용을 다시 파일에 씀
-		swaggerUIFile.text = currentSwaggerContent
-	}
 
 	copy {
 		from "build/resources/main/static/docs"

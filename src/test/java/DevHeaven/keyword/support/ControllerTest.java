@@ -6,6 +6,7 @@ import DevHeaven.keyword.domain.chat.controller.ChatRoomController;
 import DevHeaven.keyword.domain.chat.service.ChatRoomService;
 import DevHeaven.keyword.domain.chat.service.ChatService;
 import DevHeaven.keyword.domain.friend.controller.FriendController;
+import DevHeaven.keyword.domain.friend.service.ElasticSearchService;
 import DevHeaven.keyword.domain.friend.service.FriendService;
 import DevHeaven.keyword.domain.member.controller.MemberController;
 import DevHeaven.keyword.domain.member.service.MemberService;
@@ -74,4 +75,7 @@ public abstract class ControllerTest {
 
   @MockBean
   protected ScheduleService scheduleService;
+
+  @MockBean
+  protected ElasticSearchService elasticSearchService;
 }

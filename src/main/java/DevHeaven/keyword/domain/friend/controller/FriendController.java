@@ -1,9 +1,11 @@
 package DevHeaven.keyword.domain.friend.controller;
 
+import DevHeaven.keyword.domain.friend.dto.request.ElasticSearchListRequest;
 import DevHeaven.keyword.domain.friend.dto.request.FriendApproveRequest;
 import DevHeaven.keyword.domain.friend.dto.request.FriendListStatusRequest;
 import DevHeaven.keyword.domain.friend.dto.request.FriendSearchListRequest;
 import DevHeaven.keyword.domain.friend.dto.response.FriendListResponse;
+import DevHeaven.keyword.domain.friend.service.ElasticSearchService;
 import DevHeaven.keyword.domain.friend.service.FriendService;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
@@ -23,20 +25,17 @@ import java.util.List;
 public class FriendController {
 
   private final FriendService friendService;
-
-  // TODO : 임시 메서드 명칭 (메서드 명이랑 DTO 바꿔주세요)
+  private final ElasticSearchService elasticSearchService;
   @GetMapping(params = {"keyword"})
-  public ResponseEntity<List<FriendSearchListRequest>> searchFriend(
-      @AuthenticationPrincipal final MemberAdapter memberAdapter,
-      @RequestParam final String keyword,
-      final Pageable pageable) {
-    return ResponseEntity.ok(friendService.searchFriend(memberAdapter, keyword, pageable));
+  public ResponseEntity<List<ElasticSearchListRequest>> searchFriend(@AuthenticationPrincipal final MemberAdapter memberAdapter,
+      @RequestParam final String keyword, final Pageable pageable) {
+    return ResponseEntity.ok(elasticSearchService.searchMember(keyword, memberAdapter, pageable));
   }
-  
+
   @GetMapping
   public ResponseEntity<List <FriendListResponse>> getFriendList(@AuthenticationPrincipal final MemberAdapter memberAdapter,
       @RequestParam(name = "friend-state") final FriendListStatusRequest friendState, @RequestParam(required = false) final Long noticeId,
-      @PageableDefault(size = 5) final Pageable pageable
+      @PageableDefault final Pageable pageable
       ) {
 
     return ResponseEntity.ok(friendService.getFriendList(memberAdapter, friendState, noticeId, pageable));
