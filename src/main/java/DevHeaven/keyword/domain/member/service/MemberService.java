@@ -22,6 +22,7 @@ import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.common.security.JwtUtils;
 import DevHeaven.keyword.common.security.dto.TokenResponse;
 import DevHeaven.keyword.common.service.image.AmazonS3FileService;
+import DevHeaven.keyword.domain.friend.service.ElasticSearchClient;
 import DevHeaven.keyword.domain.friend.service.ElasticSearchService;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.dto.OAuthMemberAdapter;
@@ -97,7 +98,7 @@ public class MemberService {
             .provider(KEYWORD)
             .build()
     );
-
+    elasticSearchService.save(member);
     return new SignupResponse(member.getName());
   }
 
@@ -187,6 +188,7 @@ public class MemberService {
 
     if (requestedProfileImage != null) {
       member.modifyProfileImageFileName(amazonS3FileService.saveImage(requestedProfileImage));
+      elasticSearchService.update(member);
     }
 
     memberRepository.save(member);
@@ -196,13 +198,9 @@ public class MemberService {
 
   public Boolean withdraw(final MemberAdapter memberAdapter) {
     Member member = getMemberByEmail(memberAdapter.getEmail());
-
     validateMemberByStatus(member.getStatus());
-
     memberRepository.save(member.modifyStatus(WITHDRAWN));
-
-    elasticSearchService.saveWithdrawnMemberAsDocument(WITHDRAWN, member);
-
+    elasticSearchService.delete(member.getMemberId());
     return true;
   }
 
