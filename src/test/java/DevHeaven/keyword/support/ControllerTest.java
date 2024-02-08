@@ -2,6 +2,7 @@ package DevHeaven.keyword.support;
 
 import DevHeaven.keyword.common.security.JwtAuthenticationFilter;
 import DevHeaven.keyword.common.security.JwtExceptionFilter;
+import DevHeaven.keyword.common.security.JwtUtils;
 import DevHeaven.keyword.domain.chat.controller.ChatRoomController;
 import DevHeaven.keyword.domain.chat.service.ChatRoomService;
 import DevHeaven.keyword.domain.chat.service.ChatService;
