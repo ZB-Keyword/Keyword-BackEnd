@@ -1,31 +1,22 @@
 package DevHeaven.keyword.domain.chat.controller;
 
-import DevHeaven.keyword.common.exception.util.ResponseUtils;
-import DevHeaven.keyword.common.security.JwtUtils;
+
 import DevHeaven.keyword.domain.chat.dto.response.ChatResponse;
 import DevHeaven.keyword.domain.chat.dto.response.ChatRoomListResponse;
-import DevHeaven.keyword.domain.chat.service.ChatRoomService;
-import DevHeaven.keyword.domain.chat.service.ChatService;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
-import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.mock.WithCustomMockUser;
+import DevHeaven.keyword.support.ControllerTest;
 import DevHeaven.keyword.support.fixture.MemberFixture;
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.Schema;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
@@ -44,31 +35,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ChatRoomController.class)
-@AutoConfigureMockMvc(addFilters = false)
-@AutoConfigureRestDocs
-class ChatRoomControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-    @MockBean
-    private ChatRoomService chatRoomService;
-
-    @MockBean
-    private ChatService chatService;
-
-    @MockBean
-    private JwtUtils jwtUtils;
-
-    @MockBean
-    private ResponseUtils responseUtils;
-
-    @MockBean
-    private MemberRepository memberRepository;
+class ChatRoomControllerTest extends ControllerTest {
 
     MemberAdapter memberAdapter =
             MemberAdapter.from(MemberFixture.DOG.createMember());
-
 
     @Test
     @DisplayName("채팅방 생성 - 성공")
