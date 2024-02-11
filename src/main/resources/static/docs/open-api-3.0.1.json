@@ -10,6 +10,119 @@
   } ],
   "tags" : [ ],
   "paths" : {
+    "/chats/room" : {
+      "get" : {
+        "tags" : [ "Chat API" ],
+        "summary" : "채팅방 목록 조회 API",
+        "description" : "로그인한 사용자가 포함된 채팅방 목록 조회",
+        "operationId" : "chats/room",
+        "parameters" : [ {
+          "name" : "size",
+          "in" : "query",
+          "description" : "Description of size parameter",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "page",
+          "in" : "query",
+          "description" : "Description of page parameter",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChatRoomListResponse"
+                },
+                "examples" : {
+                  "chats/room" : {
+                    "value" : "{\n  \"content\" : [ {\n    \"chatRoomId\" : 1,\n    \"scheduleTitle\" : \"크리스마스 모임\",\n    \"friendsName\" : [ \"버니\", \"벅스\", \"강아지\" ]\n  }, {\n    \"chatRoomId\" : 2,\n    \"scheduleTitle\" : \"생일파티\",\n    \"friendsName\" : [ \"버니\", \"벅스\", \"강아지\" ]\n  }, {\n    \"chatRoomId\" : 3,\n    \"scheduleTitle\" : \"송별회\",\n    \"friendsName\" : [ \"버니\", \"벅스\", \"강아지\" ]\n  } ],\n  \"pageable\" : \"INSTANCE\",\n  \"totalPages\" : 1,\n  \"totalElements\" : 3,\n  \"last\" : true,\n  \"size\" : 3,\n  \"number\" : 0,\n  \"sort\" : {\n    \"empty\" : true,\n    \"sorted\" : false,\n    \"unsorted\" : true\n  },\n  \"numberOfElements\" : 3,\n  \"first\" : true,\n  \"empty\" : false\n}"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/room/{chatRoomId}" : {
+      "get" : {
+        "tags" : [ "Chat API" ],
+        "summary" : "채팅방 입장 API",
+        "description" : "채팅방 입장 후 이전 메세지 확인 가능",
+        "operationId" : "chats/room/enter/success",
+        "parameters" : [ {
+          "name" : "chatRoomId",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ChatResponse"
+                },
+                "examples" : {
+                  "chats/room/enter/success" : {
+                    "value" : "[ {\n  \"sender\" : \"버니\",\n  \"imageUrl\" : \"image.png\",\n  \"message\" : \"안녕하세요.\"\n}, {\n  \"sender\" : \"벅스\",\n  \"imageUrl\" : \"image.png\",\n  \"message\" : \"네 ~ 반갑습니다.\"\n} ]"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/room/{scheduleId}" : {
+      "post" : {
+        "tags" : [ "Chat API" ],
+        "summary" : "채팅방 생성  API",
+        "description" : "일정 생성 후에 바로 동작히는 API로 채팅방 생성 및 일정 멤버에게 채팅방을 할당해줌.",
+        "operationId" : "chats/room/create/",
+        "parameters" : [ {
+          "name" : "scheduleId",
+          "in" : "path",
+          "description" : "",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "200",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/friends486549215"
+                },
+                "examples" : {
+                  "chats/room/create/success" : {
+                    "value" : "true"
+                  },
+                  "chats/room/create/fail" : {
+                    "value" : "false"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/friends" : {
       "get" : {
         "tags" : [ "Friend API" ],
@@ -230,6 +343,96 @@
   },
   "components" : {
     "schemas" : {
+      "ChatRoomListResponse" : {
+        "title" : "ChatRoomListResponse",
+        "type" : "object",
+        "properties" : {
+          "number" : {
+            "type" : "number",
+            "description" : "현재 페이지 번호"
+          },
+          "numberOfElements" : {
+            "type" : "number",
+            "description" : "요청 페이지에서 조회된 데이터 갯수"
+          },
+          "size" : {
+            "type" : "number",
+            "description" : "한 페이지당 조회할 데이터 갯수"
+          },
+          "last" : {
+            "type" : "boolean",
+            "description" : "마지막 페이지인지 여부"
+          },
+          "totalPages" : {
+            "type" : "number",
+            "description" : "전체 페이지 갯수"
+          },
+          "pageable" : {
+            "type" : "string",
+            "description" : "페이지 정보"
+          },
+          "sort" : {
+            "type" : "object",
+            "properties" : {
+              "unsorted" : {
+                "type" : "boolean",
+                "description" : "정렬 안 됐는지 여부"
+              },
+              "sorted" : {
+                "type" : "boolean",
+                "description" : "정렬 여부"
+              },
+              "empty" : {
+                "type" : "boolean",
+                "description" : "데이터 비었는지 여부"
+              }
+            }
+          },
+          "first" : {
+            "type" : "boolean",
+            "description" : "첫 번째 페이지인지 여부"
+          },
+          "content" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "scheduleTitle" : {
+                  "type" : "string",
+                  "description" : "일정 제목"
+                },
+                "friendsName" : {
+                  "type" : "array",
+                  "description" : "일정 참여 멤버",
+                  "items" : {
+                    "oneOf" : [ {
+                      "type" : "object"
+                    }, {
+                      "type" : "boolean"
+                    }, {
+                      "type" : "string"
+                    }, {
+                      "type" : "number"
+                    } ]
+                  }
+                },
+                "chatRoomId" : {
+                  "type" : "number",
+                  "description" : "채팅방 번호"
+                }
+              }
+            }
+          },
+          "empty" : {
+            "type" : "boolean",
+            "description" : "데이터 비었는지 여부"
+          },
+          "totalElements" : {
+            "type" : "number",
+            "description" : "테이블 총 데이터 갯수"
+          }
+        }
+      },
       "Friend Delete Response" : {
         "title" : "Friend Delete Response",
         "type" : "object",
@@ -245,6 +448,27 @@
           "errorCode" : {
             "type" : "string",
             "description" : "친구 삭제 실패 code"
+          }
+        }
+      },
+      "ChatResponse" : {
+        "title" : "ChatResponse",
+        "type" : "array",
+        "items" : {
+          "type" : "object",
+          "properties" : {
+            "sender" : {
+              "type" : "string",
+              "description" : "송신자"
+            },
+            "imageUrl" : {
+              "type" : "string",
+              "description" : "프로필 이미지 url"
+            },
+            "message" : {
+              "type" : "string",
+              "description" : "전송 메세지"
+            }
           }
         }
       },
