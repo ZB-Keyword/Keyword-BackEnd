@@ -75,7 +75,7 @@ public class NoticeService {
 
   private Notice createNotice(final NoticeEvent noticeEvent, final Member member) {
     return Notice.builder()
-        .id(member.getMemberId())
+        .member(member)
         .informationId(noticeEvent.getId())
         .type(noticeEvent.getNoticeType())
         .build();
@@ -86,6 +86,7 @@ public class NoticeService {
 
     emitter.send(SseEmitter.event()
         .id(email)
+        .comment("sse 연결")
         .name("sse"));
     emitters.add(emitter);
     final MessageListener messageListener = (message, pattern) -> {
@@ -102,6 +103,7 @@ public class NoticeService {
   private NoticeResponse serialize(final Message message) {
     try {
       final Notice notification = this.objectMapper.readValue(message.getBody(), Notice.class);
+      System.out.println("NoticeResponse.from(notification) = " + NoticeResponse.from(notification));
       return NoticeResponse.from(notification);
     } catch (IOException e) {
       throw new NoticeException(ErrorCode.NOTICE_ERROR);

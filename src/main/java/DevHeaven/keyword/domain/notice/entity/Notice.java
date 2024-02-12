@@ -3,6 +3,7 @@ package DevHeaven.keyword.domain.notice.entity;
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.notice.type.NoticeType;
+import javax.persistence.JoinColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,9 +33,11 @@ public class Notice extends BaseTimeEntity {
     @Column(nullable = false)
     private Long informationId;
 
-    private Boolean isRead;
+    @Builder.Default
+    private Boolean isRead = false;
 
     @ManyToOne
+    @JoinColumn(name = "member_id")
     private Member member;
 
     public void modifyNoticeIsRead(){
