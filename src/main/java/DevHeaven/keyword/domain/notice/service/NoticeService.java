@@ -1,8 +1,12 @@
 package DevHeaven.keyword.domain.notice.service;
 
+import static DevHeaven.keyword.common.exception.type.ErrorCode.EMAIL_NOT_FOUND;
+import static DevHeaven.keyword.common.exception.type.ErrorCode.NOTICE_NOT_FOUND;
+
 import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.common.exception.NoticeException;
 import DevHeaven.keyword.common.exception.type.ErrorCode;
+import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.notice.dto.NoticeEvent;
@@ -13,7 +17,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
@@ -28,6 +34,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
+@Lazy
 public class NoticeService {
 
   private static final long DEFAULT_TIMEOUT = 60L * 1000 * 60;
@@ -37,15 +45,6 @@ public class NoticeService {
   private final NoticeRepository noticeRepository;
   private final MemberRepository memberRepository;
 
-  public NoticeService(RedisMessageListenerContainer redisMessageListenerContainer,
-      ObjectMapper objectMapper, RedisOperations<String, NoticeResponse> eventRedisOperations,
-      NoticeRepository noticeRepository, MemberRepository memberRepository) {
-    this.redisMessageListenerContainer = redisMessageListenerContainer;
-    this.objectMapper = objectMapper;
-    this.eventRedisOperations = eventRedisOperations;
-    this.noticeRepository = noticeRepository;
-    this.memberRepository = memberRepository;
-  }
 
   private static final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
@@ -81,6 +80,26 @@ public class NoticeService {
         .build();
   }
 
+  public Boolean deleteNotice(final MemberAdapter memberAdapter, final Long noticeId) {
+    final Member member = getMemberByEmail(memberAdapter.getEmail());
+
+    final Notice notice = noticeRepository.findById(noticeId)
+        .orElseThrow(() -> new NoticeException(NOTICE_NOT_FOUND));
+
+    notice.setStatus(true);
+
+    noticeRepository.save(notice);
+
+    return true;
+  }
+
+
+  private Member getMemberByEmail(final String email) {
+
+    return memberRepository.findByEmail(email)
+        .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
+  }
+
   public SseEmitter subscribe(final String email) throws IOException {
     final SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
 
@@ -103,7 +122,8 @@ public class NoticeService {
   private NoticeResponse serialize(final Message message) {
     try {
       final Notice notification = this.objectMapper.readValue(message.getBody(), Notice.class);
-      System.out.println("NoticeResponse.from(notification) = " + NoticeResponse.from(notification));
+      System.out.println(
+          "NoticeResponse.from(notification) = " + NoticeResponse.from(notification));
       return NoticeResponse.from(notification);
     } catch (IOException e) {
       throw new NoticeException(ErrorCode.NOTICE_ERROR);

@@ -4,6 +4,7 @@ import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
 
 
+import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,4 +31,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             " WHERE STATUS = 'END' and " +
             " DATEDIFF(schedule_at, NOW()) = -3", nativeQuery = true)
     List<Schedule> findScheduleEndThreeDay();
+
+    List<Schedule> findByStatus(ScheduleStatus scheduleStatus);
 }
