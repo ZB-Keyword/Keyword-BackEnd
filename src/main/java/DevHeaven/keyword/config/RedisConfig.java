@@ -1,5 +1,6 @@
 package DevHeaven.keyword.config;
 
+import DevHeaven.keyword.domain.notice.dto.response.NoticeResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.redisson.Redisson;
@@ -10,7 +11,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -44,5 +49,28 @@ public class RedisConfig {
     redisTemplate.setKeySerializer(new StringRedisSerializer());
     redisTemplate.setValueSerializer(new StringRedisSerializer());
     return redisTemplate;
+  }
+
+  // Redis 관련 구성 및 리스너
+  @Bean
+  public RedisOperations<String, NoticeResponse> eventRedisOperations(
+      RedisConnectionFactory redisConnectionFactory, ObjectMapper objectMapper) {
+    final Jackson2JsonRedisSerializer<NoticeResponse> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(
+        NoticeResponse.class);
+    jsonRedisSerializer.setObjectMapper(objectMapper);
+    final RedisTemplate<String, NoticeResponse> eventRedisTemplate = new RedisTemplate<>();
+    eventRedisTemplate.setConnectionFactory(redisConnectionFactory);
+    eventRedisTemplate.setKeySerializer(RedisSerializer.string());
+    eventRedisTemplate.setValueSerializer(jsonRedisSerializer);
+    eventRedisTemplate.setHashKeySerializer(RedisSerializer.string());
+    eventRedisTemplate.setHashValueSerializer(jsonRedisSerializer);
+    return eventRedisTemplate;
+  }
+
+  @Bean
+  public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory) {
+    final RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
+    redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
+    return redisMessageListenerContainer;
   }
 }

@@ -9,6 +9,8 @@ import DevHeaven.keyword.domain.chat.type.ChatRoomStatus;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
+import DevHeaven.keyword.domain.notice.dto.NoticeEvent;
+import DevHeaven.keyword.domain.notice.type.NoticeType;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleCreateRequest;
 import DevHeaven.keyword.domain.schedule.dto.ScheduleFriend;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleFriendRequest;
@@ -21,6 +23,7 @@ import DevHeaven.keyword.domain.schedule.entity.Schedule;
 import DevHeaven.keyword.domain.schedule.repository.ScheduleRepository;
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +41,7 @@ public class ScheduleService {
     private final MemberRepository memberRepository;
     private final ScheduleRepository scheduleRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public Page<ScheduleListResponse> getScheduleList(
             final MemberAdapter memberAdapter,
@@ -110,7 +114,20 @@ public class ScheduleService {
         ChatRoom chatRoom = chatRoomRepository.findBySchedule(schedule);
         chatRoom.setStatus(ChatRoomStatus.INVALID);
 
+        //todo 스케쥴 삭제 알림
+        sendNotice(scheduleId, member.getMemberId(), NoticeType.SCHEDULE_CALCEL);
         return true;
+    }
+
+    public void sendNotice(Long scheduleId, Long memberId, NoticeType noticeType) {
+        //이벤트 등록
+        applicationEventPublisher.publishEvent(
+            NoticeEvent.builder()
+                .id(scheduleId)
+                .memberId(memberId)
+                .noticeType(noticeType)
+                .build()
+        );
     }
 
     private void validateOrganizerSchedule(

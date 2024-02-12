@@ -16,9 +16,12 @@ import DevHeaven.keyword.domain.friend.repository.FriendRepository;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
+import DevHeaven.keyword.domain.notice.dto.NoticeEvent;
 import DevHeaven.keyword.domain.notice.entity.Notice;
 import DevHeaven.keyword.domain.notice.repository.NoticeRepository;
+import DevHeaven.keyword.domain.notice.type.NoticeType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,7 +45,7 @@ public class FriendService {
   private final MemberRepository memberRepository;
   private final NoticeRepository noticeRepository;
   private final AmazonS3FileService fileService;
-
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   public List <FriendListResponse> getFriendList(final MemberAdapter memberAdapter ,final FriendListStatusRequest friendState,
       final Long noticeId, final Pageable pageable){
@@ -104,6 +107,7 @@ public class FriendService {
     if (friendRequest.isPresent()) {
       final Friend friendPreRequest = friendRequest.get();
       friendPreRequest.modifyFriendStatus(FRIEND_CHECKING);
+      sendNotice(friendPreRequest, friend.getMemberId());
     } else {
       final Friend friendFirstRequest = Friend.builder()
           .memberRequest(requestMember)
@@ -111,9 +115,22 @@ public class FriendService {
           .status(FRIEND_CHECKING)
           .build();
       friendRepository.save(friendFirstRequest);
+      sendNotice(friendFirstRequest, friend.getMemberId());
     }
 
     return true;
+  }
+
+
+
+  private void sendNotice(final Friend friendRequest, final Long memberId) {
+    applicationEventPublisher.publishEvent(
+        NoticeEvent.builder()
+            .id(friendRequest.getId())
+            .memberId(memberId)
+            .noticeType(NoticeType.FRIEND_REQUEST)
+            .build()
+    );
   }
 
   private void validateFriendRequest(final Member requestMember, final Member friend) {
