@@ -33,4 +33,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findScheduleEndThreeDay();
 
     List<Schedule> findByStatus(ScheduleStatus scheduleStatus);
+
+    List<Schedule> findAllByStatus(String ongoing);
 }
