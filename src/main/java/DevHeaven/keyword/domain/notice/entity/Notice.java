@@ -25,6 +25,7 @@ public class Notice extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "notice_id")
     private Long id;
 
     @Column(nullable = false)
@@ -44,5 +45,9 @@ public class Notice extends BaseTimeEntity {
         if(this.isRead == false){
             this.isRead = true;
         }
+    }
+
+    public void setStatus(Boolean isRead) {
+        this.isRead = isRead;
     }
 }
