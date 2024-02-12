@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisOperations;
@@ -93,6 +95,16 @@ public class NoticeService {
     return true;
   }
 
+  public Page<NoticeResponse> getNoticeList(
+      final MemberAdapter memberAdapter, Pageable pageable) {
+
+    Member member = getMemberByEmail(memberAdapter.getEmail());
+
+    Page<Notice> noticePage = noticeRepository.findByIdAndIsRead(
+        member.getMemberId(), false, pageable);
+
+    return noticePage.map(Notice::from);
+  }
 
   private Member getMemberByEmail(final String email) {
 

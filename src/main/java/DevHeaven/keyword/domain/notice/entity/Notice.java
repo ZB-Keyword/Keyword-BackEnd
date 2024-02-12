@@ -2,6 +2,7 @@ package DevHeaven.keyword.domain.notice.entity;
 
 import DevHeaven.keyword.common.entity.BaseTimeEntity;
 import DevHeaven.keyword.domain.member.entity.Member;
+import DevHeaven.keyword.domain.notice.dto.response.NoticeResponse;
 import DevHeaven.keyword.domain.notice.type.NoticeType;
 import javax.persistence.JoinColumn;
 import lombok.AllArgsConstructor;
@@ -49,5 +50,13 @@ public class Notice extends BaseTimeEntity {
 
     public void setStatus(Boolean isRead) {
         this.isRead = isRead;
+    }
+
+    public static NoticeResponse from(Notice notice) {
+        return NoticeResponse.builder()
+            .noticeId(notice.getId())
+            .infoId(notice.getInformationId())
+            .type(notice.getType())
+            .build();
     }
 }
