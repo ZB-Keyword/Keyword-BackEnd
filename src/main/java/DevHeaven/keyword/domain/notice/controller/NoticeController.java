@@ -1,9 +1,12 @@
 package DevHeaven.keyword.domain.notice.controller;
 
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
+import DevHeaven.keyword.domain.notice.dto.response.NoticeResponse;
 import DevHeaven.keyword.domain.notice.service.NoticeService;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,4 +38,12 @@ public class NoticeController {
 
   }
 
+  @GetMapping
+  public ResponseEntity<Page<NoticeResponse>> getNoticeList(
+      @AuthenticationPrincipal final MemberAdapter memberAdapter,
+      Pageable pageable) {
+
+    return ResponseEntity.ok(noticeService.getNoticeList(memberAdapter, pageable));
+
+  }
 }
