@@ -79,7 +79,9 @@ public enum ErrorCode {
     FAIL_MODIFY_REMINDAT_AFTER_SCHEDULEAT(HttpStatus.BAD_REQUEST, "알림 시간은 일정 시간 이전으로만 설정할 수 있습니다."),
 
     //notice
-    NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND ,"해당 알림을 찾을 수 없습니다");
+    NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND ,"해당 알림을 찾을 수 없습니다"),
+    NOTICE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알림 에러 발생했습니다")
+    ;
 
     private final HttpStatus httpStatus;
     private final String errorMessage;
