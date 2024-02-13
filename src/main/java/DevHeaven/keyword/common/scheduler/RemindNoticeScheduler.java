@@ -1,11 +1,5 @@
 package DevHeaven.keyword.common.scheduler;
 
-import static DevHeaven.keyword.common.exception.type.ErrorCode.EMAIL_NOT_FOUND;
-import static DevHeaven.keyword.domain.chat.type.ChatRoomStatus.INVALID;
-import static DevHeaven.keyword.domain.chat.type.ChatRoomStatus.VALID;
-
-import DevHeaven.keyword.common.exception.MemberException;
-import DevHeaven.keyword.domain.chat.repository.ChatRoomRepository;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.notice.dto.NoticeEvent;
@@ -25,32 +19,37 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class RemindNoticeScheduler {
-    private final MemberRepository memberRepository;
-    private final ScheduleRepository scheduleRepository;
-    private final ApplicationEventPublisher applicationEventPublisher;
 
-    @Scheduled(cron = "0 0 */1 * * *") // 매시간 실행
-    @Transactional
-    public void remindNotice() {
-        List<Schedule> scheduleList = scheduleRepository.findAllByStatus("ONGOING");
+  private final MemberRepository memberRepository;
+  private final ScheduleRepository scheduleRepository;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
-        for(Schedule schedule : scheduleList) {
-            if (schedule.getScheduleAt().minusHours(schedule.getRemindAt()).isEqual(LocalDateTime.now())) {
-                for (Member friend : schedule.getFriendList()) {
-                    sendNotice(friend, friend.getMemberId());
-                }
-            }
+  @Scheduled(cron = "0 0 */1 * * *") // 매시간 실행
+  @Transactional
+  public void remindNotice() {
+    List<Schedule> scheduleList =
+        scheduleRepository.finaAllByStatusAndScheduleAtBetween(
+            "ONGOING", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
+
+    for (Schedule schedule : scheduleList) {
+      if (
+          schedule.getScheduleAt().minusHours(schedule.getRemindAt()).isEqual(LocalDateTime.now()) ||
+          schedule.getScheduleAt().minusHours(schedule.getRemindAt()).isBefore(LocalDateTime.now())) {
+        for (Member friend : schedule.getFriendList()) {
+          sendNotice(friend, friend.getMemberId());
         }
+      }
     }
+  }
 
 
-    private void sendNotice(final Member member, final Long memberId) {
-        applicationEventPublisher.publishEvent(
-            NoticeEvent.builder()
-                .id(member.getMemberId())
-                .memberId(memberId)
-                .noticeType(NoticeType.SCHEDULE_CALCEL)
-                .build()
-        );
-    }
+  private void sendNotice(final Member member, final Long memberId) {
+    applicationEventPublisher.publishEvent(
+        NoticeEvent.builder()
+            .id(member.getMemberId())
+            .memberId(memberId)
+            .noticeType(NoticeType.SCHEDULE_CALCEL)
+            .build()
+    );
+  }
 }

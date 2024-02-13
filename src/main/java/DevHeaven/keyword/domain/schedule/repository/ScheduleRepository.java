@@ -5,6 +5,7 @@ import DevHeaven.keyword.domain.schedule.entity.Schedule;
 
 
 import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +33,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             " DATEDIFF(schedule_at, NOW()) = -3", nativeQuery = true)
     List<Schedule> findScheduleEndThreeDay();
 
-    List<Schedule> findByStatus(ScheduleStatus scheduleStatus);
-
-    List<Schedule> findAllByStatus(String ongoing);
+  List<Schedule> finaAllByStatusAndScheduleAtBetween(String ongoing, LocalDateTime now, LocalDateTime localDateTime);
 }
