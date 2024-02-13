@@ -28,7 +28,7 @@ public class RemindNoticeScheduler {
   @Transactional
   public void remindNotice() {
     List<Schedule> scheduleList =
-        scheduleRepository.finaAllByStatusAndScheduleAtBetween(
+        scheduleRepository.findAllByStatusAndScheduleAtBetween(
             "ONGOING", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
 
     for (Schedule schedule : scheduleList) {
