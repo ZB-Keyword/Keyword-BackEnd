@@ -28,7 +28,6 @@ public class RemindNoticeScheduler {
   @Transactional
   public void remindNotice() {
     List<Schedule> scheduleList = scheduleRepository.findAllByStatusAndScheduleAtBetween("ONGOING", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
-
     for (Schedule schedule : scheduleList) {
       if (
           schedule.getScheduleAt().minusHours(schedule.getRemindAt()).isEqual(LocalDateTime.now()) ||
