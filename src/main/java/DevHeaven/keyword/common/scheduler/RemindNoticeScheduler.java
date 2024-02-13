@@ -27,9 +27,7 @@ public class RemindNoticeScheduler {
   @Scheduled(cron = "0 0 */1 * * *") // 매시간 실행
   @Transactional
   public void remindNotice() {
-    List<Schedule> scheduleList =
-        scheduleRepository.finaAllByStatusAndScheduleAtBetween(
-            "ONGOING", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
+    List<Schedule> scheduleList = scheduleRepository.findAllByStatusAndScheduleAtBetween("ONGOING", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
 
     for (Schedule schedule : scheduleList) {
       if (
