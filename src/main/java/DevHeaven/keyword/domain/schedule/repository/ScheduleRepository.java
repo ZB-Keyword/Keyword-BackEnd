@@ -33,5 +33,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             " DATEDIFF(schedule_at, NOW()) = -3", nativeQuery = true)
     List<Schedule> findScheduleEndThreeDay();
 
-  List<Schedule> finaAllByStatusAndScheduleAtBetween(String ongoing, LocalDateTime now, LocalDateTime localDateTime);
+  List<Schedule> findAllByStatusAndScheduleAtBetween(String ongoing, LocalDateTime now, LocalDateTime localDateTime);
 }
