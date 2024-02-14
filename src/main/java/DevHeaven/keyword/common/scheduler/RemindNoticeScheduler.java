@@ -24,7 +24,7 @@ public class RemindNoticeScheduler {
   private final ScheduleRepository scheduleRepository;
   private final ApplicationEventPublisher applicationEventPublisher;
 
-  @Scheduled(cron = "0 0 */1 * * *") // 매시간 실행
+  //@Scheduled(cron = "0 0 */1 * * *") // 매시간 실행
   @Transactional
   public void remindNotice() {
     List<Schedule> scheduleList =
