@@ -5,6 +5,7 @@ import DevHeaven.keyword.domain.friend.repository.ElasticSearchRepository;
 import DevHeaven.keyword.domain.member.entity.Member;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.document.Document;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ElasticSearchClient {
 
   private final ElasticSearchRepository elasticSearchRepository;
@@ -22,6 +24,7 @@ public class ElasticSearchClient {
 
   public List <MemberDocument> findAllByNameContainingOrEmailContaining(final String keyword, final
       Pageable pageable){
+    log.info("keyword = {}",keyword);
     return elasticSearchRepository.findAllByNameContainingOrEmailContaining(keyword,keyword,pageable).getContent();
   }
 

@@ -50,10 +50,10 @@ public class ElasticSearchService {
 
         final Member member = memberRepository.findByEmail(memberAdapter.getEmail())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-
+        log.info("member = {}", member);
         final List<MemberDocument> searchResult = elasticSearchClient
                 .findAllByNameContainingOrEmailContaining(keyword, pageable);
-
+        log.info("serrch = {}" ,searchResult);
         return searchResult.stream()
                 .map(memberDocument -> createFriendSearchListResponse(memberDocument,member))
                 .collect(Collectors.toList());
