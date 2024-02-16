@@ -144,6 +144,8 @@ public class NoticeService {
 
   private void sendToClient(final SseEmitter emitter, final String email, final Object data) {
     try {
+      log.info("email = {}",email);
+      log.info("emiiater ={}", emitter.getTimeout());
       emitter.send(SseEmitter.event()
           .id(email)
           .name("sse")
