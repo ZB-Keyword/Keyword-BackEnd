@@ -27,9 +27,9 @@
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/79c1581a-dd72-4d33-8adb-c1783e08415f" alt="회원가입및 로그인" width=70%> | <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/4c147167-ca6f-4d6d-8d59-ad6e10f7652a" alt="일정생성" width=70%> | <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/0b88d7c9-59d8-4caa-9070-728cf1827c4f" alt="친구검색요청" width=70%>  |
 
-|                  🌟 친구 요청 수락               |                   🌟 프로필 수정                  |                         🌟 실시간 알림(추가예정)                         |
+|                  🌟 친구 요청 수락               |                   🌟 프로필 수정                  |                         🌟 실시간 알림                        |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/ab0c5202-c6d9-479f-9724-9f0b5c0a6a82" alt="친구요청" width=70%> | <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/fd8e2457-cefd-44ee-98c3-9564be1797a2" alt="프로필수정" width=70%> | <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/0b88d7c9-59d8-4caa-9070-728cf1827c4f" alt="실시간알림" width=70%>  |
+| <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/ab0c5202-c6d9-479f-9724-9f0b5c0a6a82" alt="친구요청" width=70%> | <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/fd8e2457-cefd-44ee-98c3-9564be1797a2" alt="프로필수정" width=70%> | <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/56c60f65-1d3e-4252-a3e4-ceb8222eb665" alt="실시간알림" width=90%>  |
 
 | 🌟 채팅  |
 | :----------------------------------------------------------: |
