@@ -7,6 +7,7 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,10 +24,10 @@ public class NoticeController {
 
   private final NoticeService noticeService;
 
-  @GetMapping(value = "/subscribe", produces = "text/event-stream")
-  public SseEmitter subscribe(@AuthenticationPrincipal MemberAdapter memberAdapter)
+  @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public ResponseEntity<SseEmitter> subscribe(@AuthenticationPrincipal MemberAdapter memberAdapter)
       throws IOException {
-    return noticeService.subscribe(memberAdapter.getEmail());
+    return ResponseEntity.ok(noticeService.subscribe(memberAdapter.getEmail()));
   }
 
   @DeleteMapping("/{noticeId}")
