@@ -34,4 +34,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findScheduleEndThreeDay();
 
   List<Schedule> findAllByStatusAndScheduleAtBetween(ScheduleStatus ongoing, LocalDateTime now, LocalDateTime localDateTime);
+
 }

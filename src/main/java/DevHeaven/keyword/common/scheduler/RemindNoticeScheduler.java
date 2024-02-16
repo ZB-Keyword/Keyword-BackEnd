@@ -40,12 +40,11 @@ public class RemindNoticeScheduler {
           sendNotice(friend, friend.getMemberId());
         }
       }
+
       return schedule.getScheduleId();
     }
     return null;
   }
-
-
 
 
   private void sendNotice(final Member member, final Long memberId) {

@@ -104,7 +104,9 @@ public class ScheduleService {
   }
 
   @Transactional
+
   public ScheduleDeleteResponse deleteSchedule(
+
       final MemberAdapter memberAdapter,
       final Long scheduleId) {
 
@@ -152,6 +154,7 @@ public class ScheduleService {
     Schedule savedSchedule =
         scheduleRepository.findByMemberAndScheduleId(member, schedule.getScheduleId())
             .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
+
 
     if (!Objects.equals(savedSchedule.getScheduleId(), schedule.getScheduleId())) {
       throw new ScheduleException(MEMBER_NOT_ORGANIZER);
