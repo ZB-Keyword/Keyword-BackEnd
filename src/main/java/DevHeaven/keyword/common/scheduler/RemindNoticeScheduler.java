@@ -6,6 +6,7 @@ import DevHeaven.keyword.domain.notice.dto.NoticeEvent;
 import DevHeaven.keyword.domain.notice.type.NoticeType;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
 import DevHeaven.keyword.domain.schedule.repository.ScheduleRepository;
+import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,21 +27,23 @@ public class RemindNoticeScheduler {
 
   //@Scheduled(cron = "0 0 */1 * * *") // 매시간 실행
   @Transactional
-  public void remindNotice() {
-    List<Schedule> scheduleList =
-        scheduleRepository.findAllByStatusAndScheduleAtBetween(
-            "ONGOING", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
+  public Object remindNotice() {
+    List<Schedule> scheduleList = scheduleRepository.findAllByStatusAndScheduleAtBetween(
+        ScheduleStatus.ONGOING, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
 
     for (Schedule schedule : scheduleList) {
       if (
           schedule.getScheduleAt().minusHours(schedule.getRemindAt()).isEqual(LocalDateTime.now()) ||
-          schedule.getScheduleAt().minusHours(schedule.getRemindAt()).isBefore(LocalDateTime.now())) {
+              schedule.getScheduleAt().minusHours(schedule.getRemindAt()).isBefore(LocalDateTime.now())) {
         for (Member friend : schedule.getFriendList()) {
           sendNotice(friend, friend.getMemberId());
         }
       }
+      return schedule.getScheduleId();
     }
+    return null;
   }
+
 
 
   private void sendNotice(final Member member, final Long memberId) {
