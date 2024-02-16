@@ -10,6 +10,7 @@
 약속을 잡을 땐 가입된 사람들과 친구를 맺고, 일정을 만들고, 채팅을 할 수 있습니다.
 
 
+
 ---
 
 ### 🧑‍🤝‍🧑 팀원
@@ -18,7 +19,6 @@
 |--|--|--|--|--|--|--|  
 |Front-End|Front-End|Back-End|Back-End|Back-End|Back-End|Back-End|
 |[이솔](https://github.com/p-inn)|[이채영](https://github.com/chae-young)|[강경구](https://github.com/kku1031)|[박소은](https://github.com/soeun135)|[박해빈](https://github.com/ParkHaeBeen)|[조현준](https://github.com/Jennny1)|[조형준](https://github.com/JoHyungJun)
-
 
 ---
 
@@ -29,11 +29,14 @@
 
 |                  🌟 친구 요청 수락               |                   🌟 프로필 수정                  |                         🌟 실시간 알림                        |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/ab0c5202-c6d9-479f-9724-9f0b5c0a6a82" alt="친구요청" width=70%> | <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/fd8e2457-cefd-44ee-98c3-9564be1797a2" alt="프로필수정" width=70%> | <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/56c60f65-1d3e-4252-a3e4-ceb8222eb665" alt="실시간알림" width=90%>  |
+| <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/ab0c5202-c6d9-479f-9724-9f0b5c0a6a82" alt="친구요청" width=70%> | <img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/fd8e2457-cefd-44ee-98c3-9564be1797a2" alt="프로필수정" width=70%> | <img src="https://github.com/ZB-Keyword/.github/assets/130157565/3a26f523-e622-4168-9c09-74310128e5c3" alt="실시간알림" width=70%>  |
 
 | 🌟 채팅  |
 | :----------------------------------------------------------: |
 |<img src="https://github.com/ZB-Keyword/Keyword-BackEnd/assets/130157565/513cf318-11cf-4d5d-81f8-0a0c104fd197" alt="채팅" width=70%> |
+
+
+
 
 
 ---
