@@ -4,8 +4,10 @@ import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.notice.dto.NoticeEvent;
 import DevHeaven.keyword.domain.notice.type.NoticeType;
+import DevHeaven.keyword.domain.schedule.dto.response.ScheduleCreateResponse;
 import DevHeaven.keyword.domain.schedule.entity.Schedule;
 import DevHeaven.keyword.domain.schedule.repository.ScheduleRepository;
+import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +26,11 @@ public class RemindNoticeScheduler {
   private final ScheduleRepository scheduleRepository;
   private final ApplicationEventPublisher applicationEventPublisher;
 
-  @Scheduled(cron = "0 0 */1 * * *") // 매시간 실행
+  //@Scheduled(cron = "0 0 */1 * * *") // 매시간 실행
   @Transactional
-  public void remindNotice() {
-    List<Schedule> scheduleList = scheduleRepository.findAllByStatusAndScheduleAtBetween("ONGOING", LocalDateTime.now(), LocalDateTime.now().plusDays(1));
+  public Object remindNotice() {
+    List<Schedule> scheduleList = scheduleRepository.findAllByStatusAndScheduleAtBetween(
+        ScheduleStatus.ONGOING, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
 
     for (Schedule schedule : scheduleList) {
       if (
@@ -37,8 +40,12 @@ public class RemindNoticeScheduler {
           sendNotice(friend, friend.getMemberId());
         }
       }
+      return schedule.getScheduleId();
     }
+    return null;
   }
+
+
 
 
   private void sendNotice(final Member member, final Long memberId) {

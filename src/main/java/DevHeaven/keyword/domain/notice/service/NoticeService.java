@@ -119,14 +119,17 @@ public class NoticeService {
         .id(email)
         .comment("sse 연결")
         .name("sse"));
+
     emitters.add(emitter);
     final MessageListener messageListener = (message, pattern) -> {
       final NoticeResponse notificationResponse = serialize(message);
       sendToClient(emitter, email, notificationResponse);
     };
+
     this.redisMessageListenerContainer.addMessageListener(messageListener,
         ChannelTopic.of(getChannelName(email)));
     checkEmitterStatus(emitter, messageListener);
+
     return emitter;
   }
 
@@ -142,16 +145,20 @@ public class NoticeService {
     }
   }
 
-  private void sendToClient(final SseEmitter emitter, final String email, final Object data) {
+  private boolean sendToClient(final SseEmitter emitter, final String email, final Object data) {
     try {
       emitter.send(SseEmitter.event()
           .id(email)
           .name("sse")
+          .comment("connect")
           .data(data));
     } catch (IOException e) {
       emitters.remove(emitter);
       log.error("SSE 연결이 올바르지 않습니다. 해당 memberID={}", email);
     }
+
+    return true;
+
   }
 
   private String getChannelName(final String email) {

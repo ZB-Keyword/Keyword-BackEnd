@@ -11,7 +11,7 @@ group = 'DevHeaven'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '1.8'
+	sourceCompatibility = "1.9"
 }
 
 configurations {
@@ -60,6 +60,7 @@ dependencies {
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'com.github.maricn:logback-slack-appender:1.6.1'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
 }
 
 tasks.named('bootBuildImage') {
@@ -121,3 +122,4 @@ tasks.withType(GenerateSwaggerUI) {
 bootJar {
 	dependsOn('openapi3')
 }
+targetCompatibility = JavaVersion.VERSION_1_9

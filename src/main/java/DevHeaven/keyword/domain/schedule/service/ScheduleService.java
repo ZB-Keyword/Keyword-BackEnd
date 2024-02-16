@@ -20,6 +20,7 @@ import DevHeaven.keyword.domain.schedule.dto.request.ScheduleCreateRequest;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleFriendRequest;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleModifyRequest;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleCreateResponse;
+import DevHeaven.keyword.domain.schedule.dto.response.ScheduleDeleteResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleDetailResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleListResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleModifyResponse;
@@ -103,7 +104,7 @@ public class ScheduleService {
   }
 
   @Transactional
-  public boolean deleteSchedule(
+  public ScheduleDeleteResponse deleteSchedule(
       final MemberAdapter memberAdapter,
       final Long scheduleId) {
 
@@ -130,7 +131,7 @@ public class ScheduleService {
       }
     }
 
-    return true;
+    return ScheduleDeleteResponse.builder().scheduleId(schedule.getScheduleId()).build();
   }
 
 
@@ -211,6 +212,4 @@ public class ScheduleService {
         .map(sf -> memberRepository.findById(sf.getMemberId()).get())
         .collect(Collectors.toList());
   }
-
-
 }
