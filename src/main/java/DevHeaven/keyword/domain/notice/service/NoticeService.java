@@ -114,7 +114,8 @@ public class NoticeService {
 
   public SseEmitter subscribe(final String email) throws IOException {
     final SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-
+    log.info("연결  = {}",email);
+    log.info("emmiiiter ={}",emitter.getTimeout());
     emitter.send(SseEmitter.event()
         .id(email)
         .comment("sse 연결")
