@@ -2,6 +2,7 @@ package DevHeaven.keyword.domain.schedule.controller;
 
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleModifyRequest;
+import DevHeaven.keyword.domain.schedule.dto.response.ScheduleDeleteResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleDetailResponse;
 import DevHeaven.keyword.domain.schedule.dto.response.ScheduleListResponse;
 import DevHeaven.keyword.domain.schedule.dto.request.ScheduleCreateRequest;
@@ -45,7 +46,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/{scheduleId}")
-    public ResponseEntity<Boolean> deleteSchedule(
+    public ResponseEntity<ScheduleDeleteResponse> deleteSchedule(
             @AuthenticationPrincipal final MemberAdapter memberAdapter,
             @PathVariable final Long scheduleId
     ) {
