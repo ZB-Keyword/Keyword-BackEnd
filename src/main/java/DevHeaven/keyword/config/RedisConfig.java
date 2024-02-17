@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,18 +33,19 @@ public class RedisConfig {
   private static final String REDISSON_HOST_PREFIX = "redis://";
 
   @Bean
-  public RedissonClient redissonClient(){
+  public RedissonClient redissonClient() {
     Config config = new Config();
     config.useSingleServer().setAddress(REDISSON_HOST_PREFIX + redisHost + ":" + redisPort);
     return Redisson.create(config);
   }
 
   @Bean
-  public RedisConnectionFactory redisConnectionFactory(){
+  public RedisConnectionFactory redisConnectionFactory() {
     return new LettuceConnectionFactory(redisHost, redisPort);
   }
+
   @Bean
-  public RedisTemplate<String, Object> redisTemplate(){
+  public RedisTemplate<String, Object> redisTemplate() {
     RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
     redisTemplate.setConnectionFactory(redisConnectionFactory());
     redisTemplate.setKeySerializer(new StringRedisSerializer());
@@ -54,9 +56,10 @@ public class RedisConfig {
   // Redis 관련 구성 및 리스너
   @Bean
   public RedisOperations<String, NoticeResponse> eventRedisOperations(
-      RedisConnectionFactory redisConnectionFactory, ObjectMapper objectMapper) {
-    final Jackson2JsonRedisSerializer<NoticeResponse> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(
-        NoticeResponse.class);
+      RedisConnectionFactory redisConnectionFactory,
+      @Qualifier("objectMapper") ObjectMapper objectMapper) {
+    final Jackson2JsonRedisSerializer<NoticeResponse> jsonRedisSerializer =
+        new Jackson2JsonRedisSerializer<>(NoticeResponse.class);
     jsonRedisSerializer.setObjectMapper(objectMapper);
     final RedisTemplate<String, NoticeResponse> eventRedisTemplate = new RedisTemplate<>();
     eventRedisTemplate.setConnectionFactory(redisConnectionFactory);
@@ -68,7 +71,8 @@ public class RedisConfig {
   }
 
   @Bean
-  public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory) {
+  public RedisMessageListenerContainer redisMessageListenerContainer(
+      RedisConnectionFactory redisConnectionFactory) {
     final RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
     redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
     return redisMessageListenerContainer;
