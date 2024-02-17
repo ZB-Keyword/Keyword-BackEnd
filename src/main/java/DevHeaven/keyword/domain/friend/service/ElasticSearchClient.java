@@ -24,7 +24,6 @@ public class ElasticSearchClient {
 
   public List <MemberDocument> findAllByNameContainingOrEmailContaining(final String keyword, final
       Pageable pageable){
-    log.info("keyword = {}",keyword);
     return elasticSearchRepository.findAllByNameContainingOrEmailContaining(keyword,keyword,pageable).getContent();
   }
 

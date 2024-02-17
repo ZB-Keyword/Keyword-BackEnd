@@ -4,7 +4,6 @@ import DevHeaven.keyword.common.exception.MemberException;
 import DevHeaven.keyword.common.service.image.AmazonS3FileService;
 import DevHeaven.keyword.domain.friend.dto.response.FriendSearchListResponse;
 import DevHeaven.keyword.domain.friend.entity.MemberDocument;
-import DevHeaven.keyword.domain.friend.repository.ElasticSearchRepository;
 import DevHeaven.keyword.domain.friend.repository.FriendRepository;
 import DevHeaven.keyword.domain.friend.type.FriendResponseStatus;
 import DevHeaven.keyword.domain.friend.type.FriendStatus;
@@ -12,7 +11,6 @@ import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +27,7 @@ import static DevHeaven.keyword.domain.friend.type.FriendResponseStatus.NOT_FRIE
 import static DevHeaven.keyword.domain.friend.type.FriendStatus.*;
 import static DevHeaven.keyword.domain.member.type.MemberStatus.ACTIVE;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class ElasticSearchService {
@@ -50,10 +48,8 @@ public class ElasticSearchService {
 
         final Member member = memberRepository.findByEmail(memberAdapter.getEmail())
                 .orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
-        log.info("member = {}", member);
         final List<MemberDocument> searchResult = elasticSearchClient
                 .findAllByNameContainingOrEmailContaining(keyword, pageable);
-        log.info("serrch = {}" ,searchResult);
         return searchResult.stream()
                 .map(memberDocument -> createFriendSearchListResponse(memberDocument,member))
                 .collect(Collectors.toList());

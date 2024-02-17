@@ -43,7 +43,6 @@ public class AmazonS3FileService {
     final String fileName = createFileName(imgFile.getOriginalFilename());
     final ObjectMetadata objectMetadata = createObjectMetadata(imgFile);
     uploadImageToS3(folderName+fileName, imgFile, objectMetadata);
-    System.out.println("fileName = " + fileName);
     return fileName;
   }
 

@@ -6,7 +6,6 @@ import DevHeaven.keyword.domain.chat.service.ChatRoomService;
 import DevHeaven.keyword.domain.chat.service.ChatService;
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/chats")
-@Slf4j
 public class ChatRoomController {
     private final ChatRoomService chatRoomService;
     private final ChatService chatService;

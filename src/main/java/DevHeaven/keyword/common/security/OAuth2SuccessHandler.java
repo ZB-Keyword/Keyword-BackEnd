@@ -17,7 +17,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RequiredArgsConstructor
 @Component
-@Slf4j
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
   private final MemberService memberService;
@@ -33,21 +32,17 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
       final HttpServletResponse response,
       final Authentication authentication) throws IOException, ServletException {
 
-    log.info("success to social login");
 
-    OAuthMemberAdapter oAuthMemberAdapter = (OAuthMemberAdapter) authentication.getPrincipal();
+    final OAuthMemberAdapter oAuthMemberAdapter = (OAuthMemberAdapter) authentication.getPrincipal();
 
-    TokenAndInfoResponse tokenAndInfoResponse = memberService.signinOAuth(oAuthMemberAdapter);
+    final TokenAndInfoResponse tokenAndInfoResponse = memberService.signinOAuth(oAuthMemberAdapter);
 
-    // TODO : 현재는 Query String 형태로 프론트에 정보를 제공하지만, 추후 더 좋은 방법으로 교체 예정
-    String redirectUri = getRedirectUrlByTokenAndInfoResponse(tokenAndInfoResponse);
+    final String redirectUri = getRedirectUrlByTokenAndInfoResponse(tokenAndInfoResponse);
     response.sendRedirect(redirectUri);
   }
 
   private String getRedirectUrlByTokenAndInfoResponse(
       final TokenAndInfoResponse tokenAndInfoResponse) {
-
-    // http://localhost:8080/auth/redirect/{memberId}?access-token=..&refresh-token=..
     return UriComponentsBuilder.newInstance()
         .scheme(OAUTH_REDIRECT_SCHEME)
         .host(OAUTH_REDIRECT_HOST)

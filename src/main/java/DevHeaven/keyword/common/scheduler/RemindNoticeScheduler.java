@@ -10,25 +10,22 @@ import DevHeaven.keyword.domain.schedule.type.ScheduleStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class RemindNoticeScheduler {
 
-  private final MemberRepository memberRepository;
   private final ScheduleRepository scheduleRepository;
   private final ApplicationEventPublisher applicationEventPublisher;
 
   //@Scheduled(cron = "0 0 */1 * * *") // 매시간 실행
   @Transactional
   public Object remindNotice() {
-    List<Schedule> scheduleList = scheduleRepository.findAllByStatusAndScheduleAtBetween(
+    final List<Schedule> scheduleList = scheduleRepository.findAllByStatusAndScheduleAtBetween(
         ScheduleStatus.ONGOING, LocalDateTime.now(), LocalDateTime.now().plusDays(1));
 
     for (Schedule schedule : scheduleList) {

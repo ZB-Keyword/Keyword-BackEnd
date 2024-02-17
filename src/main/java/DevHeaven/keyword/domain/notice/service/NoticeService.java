@@ -83,7 +83,7 @@ public class NoticeService {
   }
 
   public Boolean deleteNotice(final MemberAdapter memberAdapter, final Long noticeId) {
-    final Member member = getMemberByEmail(memberAdapter.getEmail());
+    getMemberByEmail(memberAdapter.getEmail());
 
     final Notice notice = noticeRepository.findById(noticeId)
         .orElseThrow(() -> new NoticeException(NOTICE_NOT_FOUND));
@@ -98,9 +98,9 @@ public class NoticeService {
   public Page<NoticeResponse> getNoticeList(
       final MemberAdapter memberAdapter, Pageable pageable) {
 
-    Member member = getMemberByEmail(memberAdapter.getEmail());
+    final Member member = getMemberByEmail(memberAdapter.getEmail());
 
-    Page<Notice> noticePage = noticeRepository.findByIdAndIsRead(
+    final Page<Notice> noticePage = noticeRepository.findByIdAndIsRead(
         member.getMemberId(), false, pageable);
 
     return noticePage.map(Notice::from);
@@ -114,8 +114,7 @@ public class NoticeService {
 
   public SseEmitter subscribe(final String email) throws IOException {
     final SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-    log.info("연결  = {}",email);
-    log.info("emmiiiter ={}",emitter.getTimeout());
+    log.info("emitter 연결  = {}",email);
     emitter.send(SseEmitter.event()
         .id(email)
         .comment("sse 연결")
@@ -135,8 +134,6 @@ public class NoticeService {
   private NoticeResponse serialize(final Message message) {
     try {
       final Notice notification = this.objectMapper.readValue(message.getBody(), Notice.class);
-      System.out.println(
-          "NoticeResponse.from(notification) = " + NoticeResponse.from(notification));
       return NoticeResponse.from(notification);
     } catch (IOException e) {
       throw new NoticeException(ErrorCode.NOTICE_ERROR);
@@ -145,8 +142,6 @@ public class NoticeService {
 
   private void sendToClient(final SseEmitter emitter, final String email, final Object data) {
     try {
-      log.info("email = {}",email);
-      log.info("emiiater ={}", emitter.getTimeout());
       emitter.send(SseEmitter.event()
           .id(email)
           .name("sse")

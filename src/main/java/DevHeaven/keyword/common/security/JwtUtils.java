@@ -56,7 +56,6 @@ public class JwtUtils {
   protected void init() {
     byte[] keyBytes = Decoders.BASE64.decode(secretKey);
     key = Keys.hmacShaKeyFor(keyBytes);
-    System.out.println("Secret Key: " + secretKey);
   }
 
   public TokenResponse createTokens(final String email) {

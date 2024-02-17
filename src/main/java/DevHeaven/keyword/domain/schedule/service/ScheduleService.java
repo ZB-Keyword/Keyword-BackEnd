@@ -40,8 +40,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class ScheduleService {
 
   private final MemberRepository memberRepository;
@@ -53,9 +53,9 @@ public class ScheduleService {
       final MemberAdapter memberAdapter,
       Pageable pageable
   ) {
-    Member member = getMemberByEmail(memberAdapter.getEmail());
+    final Member member = getMemberByEmail(memberAdapter.getEmail());
 
-    List<Schedule> scheduleList =
+    final List<Schedule> scheduleList =
         scheduleRepository.getScheduleListByMember(member.getMemberId(), pageable);
 
     return new PageImpl<>(scheduleList.stream()
@@ -67,7 +67,7 @@ public class ScheduleService {
       final ScheduleCreateRequest request,
       final MemberAdapter memberAdapter) {
 
-    Member member = getMemberByEmail(memberAdapter.getEmail());
+    final Member member = getMemberByEmail(memberAdapter.getEmail());
 
     request.getScheduleFriendList().add(
         new ScheduleFriend(
@@ -75,7 +75,7 @@ public class ScheduleService {
             member.getEmail())
     );
 
-    Schedule schedule = Schedule.builder()
+    final Schedule schedule = Schedule.builder()
         .title(request.getTitle())
         .contents(request.getContents())
         .scheduleAt(request.getScheduleAt())
@@ -108,9 +108,9 @@ public class ScheduleService {
       final MemberAdapter memberAdapter,
       final Long scheduleId) {
 
-    Member member = getMemberByEmail(memberAdapter.getEmail());
+    final Member member = getMemberByEmail(memberAdapter.getEmail());
 
-    Schedule schedule = scheduleRepository.findById(scheduleId)
+    final Schedule schedule = scheduleRepository.findById(scheduleId)
         .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
     validateOrganizerSchedule(member, schedule);
@@ -118,7 +118,7 @@ public class ScheduleService {
     schedule.setStatus(ScheduleStatus.DELETE);
 
     try {
-      ChatRoom chatRoom = chatRoomRepository.findBySchedule(schedule);
+      final ChatRoom chatRoom = chatRoomRepository.findBySchedule(schedule);
       chatRoom.setStatus(ChatRoomStatus.INVALID);
 
     } catch (Exception e) {
@@ -149,7 +149,7 @@ public class ScheduleService {
       final Member member,
       final Schedule schedule) {
 
-    Schedule savedSchedule =
+    final Schedule savedSchedule =
         scheduleRepository.findByMemberAndScheduleId(member, schedule.getScheduleId())
             .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
@@ -164,9 +164,9 @@ public class ScheduleService {
       final Long scheduleId,
       final Long noticeId) {
 
-    Member member = getMemberByEmail(memberAdapter.getEmail());
+    getMemberByEmail(memberAdapter.getEmail());
 
-    Schedule schedule = scheduleRepository.findById(scheduleId)
+    final Schedule schedule = scheduleRepository.findById(scheduleId)
         .orElseThrow(() -> new ScheduleException(SCHEDULE_NOT_FOUND));
 
     return schedule.toScheduleDetail();
