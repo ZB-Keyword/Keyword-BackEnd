@@ -10,9 +10,12 @@ import DevHeaven.keyword.domain.member.dto.MemberAdapter;
 import DevHeaven.keyword.domain.member.entity.Member;
 import DevHeaven.keyword.domain.member.repository.MemberRepository;
 import DevHeaven.keyword.domain.notice.dto.NoticeEvent;
+import DevHeaven.keyword.domain.notice.dto.response.NoticeListResponse;
 import DevHeaven.keyword.domain.notice.dto.response.NoticeResponse;
 import DevHeaven.keyword.domain.notice.entity.Notice;
 import DevHeaven.keyword.domain.notice.repository.NoticeRepository;
+import DevHeaven.keyword.domain.schedule.entity.Schedule;
+import DevHeaven.keyword.domain.schedule.repository.ScheduleRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -51,7 +54,7 @@ public class NoticeService {
   private final RedisOperations<String, NoticeResponse> eventRedisOperations;
   private final NoticeRepository noticeRepository;
   private final MemberRepository memberRepository;
-
+  private final ScheduleRepository scheduleRepository;
 
   private static final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
@@ -100,7 +103,7 @@ public class NoticeService {
     return true;
   }
 
-  public Page<NoticeResponse> getNoticeList(
+  public Page<NoticeListResponse> getNoticeList(
       final MemberAdapter memberAdapter, Pageable pageable) {
 
     final Member member = getMemberByEmail(memberAdapter.getEmail());
@@ -108,7 +111,18 @@ public class NoticeService {
     final Page<Notice> noticePage = noticeRepository.findByMember_MemberIdAndIsRead(
         member.getMemberId(), false, pageable);
 
-    return noticePage.map(Notice::from);
+    List<Schedule> schedule = scheduleRepository.findByMember_MemberId(
+        member.getMemberId());
+
+    return noticePage.map(notice -> NoticeListResponse.from(notice, findScheduleForNotice(notice, schedule)));
+  }
+
+
+  private Schedule findScheduleForNotice(Notice notice, List<Schedule> schedules) {
+    return schedules.stream()
+        .filter(schedule -> schedule.getMember().getMemberId().equals(notice.getMember().getMemberId()))
+        .findFirst()
+        .orElse(null);
   }
 
   private Member getMemberByEmail(final String email) {

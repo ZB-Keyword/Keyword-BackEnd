@@ -1,9 +1,8 @@
 package DevHeaven.keyword.domain.notice.controller;
 
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
-import DevHeaven.keyword.domain.notice.dto.response.NoticeResponse;
+import DevHeaven.keyword.domain.notice.dto.response.NoticeListResponse;
 import DevHeaven.keyword.domain.notice.service.NoticeService;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +40,7 @@ public class NoticeController {
   }
 
   @GetMapping
-  public ResponseEntity<Page<NoticeResponse>> getNoticeList(
+  public ResponseEntity<Page<NoticeListResponse>> getNoticeList(
       @AuthenticationPrincipal final MemberAdapter memberAdapter,
       Pageable pageable) {
 
