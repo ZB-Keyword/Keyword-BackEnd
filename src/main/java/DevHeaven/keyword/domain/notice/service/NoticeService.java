@@ -124,7 +124,7 @@ public class NoticeService {
     try {
       emitter.send(SseEmitter.event()
           .id(email)
-          .comment("sse connect")
+          .comment("sse 연결")
           .name("sse"));
     } catch (IOException e) {
       throw new RuntimeException(e);
