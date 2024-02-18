@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping("/notification")
@@ -25,10 +26,9 @@ public class NoticeController {
 
   @GetMapping(value = "/subscribe", produces = "text/event-stream")
   @ResponseBody
-  public ResponseEntity<String> subscribe(@AuthenticationPrincipal MemberAdapter memberAdapter)
-      throws IOException {
+  public ResponseEntity<SseEmitter> subscribe(@AuthenticationPrincipal MemberAdapter memberAdapter) {
 
-    return noticeService.subscribe(memberAdapter);
+    return ResponseEntity.ok(noticeService.subscribe(memberAdapter));
   }
 
   @DeleteMapping("/{noticeId}")

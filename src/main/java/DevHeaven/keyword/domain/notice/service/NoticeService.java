@@ -117,13 +117,18 @@ public class NoticeService {
         .orElseThrow(() -> new MemberException(EMAIL_NOT_FOUND));
   }
 
-  public SseEmitter subscribe(final String email) throws IOException {
+  public SseEmitter subscribe(final MemberAdapter memberAdapter){
+    final String email = memberAdapter.getEmail();
     final SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
     log.info("emitter 연결  = {}", email);
-    emitter.send(SseEmitter.event()
-        .id(email)
-        .comment("sse 연결")
-        .name("sse"));
+    try {
+      emitter.send(SseEmitter.event()
+          .id(email)
+          .comment("sse connect")
+          .name("sse"));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
     emitters.add(emitter);
     final MessageListener messageListener = (message, pattern) -> {
       final NoticeResponse notificationResponse = serialize(message);
@@ -173,6 +178,7 @@ public class NoticeService {
   }
 
 
+/*
   public ResponseEntity<String> subscribe(MemberAdapter memberAdapter)
       throws JsonProcessingException {
     try {
@@ -201,5 +207,6 @@ public class NoticeService {
 
     return new SseEmitter();
   }
+*/
 
 }
