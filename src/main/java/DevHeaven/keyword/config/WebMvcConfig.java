@@ -20,9 +20,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class WebMvcConfig implements WebMvcConfigurer {
 
-
-
-  @Bean
+/*  @Bean
   public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
     MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
     converter.setObjectMapper(jacksonObjectMapper());
@@ -46,5 +44,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
     converters.add(stringHttpMessageConverter());
     converters.add(mappingJackson2HttpMessageConverter());
 
-  }
+  }*/
 }
