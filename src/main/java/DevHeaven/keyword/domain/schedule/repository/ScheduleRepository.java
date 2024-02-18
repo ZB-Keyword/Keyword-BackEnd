@@ -12,6 +12,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
@@ -20,7 +21,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             + " FROM schedulefriend sf"
             + " WHERE sf.member_id = :id)"
             + " ORDER BY s.status = 'ONGOING' DESC, s.schedule_at DESC", nativeQuery = true)
-    List<Schedule> getScheduleListByMember(Long id, Pageable pageable);
+    List<Schedule> getScheduleListByMember(@Param(value = "id") Long id, Pageable pageable);
 
     Optional<Schedule> findByMemberAndScheduleId(Member member, Long scheduleId);
 

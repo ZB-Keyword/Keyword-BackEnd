@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-@Configuration
+/*@Configuration
 public class JacksonConfig {
 
   @Bean(name = "jacksonObjectMapper")
@@ -16,4 +16,4 @@ public class JacksonConfig {
     objectMapper.registerModule(new JavaTimeModule());
     return objectMapper;
   }
-}
+}*/

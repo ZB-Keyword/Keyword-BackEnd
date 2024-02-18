@@ -21,30 +21,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
 
 
-  @Autowired
-  @Lazy
-  @Qualifier("jacksonObjectMapper")
-  private ObjectMapper jacksonObjectMapper;
 
   @Bean
   public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
     MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-    converter.setObjectMapper(jacksonObjectMapper);
+    converter.setObjectMapper(jacksonObjectMapper());
     return converter;
   }
 
-  @Bean(name = "jacksonObjectMapper")
-  @Lazy
+  @Bean
   public ObjectMapper jacksonObjectMapper() {
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.registerModule(new JavaTimeModule());
     return objectMapper;
-  }
-
-  @Bean
-  @Primary
-  public ObjectMapper objectMapper() {
-    return new ObjectMapper();
   }
 
   @Bean

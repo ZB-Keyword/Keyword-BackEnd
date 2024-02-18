@@ -30,6 +30,7 @@ public class RedisConfig {
   private int redisPort;
 
   private final ObjectMapper objectMapper;
+
   private static final String REDISSON_HOST_PREFIX = "redis://";
 
   @Bean
@@ -56,8 +57,7 @@ public class RedisConfig {
   // Redis 관련 구성 및 리스너
   @Bean
   public RedisOperations<String, NoticeResponse> eventRedisOperations(
-      RedisConnectionFactory redisConnectionFactory,
-      @Qualifier("objectMapper") ObjectMapper objectMapper) {
+      RedisConnectionFactory redisConnectionFactory) {
     final Jackson2JsonRedisSerializer<NoticeResponse> jsonRedisSerializer =
         new Jackson2JsonRedisSerializer<>(NoticeResponse.class);
     jsonRedisSerializer.setObjectMapper(objectMapper);
