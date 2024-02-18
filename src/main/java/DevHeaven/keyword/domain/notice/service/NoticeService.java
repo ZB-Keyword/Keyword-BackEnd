@@ -13,9 +13,12 @@ import DevHeaven.keyword.domain.notice.dto.NoticeEvent;
 import DevHeaven.keyword.domain.notice.dto.response.NoticeResponse;
 import DevHeaven.keyword.domain.notice.entity.Notice;
 import DevHeaven.keyword.domain.notice.repository.NoticeRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +31,8 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,7 +119,7 @@ public class NoticeService {
 
   public SseEmitter subscribe(final String email) throws IOException {
     final SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
-    log.info("emitter 연결  = {}",email);
+    log.info("emitter 연결  = {}", email);
     emitter.send(SseEmitter.event()
         .id(email)
         .comment("sse 연결")
@@ -166,4 +171,35 @@ public class NoticeService {
       this.redisMessageListenerContainer.removeMessageListener(messageListener);
     });
   }
+
+
+  public ResponseEntity<String> subscribe(MemberAdapter memberAdapter)
+      throws JsonProcessingException {
+    try {
+      SseEmitter subscribe = subscribeLogic(memberAdapter.getEmail());
+      Map<String, Object> responseMap = new HashMap<>();
+      responseMap.put("success", true);
+      responseMap.put("emitter", subscribe);
+
+      // 직접 JSON 문자열 변환
+      String jsonResponse = objectMapper.writeValueAsString(responseMap);
+
+      return ResponseEntity.ok(jsonResponse);
+    } catch (IOException e) {
+      Map<String, Object> errorMap = new HashMap<>();
+      errorMap.put("success", false);
+      errorMap.put("error", "Failed to subscribe");
+
+      // 직접 JSON 문자열 변환
+      String jsonError = objectMapper.writeValueAsString(errorMap);
+
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(jsonError);
+    }
+  }
+
+  private SseEmitter subscribeLogic(String email) throws IOException {
+
+    return new SseEmitter();
+  }
+
 }
