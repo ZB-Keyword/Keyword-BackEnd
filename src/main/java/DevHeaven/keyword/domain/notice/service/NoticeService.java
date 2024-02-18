@@ -105,7 +105,7 @@ public class NoticeService {
 
     final Member member = getMemberByEmail(memberAdapter.getEmail());
 
-    final Page<Notice> noticePage = noticeRepository.findByIdAndIsRead(
+    final Page<Notice> noticePage = noticeRepository.findByMember_MemberIdAndIsRead(
         member.getMemberId(), false, pageable);
 
     return noticePage.map(Notice::from);
