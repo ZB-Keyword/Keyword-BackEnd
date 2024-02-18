@@ -1,7 +1,6 @@
 package DevHeaven.keyword.domain.member.controller;
 
 import DevHeaven.keyword.domain.member.dto.MemberAdapter;
-import DevHeaven.keyword.domain.member.dto.OAuthMemberAdapter;
 import DevHeaven.keyword.domain.member.dto.request.ModifyPasswordRequest;
 import DevHeaven.keyword.domain.member.dto.request.ReissueRequest;
 import DevHeaven.keyword.domain.member.dto.request.SigninRequest;
@@ -10,7 +9,6 @@ import DevHeaven.keyword.domain.member.dto.response.MemberInfoResponse;
 import DevHeaven.keyword.domain.member.dto.response.MyInfoResponse;
 import DevHeaven.keyword.domain.member.dto.response.SignupResponse;
 import DevHeaven.keyword.domain.member.service.MemberService;
-import DevHeaven.keyword.domain.member.service.OAuth2UserService;
 import DevHeaven.keyword.domain.member.dto.response.TokenAndInfoResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberController {
 
   private final MemberService memberService;
-
-  private final OAuth2UserService oauth2UserService;
 
   @GetMapping("")
   public ResponseEntity<MyInfoResponse> getMyInfo(
