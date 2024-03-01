@@ -190,37 +190,4 @@ public class NoticeService {
       this.redisMessageListenerContainer.removeMessageListener(messageListener);
     });
   }
-
-
-/*
-  public ResponseEntity<String> subscribe(MemberAdapter memberAdapter)
-      throws JsonProcessingException {
-    try {
-      SseEmitter subscribe = subscribeLogic(memberAdapter.getEmail());
-      Map<String, Object> responseMap = new HashMap<>();
-      responseMap.put("success", true);
-      responseMap.put("emitter", subscribe);
-
-      // 직접 JSON 문자열 변환
-      String jsonResponse = objectMapper.writeValueAsString(responseMap);
-
-      return ResponseEntity.ok(jsonResponse);
-    } catch (IOException e) {
-      Map<String, Object> errorMap = new HashMap<>();
-      errorMap.put("success", false);
-      errorMap.put("error", "Failed to subscribe");
-
-      // 직접 JSON 문자열 변환
-      String jsonError = objectMapper.writeValueAsString(errorMap);
-
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(jsonError);
-    }
-  }
-
-  private SseEmitter subscribeLogic(String email) throws IOException {
-
-    return new SseEmitter();
-  }
-*/
-
 }
