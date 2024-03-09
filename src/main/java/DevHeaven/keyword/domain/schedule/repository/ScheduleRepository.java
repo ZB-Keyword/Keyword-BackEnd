@@ -15,11 +15,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
-
-    @Query(value = "SELECT s.* FROM schedulefriend sf  join schedule s "
-        + "on s.schedule_id = sf.schedule_id "
-        + "WHERE sf.member_id = :id "
-        + "ORDER BY s.status= 'ONGOING'DESC, s.schedule_at DESC", nativeQuery = true)
+    
+   @Query(value = "SELECT * FROM schedule s WHERE s.schedule_id in"
+            + " (SELECT sf.schedule_id"
+            + " FROM schedulefriend sf"
+            + " WHERE sf.member_id = :id) "
+            + " ORDER BY s.status = 'ONGOING' DESC, s.schedule_at DESC", nativeQuery = true)
     List<Schedule> getScheduleListByMember(@Param(value = "id") Long id, Pageable pageable);
 
     Optional<Schedule> findByMemberAndScheduleId(Member member, Long scheduleId);
