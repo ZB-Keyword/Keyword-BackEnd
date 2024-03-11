@@ -22,18 +22,15 @@ public interface FriendRepository extends JpaRepository<Friend, Long>  {
   Optional<Friend> findFriendRequest(@Param("memberRequestId") Long memberRequestId,
       @Param("friendId") Long friendId, @Param("statusList") List <FriendStatus> statusList);
 
-  @Query("SELECT f.friend.memberId FROM Friend f JOIN f.friend friend JOIN f.memberRequest memberRequest "
-      + "WHERE memberRequest.memberId = :memberRequestId AND f.status = :friendStatus ORDER BY f.friend.name")
+  @Query("SELECT f.friend.memberId FROM Friend f JOIN f.friend friend "
+      + "WHERE f.memberRequest.memberId = :memberRequestId AND f.status = :friendStatus ORDER BY f.friend.name")
   Page<Long> findFriendListByMemberId(@Param("memberRequestId") Long memberRequestId,
       @Param("friendStatus") FriendStatus friendStatus,
       Pageable pageable);
-  @Query("SELECT f.memberRequest.memberId FROM Friend f JOIN f.friend friend JOIN f.memberRequest memberRequest "
-      + "WHERE friend.memberId = :friendMemberId AND f.status = :friendStatus ORDER BY f.memberRequest.name")
+  @Query("SELECT f.memberRequest.memberId FROM Friend f JOIN f.memberRequest memberRequest "
+      + "WHERE f.friend.memberId = :friendMemberId AND f.status = :friendStatus ORDER BY f.memberRequest.name")
   Page<Long> findFriendListByFriendId(@Param("friendMemberId") Long friendMemberId,
       @Param("friendStatus") FriendStatus friendStatus,
       Pageable pageable);
 
-  List<Friend> findAllByStatus(FriendStatus status);
-
-  Optional<Object> findByMemberRequestMemberIdAndFriendMemberId(Long memberId, Long id);
 }
